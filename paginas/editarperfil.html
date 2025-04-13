@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markline - Editar Perfil</title>
+    <link rel="stylesheet" href="editarperfil.css">
+</head>
+<body>
+    <header>
+        <h1><a href="main.html">Markline</a></h1>
+        <nav>
+            <button class="botones" onclick="location.href='perfil.html'">Regresar</button>
+        </nav>
+    </header>
+
+    <section class="registro-container">
+        <form id="editarForm" enctype="multipart/form-data" method="POST" action="actualizar_perfil.php">
+            <h2>Editar Perfil</h2>
+
+            <label>Nombre/s</label>
+            <input type="text" name="nombre" id="nombre">
+
+            <label>Apellido Paterno</label>
+            <input type="text" name="apellidoP" id="apellidoP">
+
+            <label>Apellido Materno</label>
+            <input type="text" name="apellidoM" id="apellidoM">
+
+            <label>Username</label>
+            <input type="text" name="username" id="username">
+
+            <label>Fotografía</label>
+            <input type="file" name="avatar" id="avatar" accept="image/*">
+
+            <label>Género</label>
+            <div class="genero">
+                <input type="radio" name="genero" value="Masculino"> Masculino
+                <input type="radio" name="genero" value="Femenino"> Femenino
+            </div>
+            
+            <div id="botonescont">
+                <button class="botones" type="submit">Guardar Cambios</button>
+                <button class="botones" type="button" id="cambiarContrasena">Cambiar Contraseña</button>    
+            </div>
+
+            <div id="contrasenaForm" style="display: none; margin-top: 20px;">
+                <h3>Cambiar Contraseña</h3>
+                <label>Contraseña Actual</label>
+                <input type="password" name="contrasena_actual" id="contrasena_actual">
+                
+                <label>Nueva Contraseña</label>
+                <input type="password" name="nueva_contrasena" id="nueva_contrasena">
+                
+                <label>Confirmar Nueva Contraseña</label>
+                <input type="password" name="confirmar_contrasena" id="confirmar_contrasena">
+                
+                <button class="botones" type="button" id="guardarContrasena">Guardar Contraseña</button>
+            </div>
+        </form>
+    </section>
+
+    <script src="editarperfil.js"></script>
+</body>
+</html>

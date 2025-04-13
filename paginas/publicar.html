@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markline - Publicar Producto</title>
+    <link rel="stylesheet" href="registrate.css">
+</head>
+<body>
+    <header>
+        <h1><a href="main.html">Markline</a></h1>
+    </header>
+
+    <section class="registro-container">
+        <div id="formregcontainer">
+            <form id="publicarForm" enctype="multipart/form-data" method="POST" action="publicar.php">
+                <h2>Publicar Producto</h2>
+
+                <label>Nombre del Producto</label>
+                <input type="text" name="nombre" id="nombre" required>
+    
+                <label>Descripción</label>
+                <textarea name="descripcion" id="descripcion" rows="4" required></textarea>
+    
+                <label>Categoría</label>
+                <select name="categoria" id="categoria" required>
+                    <option value="">Selecciona una categoría</option>
+                    <option value="Electrónica">Electrónica</option>
+                    <option value="Ropa">Ropa</option>
+                    <option value="Hogar">Hogar</option>
+                    <option value="Deportes">Deportes</option>
+                    <option value="Juguetes">Juguetes</option>
+                    <option value="Otros">Otros</option>
+                </select>
+    
+                <label>Precio ($)</label>
+                <input type="number" name="precio" id="precio" min="0" step="0.01" required>
+    
+                <label>Stock disponible</label>
+                <input type="number" name="stock" id="stock" min="0" required>
+    
+                <label>Imagen principal del producto (requerida)</label>
+                <input type="file" name="fotoPrincipal" id="fotoPrincipal" accept="image/*" required>
+    
+                <label>Imagen extra 1 (opcional)</label>
+                <input type="file" name="fotoExtra1" id="fotoExtra1" accept="image/*">
+                
+                <label>Imagen extra 2 (opcional)</label>
+                <input type="file" name="fotoExtra2" id="fotoExtra2" accept="image/*">
+    
+                <label>Video del producto (opcional)</label>
+                <input type="file" name="video" id="video" accept="video/*">
+                
+                <div id="botonesContainer">
+                    <button class="botones" type="submit" id="btnpublicar">Publicar</button>
+                    <button class="botones" type="button" id="btncancelar"><a href="mainvendedor.html">Cancelar</a></button>    
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <script src="publicar.js"></script>
+</body>
+</html>

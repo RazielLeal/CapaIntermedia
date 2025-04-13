@@ -1,0 +1,99 @@
+:root{
+    
+    --principal: rgb(0, 116, 31); 
+    --secundario:rgb(92, 196, 114); 
+    --terciario: rgb(157, 245, 159);
+    --blanco: rgb(255, 255, 255);
+    --fondo:rgb(255, 255, 255);
+    --letrauno:rgb(207, 207, 207);
+    --letrados:rgb(179, 179, 179);
+    --sombra:rgba(132, 189, 255, 0.1);
+    --sombra2:rgba(50, 72, 97, 0.568);
+
+}
+
+body, html {
+    font-family:'Courier New', Courier, monospace;
+    font-size: 20px;
+    width: 100%;
+    height: 100%;
+    background-color: var(--fondo);
+    background-repeat: no-repeat;
+    background-size: 1920px 1080px;
+}
+
+header {
+    background-color: var(--principal);
+    color: var(--letrauno);
+    padding: 0px 15px 0px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    justify-self: center;
+    height: 50px;
+    border-radius: 15px;
+}
+
+.botones
+{
+    border-radius: 10px;
+    border: none;
+    padding: 5px;
+    width: max-content;
+    height: 30px;
+    font-size: 15px;
+    font-family: inherit;
+    box-shadow: 0 5px 10px 3px var(--sombra2);
+    cursor: pointer;
+    background-color: var(--blanco);
+}
+
+
+a{
+    text-decoration: none;
+    color: inherit;
+}
+.registro-container {
+    background: var(--secundario);
+    padding: 20px;
+    width: 50%;
+    margin: auto;
+    border-radius: 15px;
+    margin-top: 20px;
+}
+
+h2{
+    padding:0px;
+    margin: 0px;
+}
+form {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--terciario);
+    padding: 10px;
+    gap: 10px;
+    border-radius: 15px;
+}
+
+input {
+    margin-bottom: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #dff2bf;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+.genero {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+

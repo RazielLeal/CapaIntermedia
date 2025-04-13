@@ -1,0 +1,162 @@
+:root{
+    
+    --principal: rgb(0, 116, 31); 
+    --secundario:rgb(92, 196, 114); 
+    --terciario: rgb(157, 245, 159);
+    --blanco: rgb(255, 255, 255);
+    --fondo:rgb(255, 255, 255);
+    --letrauno:rgb(207, 207, 207);
+    --letrados:rgb(179, 179, 179);
+    --sombra:rgba(132, 189, 255, 0.1);
+    --sombra2:rgba(50, 72, 97, 0.568);
+
+}
+
+body, html {
+    font-family:'Courier New', Courier, monospace;
+    font-size: 20px;
+    width: 100%;
+    height: 100%;
+    background-color: var(--fondo);
+    background-repeat: no-repeat;
+    background-size: 1920px 1080px;
+}
+
+header {
+    background-color: var(--principal);
+    color: var(--letrauno);
+    padding: 0px 15px 0px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    justify-self: center;
+    height: 50px;
+    border-radius: 15px;
+}
+
+.botones
+{
+    border-radius: 10px;
+    border: none;
+    padding: 5px;
+    width: max-content;
+    height: 30px;
+    font-size: 15px;
+    font-family: inherit;
+    box-shadow: 0 5px 10px 3px var(--sombra2);
+    cursor: pointer;
+    background-color: var(--blanco);
+}
+
+
+.user-icon img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.perfil-container {
+    width: 80%;
+    margin: auto;
+    background-color: var(--secundario);
+    padding: 15px;
+    border-radius: 15px;
+    margin-top: 20px;
+}
+
+.perfil-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background-color: var(--terciario);
+    padding: 10px;
+    border-radius: 15px;
+}
+
+.avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+}
+
+.editar-btn, .cerrar-btn, .listas-btn {
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.editar-btn {
+    background-color: #cddc39;
+}
+
+.cerrar-btn {
+    background-color: #e77d6f;
+    color: white;
+}
+
+#listas-btn {
+    background-color: #add0fd;
+}
+
+.publicaciones{
+    background-color: #add0fd;
+}
+.publicaciones h2 {
+    font-family: 'Georgia', serif;
+}
+
+.filtros {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.filtros select {
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+a{
+    text-decoration: none;
+    color: inherit;
+}
+.grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.producto {
+    display: flex;
+    align-items: center;
+    background-color: var(--blanco);
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    gap: 15px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.producto:hover {
+    transform: scale(1.02);
+}
+
+.imagen-producto {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.producto p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}

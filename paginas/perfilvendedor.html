@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markline - Perfil</title>
+    <link rel="stylesheet" href="perfilvendedor.css">
+</head>
+<body>
+    <header>
+        <h1><a href="mainvendedor.html">Markline</a></h1>
+        <div class="user-icon">
+            <img src="avatar.png" alt="Usuario">
+        </div>
+    </header>
+
+    <section class="perfil-container">
+        <div class="perfil-info">
+            <img id="profile-photo" src="avatar.png" alt="Avatar" class="avatar">
+            <div class="datos">
+                <h2 id="user-name">"Nickname"</h2>
+                <p id="user-email">Email: </p>
+                <p id="register-date">Fecha de Registro: </p>
+            </div>
+            <button class="botones" id="editar-btn" onclick="window.location.href='editarperfil.html'">Editar Perfil</button>
+            <button class="botones" id="listas-btn" onclick="window.location.href='listas.html'">Ver Listas</button>
+            <button class="botones" id="cerrar-btn">Cerrar Sesión</button>
+        </div>
+
+        <div class="publicaciones">
+            <h2>Publicaciones</h2>
+            <div class="filtros">
+                <label for="categoria">Categoría:</label>
+                <select id="categoria">
+                    <option value="">Seleccionar</option>
+                    <option value="ropa">Ropa</option>
+                    <option value="electronica">Electrónica</option>
+                    <option value="hogar">Hogar</option>
+                    <option value="juguetes">Juguetes</option>
+                </select>
+
+                <label for="fecha">Fecha:</label>
+                <select id="fecha">
+                    <option value="recientes">Recientes</option>
+                    <option value="ultimos">Últimos</option>
+                </select>
+            </div>
+
+            <div class="grid" id="productos">
+                <!-- Los productos se cargarán dinámicamente aquí -->
+            </div>
+
+            <div class="paginacion" id="paginacion">
+                <!-- La paginación se generará dinámicamente aquí -->
+            </div>
+        </div>
+    </section>
+
+    <script src="perfilvendedor.js"></script>
+</body>
+</html>

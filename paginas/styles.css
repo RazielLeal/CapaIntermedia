@@ -1,0 +1,354 @@
+:root{
+    --principal: rgb(0, 116, 31);
+    --secundario: rgb(92, 196, 114);
+    --terciario: rgb(157, 245, 159);
+    --blanco: rgb(255, 255, 255);
+    --fondo: rgb(255, 255, 255);
+    --letrauno: rgb(240, 240, 240);
+    --letrados: rgb(179, 179, 179);
+    --sombra: rgba(132, 189, 255, 0.1);
+    --sombra2: rgba(50, 72, 97, 0.568);
+}
+
+.blur {
+    filter: blur(5px);
+    transition: filter 0.3s ease;
+}
+
+.show-popup {
+    visibility: visible !important;
+    opacity: 1 !important;
+    transition-delay: 0s;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+}
+
+.overlay.show {
+    display: block;
+}
+
+body, html {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 20px;
+    width: 100%;
+    height: 100%;
+    background-color: var(--fondo);
+    margin: 0;
+    padding: 0;
+}
+
+.ContLP {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+/* Header */
+.headertitulo {
+    background-color: var(--principal);
+    margin: 0;
+    padding: 0 20px;
+    display: flex;
+    width: 100%;
+    height: 60px;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.titulo {
+    font-size: 28px;
+    color: var(--blanco);
+    font-weight: bold;
+    text-decoration: none;
+    cursor: default;
+    letter-spacing: 1px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.header-buttons {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-right: auto;
+    padding-left: 840px;
+}
+
+.headerbtn a {
+    color: var(--blanco);
+    text-decoration: none;
+    font-size: 16px;
+    transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.headerbtn i {
+    font-size: 14px;
+}
+
+.headerbtn a:hover {
+    opacity: 0.9;
+}
+
+/* Productos Destacados (centrado) */
+.productos-header {
+    text-align: center;
+    padding: 20px 0;
+    width: 100%;
+}
+
+.productos-header h2 {
+    margin: 0;
+    color: var(--principal);
+    font-size: 24px;
+}
+
+/* Product Grid */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ... (el resto de tu CSS existente permanece igual) ... */
+
+.product-card {
+    background: linear-gradient(145deg, var(--secundario) 0%, var(--terciario) 100%);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.product-image-container {
+    height: 180px;
+    overflow: hidden;
+}
+
+.product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.product-info {
+    padding: 15px;
+    text-align: center;
+}
+
+.product-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin: 0 0 10px 0;
+}
+
+.product-price {
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+/* Popup Login */
+.popupIScont {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--principal);
+    box-shadow: 0px 5px 10px 3px var(--sombra);
+    z-index: 1000;
+    width: 700px;
+    height: 400px;
+    border-radius: 10px;
+    padding: 20px;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0.3s, opacity 0.3s ease;
+}
+
+.formIS {
+    background-color: var(--secundario);
+    border-radius: 10px;
+    height: 100%;
+    width: 100%;
+    display: grid;
+    grid-template-rows: repeat(3,1fr);   
+    gap: 10px; 
+}
+
+.formIS .continput {
+    display: grid;
+    grid-template-rows: repeat(2,1fr);
+    grid-template-columns: repeat(4,1fr);
+    justify-content: left;
+    align-items: center;
+    padding: 20px;
+    height: 100%;
+}
+
+.formIS .continput .descinputis {    
+    font-size: inherit;
+    color: var(--letrauno);
+    font: inherit;
+    font-weight: bold;
+    grid-column: 1/4;
+    grid-row: 1/2;
+}
+
+.formIS .continput .inputgen {
+    grid-row: 2/3;
+    grid-column: 1/4;
+    width: 90%;
+    font: inherit;
+    border-radius: 12px;
+    border: none;
+    padding: 5px 5px 5px 10px;
+    height: 25px;
+    font-size: 18px;
+    align-self: normal;
+    box-shadow: 0 5px 10px 3px var(--sombra2);
+}
+
+.botones {
+    border-radius: 10px;
+    border: none;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 90%;
+    height: 30px;
+    font-size: 15px;
+    font-family: inherit;
+    box-shadow: 0 5px 10px 3px var(--sombra2);
+    cursor: pointer;
+    background-color: var(--blanco);
+}
+
+.formIS .continput #btnformis {
+    grid-column: 3/4;
+    grid-row: 1/2;
+}
+
+.formIS .continput #btnformsalir {
+    grid-row: 1/2;
+    grid-column: 4/5;
+}
+
+#mostrarcontracont {
+    align-self: normal;
+    justify-self: normal;
+    grid-row: 2/3;
+    grid-column: 4/5;
+    width: auto;
+    height: 30px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: left;
+    position: relative; 
+    cursor: pointer; 
+}
+
+#mostrarcontracont img {    
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    transition: opacity 0.3s ease;
+    filter: drop-shadow(0px 3px 0px var(--sombra2));
+}
+
+#mostrarcontracont div {
+    position: relative;
+    white-space: nowrap;
+    margin-left: 50px;
+}
+
+#mostrarcontracont .unchecked {
+    opacity: 1;
+}
+
+#mostrarcontracont .checked {
+    opacity: 0;
+}
+
+#mostrarcontracont.checked .checked {
+    opacity: 1;
+}
+
+#mostrarcontracont.checked .unchecked {
+    opacity: 0;
+}
+
+/* Loading State */
+.producto-loading {
+    text-align: center;
+    padding: 40px;
+    font-size: 1.1rem;
+    color: #666;
+    grid-column: 1 / -1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .popupIScont {
+        width: 90%;
+        height: auto;
+    }
+    
+    .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .headertitulo {
+        padding: 0 15px;
+    }
+    
+    .titulo {
+        font-size: 24px;
+    }
+    
+    .header-buttons {
+        gap: 10px;
+    }
+    
+    .headerbtn a {
+        font-size: 14px;
+    }
+    
+    .product-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.productos-header {
+    text-align: center; /* Centra el texto horizontalmente */
+    padding: 20px 0; /* Añade un poco de espacio arriba y abajo */
+    width: 100%; /* Asegura que ocupe todo el ancho disponible */
+}

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markline - Inicio</title>
+    <link rel="stylesheet" href="main.css">
+    <style>
+        #cart-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        #cart-modal button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="main.html">Markline</a></h1>
+        <nav>
+            <button class="botones" onclick="location.href='publicar.html'">Publicar Producto</button>
+            <button class="botones" onclick="location.href='perfilvendedor.html'">Ver Perfil</button>
+            <button class="botones" onclick="openCart()"> 🛒
+            </button>
+        </nav>
+    </header>
+
+    <section id="user-info">
+        <img id="profile-photo" alt="Foto de perfil" />
+        <p id="user-name"></p>
+    </section>
+
+    <div id="cart-modal">
+        <p>Este es tu carrito de compras.</p>
+        <button onclick="closeCart()">Salir</button>
+    </div>
+
+    <script>
+        function openCart() {
+            document.getElementById('cart-modal').style.display = 'block';
+        }
+        
+        function closeCart() {
+            document.getElementById('cart-modal').style.display = 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const username = sessionStorage.getItem('username');
+            const userNameElement = document.getElementById('user-name');
+            const profilePhoto = document.getElementById('profile-photo');
+
+            if (username) {
+                userNameElement.textContent = username;
+
+                fetch(`login.php?user=${encodeURIComponent(username)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            userNameElement.textContent = data.username;
+
+                            if (data.photo) {
+                                profilePhoto.src = 'data:image/jpeg;base64,' + data.photo;
+                            } else {
+                                profilePhoto.alt = 'Avatar no disponible';
+                            }
+                        } else {
+                            alert('Error al cargar el usuario.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error al cargar los datos del usuario:', error);
+                        alert('No se pudo cargar la información del usuario.');
+                    });
+            } else {
+                alert('No hay usuario registrado en la sesión.');
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>
