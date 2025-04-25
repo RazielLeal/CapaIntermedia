@@ -13,20 +13,21 @@ if ($conn->connect_error) {
 $conn->set_charset("utf8");
 
 try {
-    // Consulta para obtener productos aleatorios con la nueva estructura
+    // Consulta para obtener productos aleatorios con status 'Aceptado'
     $sql = "SELECT 
-                p.ID, 
-                p.Nombre, 
-                p.Descripcion, 
-                p.FotoPrincipal,
-                p.Categoria,
-                p.Precio,
-                p.Calificacion,
-                u.Nombre AS Vendedor
-            FROM Producto p
-            JOIN Usuario u ON p.ID_Usuario = u.ID
-            ORDER BY RAND() 
-            LIMIT 8";
+            p.ID, 
+            p.Nombre, 
+            p.Descripcion, 
+            p.FotoPrincipal,
+            p.Precio,
+            p.Calificacion,
+            u.Nombre AS Vendedor
+        FROM Producto p
+        JOIN Usuario u ON p.ID_Usuario = u.ID
+        WHERE p.Status = 'Aceptado'
+        ORDER BY RAND() 
+        LIMIT 8";
+
     
     $result = $conn->query($sql);
 
@@ -45,7 +46,6 @@ try {
                 'Nombre' => htmlspecialchars($row['Nombre'], ENT_QUOTES, 'UTF-8'),
                 'Descripcion' => htmlspecialchars($row['Descripcion'] ?? '', ENT_QUOTES, 'UTF-8'),
                 'Foto' => $imagen,
-                'Categoria' => htmlspecialchars($row['Categoria'], ENT_QUOTES, 'UTF-8'),
                 'Precio' => number_format($row['Precio'], 2),
                 'Calificacion' => number_format($row['Calificacion'], 1),
                 'Vendedor' => htmlspecialchars($row['Vendedor'], ENT_QUOTES, 'UTF-8')

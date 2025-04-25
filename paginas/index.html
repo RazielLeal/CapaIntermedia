@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markline</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="ContLP">
+        <section class="headertitulo" id="header">
+            <div class="titulo" id="titulo">
+                Markline
+            </div>
+
+            <div class="header-buttons">
+                <div class="headerbtn" id="btnis">
+                    <a><i class="fas fa-sign-in-alt"></i> Iniciar sesión</a>
+                </div>
+                <div class="headerbtn" id="btnreg">
+                    <a href="registrate.html"><i class="fas fa-user-plus"></i> Registrarse</a>
+                </div>
+            </div>
+        </section>
+    
+        <section class="contimglp" id="contimglp">
+            <div class="productos-header">
+                <h2> Productos Destacados</h2>
+            </div>
+            
+            <div class="product-grid" id="productosContainer">
+                <div class="producto-loading">Cargando productos...</div>
+            </div>
+        </section>
+    </div>
+
+    <div class="overlay"></div>
+
+    <section class="popupIScont">
+        <form action="" method="post" class="formIS" id="formIS">    
+            <div class="continput">
+                <div class="descinputis">
+                    Ingrese su correo o nombre de usuario:
+                </div>
+                <input type="email" class="inputgen" id="inputcorreo" placeholder="Correo o usuario">
+            </div>
+
+            <div class="continput">
+                <div class="descinputis">
+                    Ingrese su contraseña:
+                </div>
+                <input type="password" class="inputgen" id="inputcontra" placeholder="Contraseña">
+                <div id="mostrarcontracont" class="custom-checkbox">
+                    <img src="checkboxoff.png" alt="CheckMostrarContraseña" id="CheckMostrarContra" class="checked">
+                    <img src="checkbox.png" alt="CheckMostrarContraseña" id="CheckOcultarContra" class="unchecked"> 
+                    <div id="cambiartexto">
+                        Mostrar contraseña
+                    </div>
+                </div>
+            </div>
+
+            <div class="continput">
+                <input type="button" value="Iniciar sesión" id="btnformis" class="botones">
+                <input type="button" value="Cancelar" id="btnformsalir" class="botones">
+            </div>
+        </form>
+    </section>
+
+    <script src="index.js"></script>
+</body>
+</html>

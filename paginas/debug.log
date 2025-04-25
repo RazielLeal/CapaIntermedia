@@ -1,0 +1,5 @@
+[2025-04-15 00:51:03] Inicio del script
+[2025-04-15 00:51:03] Archivos procesados: {"principal_size":47645,"extra1_size":47645,"extra2_size":47645,"video_path":"uploads\/videos\/67fd91573a2a8_asdf.mp4"}
+[2025-04-15 00:51:03] Consulta SQL: INSERT INTO Producto 
+            (Nombre, Descripcion, FotoPrincipal, FotoExtra1, FotoExtra2, Video, Categoria, Precio, Stock, ID_Usuario) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)

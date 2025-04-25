@@ -1,0 +1,120 @@
+CREATE DATABASE IF NOT EXISTS PWInter;
+USE PWInter;
+
+-- Tabla Usuario
+CREATE TABLE Usuario (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    Correo VARCHAR(255) UNIQUE NOT NULL,
+    Contrasena VARCHAR(255) NOT NULL,
+    Nombre VARCHAR(100) NOT NULL,
+    ApellidoPaterno VARCHAR(100) NOT NULL,
+    ApellidoMaterno VARCHAR(100),
+    Nickname VARCHAR(50) UNIQUE NOT NULL,
+    DiaDeRegistro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Nacimiento DATE NOT NULL,
+    Rol ENUM('Admin', 'Usuario', 'Vendedor') DEFAULT 'Usuario',
+    Avatar LONGBLOB,
+    Genero ENUM('Masculino', 'Femenino)
+); 
+
+-- Tabla Categoria
+CREATE TABLE Categoria (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre VARCHAR(100) NOT NULL,
+    Descripcion TEXT
+);
+
+
+
+-- Tabla Lista
+CREATE TABLE Lista (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre VARCHAR(255) NOT NULL,
+    Descripcion TEXT,
+    Status ENUM('Publica', 'Privada') DEFAULT 'Publica',
+    ID_Usuario INT,
+    FOREIGN KEY (ID_Usuario) REFERENCES Usuario(ID)
+);
+
+
+-- Tabla Producto
+CREATE TABLE Producto (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre VARCHAR(255) NOT NULL,
+    Descripcion TEXT,
+    FotoPrincipal LONGBLOB,
+    FotoExtra1 LONGBLOB,
+    FotoExtra2 LONGBLOB,
+    Video VARCHAR(255),
+    Precio DECIMAL(10,2) NOT NULL,
+    Stock INT NOT NULL,
+    Vendidos INT DEFAULT 0,
+    Calificacion DECIMAL(3,2) DEFAULT 0.0,
+    Comentarios TEXT,
+    Status ENUM('Aceptado', 'No aceptado', 'Rechazado') DEFAULT 'No aceptado',
+    ID_CategoriaPrincipal INT,
+    ID_Usuario INT,
+    FOREIGN KEY (ID_CategoriaPrincipal) REFERENCES Categoria(ID),
+    FOREIGN KEY (ID_Usuario) REFERENCES Usuario(ID)
+);
+
+
+-- Muchos Productos en Muchas Listas
+CREATE TABLE Lista_Producto (
+    ID_Lista INT NOT NULL,
+    ID_Producto INT NOT NULL,
+    FechaAgregado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    Orden INT DEFAULT 0,
+    PRIMARY KEY (ID_Lista, ID_Producto),
+    FOREIGN KEY (ID_Lista) REFERENCES Lista(ID) ON DELETE CASCADE,
+    FOREIGN KEY (ID_Producto) REFERENCES Producto(ID) ON DELETE CASCADE
+);
+
+-- Muchos Productos en Muchas Categorias
+CREATE TABLE Producto_Categoria (
+    ID_Producto INT NOT NULL,
+    ID_Categoria INT NOT NULL,
+    PRIMARY KEY (ID_Producto, ID_Categoria),
+    FOREIGN KEY (ID_Producto) REFERENCES Producto(ID) ON DELETE CASCADE,
+    FOREIGN KEY (ID_Categoria) REFERENCES Categoria(ID) ON DELETE CASCADE
+);
+
+
+-- Tabla Carrito
+CREATE TABLE Carrito (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    ID_Usuario INT NOT NULL,
+    ID_Producto INT NOT NULL,
+    Cantidad INT NOT NULL,
+    Total DECIMAL(10,2) NOT NULL,
+    Status ENUM('Pendiente', 'Comprado', 'Cancelado') DEFAULT 'Pendiente',
+    FechaCreacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FechaActualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (ID_Usuario) REFERENCES Usuario(ID) ON DELETE CASCADE,
+    FOREIGN KEY (ID_Producto) REFERENCES Producto(ID) ON DELETE CASCADE,
+    INDEX idx_usuario_status (ID_Usuario, Status)
+);
+
+-- Tabla Chat
+CREATE TABLE Chat (
+    ID INT AUTO_INCREMENT PRIMARY KEY
+);
+
+-- Tabla Mensajes
+CREATE TABLE Mensajes (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    Mensaje TEXT NOT NULL,
+    Fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ID_Usuario INT,
+    ID_Chat INT,
+    FOREIGN KEY (ID_Usuario) REFERENCES Usuario(ID),
+    FOREIGN KEY (ID_Chat) REFERENCES Chat(ID)
+);
+
+-- Tabla Multimedia
+CREATE TABLE Multimedia (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    Archivo VARCHAR(255) NOT NULL,
+    ID_Producto INT,
+    FOREIGN KEY (ID_Producto) REFERENCES Producto(ID)
+);

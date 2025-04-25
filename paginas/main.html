@@ -5,30 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markline - Inicio</title>
     <link rel="stylesheet" href="main.css">
-    <style>
-        #cart-modal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-        }
-        #cart-modal button {
-            margin-top: 10px;
-        }
-    </style>
 </head>
 <body>
     <header>
         <h1><a href="main.html">Markline</a></h1>
+        <div id="header-search">
+            <input type="text" id="header-search-input" placeholder="Buscar productos..." autocomplete="off">
+            <div id="header-search-results"></div>
+        </div>
         <nav>
             <button class="botones" onclick="location.href='Perfil.html'">Ver Perfil</button>
-            <button class="botones" onclick="openCart()"> 🛒
-            </button>
+            <button class="botones" onclick="openCart()"> 🛒 Carrito (<span id="cart-count">0</span>)</button>
         </nav>
     </header>
 
@@ -37,53 +24,375 @@
         <p id="user-name"></p>
     </section>
 
-    <div id="cart-modal">
-        <p>Este es tu carrito de compras.</p>
-        <button onclick="closeCart()">Salir</button>
-    </div>
+    <section id="productos-populares">
+        <h2>Productos más vendidos</h2>
+        <div class="productos-container" id="productos-container">
+            <!-- Los productos se cargarán aquí dinámicamente -->
+        </div>
+    </section>
+
+    <div id="cart-overlay" onclick="closeCart()"></div>
+    <div id="cart-modal"></div>
 
     <script>
+        // Función para abrir el carrito
         function openCart() {
+            document.getElementById('cart-overlay').style.display = 'block';
             document.getElementById('cart-modal').style.display = 'block';
+            updateCartModal();
         }
         
+        // Función para cerrar el carrito
         function closeCart() {
+            document.getElementById('cart-overlay').style.display = 'none';
             document.getElementById('cart-modal').style.display = 'none';
         }
+        
+        // Función para actualizar el modal del carrito
+        function updateCartModal() {
+            const username = sessionStorage.getItem('username');
+            if (!username) {
+                alert('Debes iniciar sesión para ver el carrito');
+                return;
+            }
 
-        document.addEventListener('DOMContentLoaded', function() {
-    const username = sessionStorage.getItem('username');
-    const userNameElement = document.getElementById('user-name');
-    const profilePhoto = document.getElementById('profile-photo');
+            fetch('carrito_api.php', {
+                headers: {
+                    'Authorization': 'Bearer ' + username
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const modal = document.getElementById('cart-modal');
+                
+                if (!data.success) {
+                    modal.innerHTML = '<p>Error al cargar el carrito: ' + (data.error || '') + '</p>';
+                    return;
+                }
 
-    if (username) {
-        userNameElement.textContent = username;
+                let html = '<h2>Tu Carrito</h2>';
+                
+                if (data.carrito.length === 0) {
+                    html += '<p>Tu carrito está vacío</p>';
+                } else {
+                    let total = 0;
+                    html += `
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%; margin: 15px 0;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:left;">Producto</th>
+                                    <th style="text-align:right;">Precio</th>
+                                    <th style="text-align:center;">Cantidad</th>
+                                    <th style="text-align:right;">Subtotal</th>
+                                    <th style="text-align:center;">Eliminar</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+                    
+                    data.carrito.forEach(item => {
+                        const subtotal = parseFloat(item.Total);
+                        total += subtotal;
+                        
+                        html += `
+                        <tr>
+                            <td style="display:flex; align-items:center;">
+                                <img src="${item.FotoPrincipal ? 'data:image/jpeg;base64,' + item.FotoPrincipal : 'avatar.png'}" 
+                                     style="width:50px; height:50px; object-fit:contain; margin-right:10px;">
+                                ${item.Nombre}
+                            </td>
+                            <td style="text-align:right;">$${item.Precio}</td>
+                            <td style="text-align:center;">${item.Cantidad}</td>
+                            <td style="text-align:right;">$${subtotal.toFixed(2)}</td>
+                            <td style="text-align:center;">
+                                <button onclick="removeFromCart(${item.ID})" style="background:none; border:none; cursor:pointer; color:red;">✖</button>
+                            </td>
+                        </tr>`;
+                    });
+                    
+                    html += `
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" style="text-align:right; font-weight:bold;">Total:</td>
+                                    <td style="text-align:right; font-weight:bold;">$${total.toFixed(2)}</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <button onclick="checkout()" style="background-color:var(--principal); color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; width:100%;">Proceder al Pago</button>`;
+                }
+                
+                html += '<button onclick="closeCart()" style="margin-top:15px; width:100%;">Seguir Comprando</button>';
+                modal.innerHTML = html;
+                
+                updateCartCount();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('cart-modal').innerHTML = '<p>Error al cargar el carrito</p>';
+            });
+        }
+        
+        // Función para eliminar un producto del carrito
+        function removeFromCart(carritoId) {
+            const username = sessionStorage.getItem('username');
+            if (!username) {
+                alert('Debes iniciar sesión para modificar el carrito');
+                return;
+            }
 
-        fetch(`login.php?user=${encodeURIComponent(username)}`)
+            fetch('carrito_api.php', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + username
+                },
+                body: JSON.stringify({
+                    carritoId: carritoId
+                })
+            })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    userNameElement.textContent = data.username;
-
-                    if (data.photo) {
-                        profilePhoto.src = 'data:image/jpeg;base64,' + data.photo;
-                    } else {
-                        profilePhoto.alt = 'Avatar no disponible';
-                    }
+                    updateCartModal();
                 } else {
-                    alert('Error al cargar el usuario.');
+                    alert('Error al eliminar del carrito: ' + (data.error || ''));
                 }
             })
             .catch(error => {
-                console.error('Error al cargar los datos del usuario:', error);
-                alert('No se pudo cargar la información del usuario.');
+                console.error('Error:', error);
+                alert('Error al eliminar del carrito');
             });
-    } else {
-        alert('No hay usuario registrado en la sesión.');
-        window.location.href = 'index.html';
-    }
-});
+        }
+        
+        // Función para el proceso de pago
+        function checkout() {
+            const username = sessionStorage.getItem('username');
+            if (!username) {
+                alert('Debes iniciar sesión para realizar la compra');
+                return;
+            }
 
+            fetch('carrito_api.php', {
+                headers: {
+                    'Authorization': 'Bearer ' + username
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success || data.carrito.length === 0) {
+                    alert('No hay productos en el carrito');
+                    return;
+                }
+
+                // Verificar stock antes de comprar
+                const sinStock = data.carrito.some(item => item.Cantidad > item.Stock);
+                if (sinStock) {
+                    alert('Algunos productos no tienen suficiente stock');
+                    return;
+                }
+
+                // Actualizar el estado del carrito a "Comprado"
+                fetch('actualizar_carrito.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + username
+                    },
+                    body: JSON.stringify({
+                        nuevoEstado: 'Comprado'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Compra realizada con éxito');
+                        closeCart();
+                        updateCartCount();
+                        loadProducts(); // Recargar productos para actualizar stock
+                    } else {
+                        alert('Error al realizar la compra: ' + (data.error || ''));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al realizar la compra');
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al verificar el carrito');
+            });
+        }
+
+        // Función para actualizar el contador del carrito
+        function updateCartCount() {
+            const username = sessionStorage.getItem('username');
+            if (!username) {
+                document.getElementById('cart-count').textContent = '0';
+                return;
+            }
+
+            fetch('carrito_api.php', {
+                headers: {
+                    'Authorization': 'Bearer ' + username
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const count = data.carrito.reduce((total, item) => total + item.Cantidad, 0);
+                    document.getElementById('cart-count').textContent = count;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('cart-count').textContent = '0';
+            });
+        }
+
+        // Función para cargar productos
+        function loadProducts() {
+            fetch('get_popular_products.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const container = document.getElementById('productos-container');
+                        container.innerHTML = '';
+                        
+                        data.products.forEach(product => {
+                            const productElement = document.createElement('div');
+                            productElement.className = 'producto';
+                            productElement.innerHTML = `
+                                <img src="${product.imagen}" alt="${product.nombre}">
+                                <h3>${product.nombre}</h3>
+                                <div class="precio">$${product.precio}</div>
+                                <div class="vendidos">${product.vendidos} vendidos</div>
+                                <div class="stock ${product.stock > 0 ? 'disponible' : 'agotado'}">
+                                    ${product.stock > 0 ? `Disponibles: ${product.stock}` : 'AGOTADO'}
+                                </div>
+                            `;
+                            productElement.addEventListener('click', () => {
+                                window.location.href = `producto.html?id=${product.id}`;
+                            });
+                            container.appendChild(productElement);
+                        });
+                    } else {
+                        console.error('Error al cargar productos:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        // Función para buscar productos
+        function searchProducts(query) {
+            if (query.length < 2) {
+                document.getElementById('header-search-results').style.display = 'none';
+                return;
+            }
+
+            fetch(`search_products.php?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultsContainer = document.getElementById('header-search-results');
+                    resultsContainer.innerHTML = '';
+
+                    if (data.success && data.products.length > 0) {
+                        data.products.forEach(product => {
+                            const item = document.createElement('div');
+                            item.className = 'header-search-result';
+                            item.innerHTML = `
+                                <img src="${product.imagen}" alt="${product.nombre}">
+                                <div style="flex:1;">
+                                    <div style="font-weight:bold;">${product.nombre}</div>
+                                    <div style="color:var(--secundario);">$${product.precio}</div>
+                                    <div style="font-size:0.8em; color:${product.stock > 0 ? 'var(--principal)' : 'red'}">
+                                        ${product.stock > 0 ? 'Disponible' : 'Agotado'}
+                                    </div>
+                                </div>
+                            `;
+                            item.addEventListener('click', () => {
+                                window.location.href = `producto.html?id=${product.id}`;
+                            });
+                            resultsContainer.appendChild(item);
+                        });
+                        resultsContainer.style.display = 'block';
+                    } else {
+                        const noResults = document.createElement('div');
+                        noResults.className = 'no-results';
+                        noResults.textContent = 'No se encontraron productos';
+                        resultsContainer.appendChild(noResults);
+                        resultsContainer.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+
+        // Cargar datos del usuario y productos al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            const username = sessionStorage.getItem('username');
+            const userNameElement = document.getElementById('user-name');
+            const profilePhoto = document.getElementById('profile-photo');
+
+            if (username) {
+                userNameElement.textContent = username;
+
+                fetch(`login.php?user=${encodeURIComponent(username)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            userNameElement.textContent = data.username;
+
+                            if (data.photo) {
+                                profilePhoto.src = 'data:image/jpeg;base64,' + data.photo;
+                            } else {
+                                profilePhoto.src = 'avatar.png';
+                            }
+                            
+                            // Si el rol es usuario, cargar productos
+                            if (data.role === 'Usuario') {
+                                loadProducts();
+                                updateCartCount();
+                            }
+
+                            // Abrir carrito automáticamente si hay #openCart en la URL
+                            if (window.location.hash === '#openCart') {
+                                openCart();
+                            }
+                        } else {
+                            alert('Error al cargar el usuario.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error al cargar los datos del usuario:', error);
+                        alert('No se pudo cargar la información del usuario.');
+                    });
+            } else {
+                alert('No hay usuario registrado en la sesión.');
+                window.location.href = 'index.html';
+            }
+
+            // Inicializar el buscador
+            const searchInput = document.getElementById('header-search-input');
+            const searchResults = document.getElementById('header-search-results');
+            
+            searchInput.addEventListener('input', function() {
+                searchProducts(this.value);
+            });
+            
+            // Cerrar resultados al hacer clic fuera
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                    searchResults.style.display = 'none';
+                }
+            });
+        });
     </script>
 </body>
 </html>

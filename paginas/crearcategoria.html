@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markline - Crear Categoría</title>
+    <link rel="stylesheet" href="crearcategoria.css">
+</head>
+<body>
+    <header>
+        <h1><a href="main.html">Markline</a></h1>
+    </header>
+
+    <section class="categoria-container">
+        <div id="formCategoriaContainer">
+            <form id="categoriaForm">
+                <h2>Crear Nueva Categoría</h2>
+
+                <label>Nombre de la categoría</label>
+                <input type="text" name="nombre" id="nombreCategoria" required>
+                
+                <label>Descripción</label>
+                <textarea name="descripcion" id="descripcionCategoria" rows="4" required></textarea>
+                
+                <div class="botones-form">
+                    <button type="submit" class="botones">Crear Categoría</button>
+                    <button type="button" id="btnCancelar" class="botones"><a href="mainadministrador.html">Cancelar</a></button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <script src="crearcategoria.js"></script>
+</body>
+</html>

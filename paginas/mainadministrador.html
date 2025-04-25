@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markline - Panel de Administración</title>
+    <link rel="stylesheet" href="mainadministrador.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1><a href="mainadministrador.html">Markline</a></h1>
+        <nav>
+    
+            <button class="botones" onclick="location.href='perfiladmin.html'"><i class="fas fa-user-cog"></i> Perfil</button>
+        </nav>
+    </header>
+
+    <section id="user-info">
+        <img id="profile-photo" alt="Foto de perfil" />
+        <p id="user-name"></p>
+    </section>
+
+    <section class="admin-panel">
+        <h2>Panel de Administración</h2>
+        <div class="admin-actions">
+            <div class="admin-action" onclick="location.href='gestionusuarios.html'">
+                <i class="fas fa-users-cog"></i>
+                <h3>Gestionar Usuarios</h3>
+                <p>Administra los usuarios del sistema</p>
+            </div>
+            <div class="admin-action" onclick="location.href='gestionproductos.html'">
+                <i class="fas fa-boxes"></i>
+                <h3>Solicitud de Productos</h3>
+                <p>Administra todos los productos</p>
+            </div>
+            <div class="admin-action" onclick="location.href='crearcategoria.html'">
+                <i class="fas fa-chart-bar"></i>
+                <h3>Agregar Categoria</h3>
+                <p>Ingresa nuevas categorias</p>
+            </div>
+            <div class="admin-action" onclick="location.href='configuracion.html'">
+                <i class="fas fa-cog"></i>
+                <h3>Configuración</h3>
+                <p>Ajustes del sistema</p>
+            </div>
+        </div>
+    </section>
+
+    <div id="cart-overlay" onclick="closeCart()"></div>
+    <div id="cart-modal"></div>
+
+    <script>
+        function openCart() {
+            document.getElementById('cart-overlay').style.display = 'block';
+            document.getElementById('cart-modal').style.display = 'block';
+            updateCartModal();
+        }
+        
+        function closeCart() {
+            document.getElementById('cart-overlay').style.display = 'none';
+            document.getElementById('cart-modal').style.display = 'none';
+        }
+
+        function updateCartModal() {
+            const modal = document.getElementById('cart-modal');
+            modal.innerHTML = `
+                <h2>Carrito de Compras</h2>
+                <p>Como administrador, puedes ver todas las compras del sistema.</p>
+                <button onclick="location.href='compras_sistema.html'">Ver todas las compras</button>
+                <button onclick="closeCart()" style="margin-top:15px;">Cerrar</button>
+            `;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const username = sessionStorage.getItem('username');
+            const userNameElement = document.getElementById('user-name');
+            const profilePhoto = document.getElementById('profile-photo');
+
+            if (username) {
+                userNameElement.textContent = username;
+
+                fetch(`login.php?user=${encodeURIComponent(username)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            userNameElement.textContent = data.username;
+
+                            if (data.photo) {
+                                profilePhoto.src = 'data:image/jpeg;base64,' + data.photo;
+                            } else {
+                                profilePhoto.src = 'avatar.png';
+                            }
+                        } else {
+                            alert('Error al cargar el usuario.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error al cargar los datos del usuario:', error);
+                        alert('No se pudo cargar la información del usuario.');
+                    });
+            } else {
+                alert('No hay usuario registrado en la sesión.');
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

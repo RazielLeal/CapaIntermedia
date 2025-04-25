@@ -1,0 +1,20 @@
+[15-Apr-2025 02:03:51 Europe/Berlin] PHP Fatal error:  Uncaught ArgumentCountError: The number of elements in the type definition string must match the number of bind variables in E:\XAMPP\htdocs\[Programacion Web Intermedia]\paginas\publicar.php:75
+Stack trace:
+#0 E:\XAMPP\htdocs\[Programacion Web Intermedia]\paginas\publicar.php(75): mysqli_stmt->bind_param('ssbbbsdii', 'AAAA', 'BBBBBB', NULL, NULL, NULL, 'uploads/videos/...', 'Juguetes', '215', '12', 44)
+#1 {main}
+  thrown in E:\XAMPP\htdocs\[Programacion Web Intermedia]\paginas\publicar.php on line 75
+[15-Apr-2025 02:06:16 Europe/Berlin] PHP Fatal error:  Uncaught ArgumentCountError: The number of elements in the type definition string must match the number of bind variables in E:\XAMPP\htdocs\[Programacion Web Intermedia]\paginas\publicar.php:72
+Stack trace:
+#0 E:\XAMPP\htdocs\[Programacion Web Intermedia]\paginas\publicar.php(72): mysqli_stmt->bind_param('ssbbbsdii', 'ASas', 'ADfsagf', NULL, NULL, NULL, 'uploads/videos/...', 'Deportes', '234', '235', 44)
+#1 {main}
+  thrown in E:\XAMPP\htdocs\[Programacion Web Intermedia]\paginas\publicar.php on line 72
+[15-Apr-2025 02:07:55 Europe/Berlin] PHP Fatal error:  Uncaught ArgumentCountError: The number of elements in the type definition string must match the number of bind variables in E:\XAMPP\htdocs\[Programacion Web Intermedia]\paginas\publicar.php:72
+Stack trace:
+#0 E:\XAMPP\htdocs\[Programacion Web Intermedia]\paginas\publicar.php(72): mysqli_stmt->bind_param('ssbbbsdii', 'ASas', 'ADfsagf', NULL, NULL, NULL, 'uploads/videos/...', 'Deportes', '234', '235', 44)
+#1 {main}
+  thrown in E:\XAMPP\htdocs\[Programacion Web Intermedia]\paginas\publicar.php on line 72
+[15-Apr-2025 02:08:13 Europe/Berlin] PHP Fatal error:  Uncaught ArgumentCountError: The number of elements in the type definition string must match the number of bind variables in E:\XAMPP\htdocs\[Programacion Web Intermedia]\paginas\publicar.php:72
+Stack trace:
+#0 E:\XAMPP\htdocs\[Programacion Web Intermedia]\paginas\publicar.php(72): mysqli_stmt->bind_param('ssbbbsdii', 'Jesus Raul', 'rqwrq', NULL, NULL, NULL, NULL, 'Deportes', '214', '235', 44)
+#1 {main}
+  thrown in E:\XAMPP\htdocs\[Programacion Web Intermedia]\paginas\publicar.php on line 72

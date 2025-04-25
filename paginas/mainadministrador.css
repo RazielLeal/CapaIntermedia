@@ -1,0 +1,324 @@
+:root{
+    --principal: rgb(116, 0, 0); 
+    --secundario:rgb(196, 92, 92); 
+    --terciario: rgb(245, 157, 157);
+    --blanco: rgb(255, 255, 255);
+    --fondo:rgb(255, 255, 255);
+    --letrauno:rgb(207, 207, 207);
+    --letrados:rgb(179, 179, 179);
+    --sombra:rgba(132, 189, 255, 0.1);
+    --sombra2:rgba(50, 72, 97, 0.568);
+}
+
+body, html {
+    font-family:'Courier New', Courier, monospace;
+    font-size: 20px;
+    width: 100%;
+    height: 100%;
+    background-color: var(--fondo);
+    background-repeat: no-repeat;
+    background-size: 1920px 1080px;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: var(--principal);
+    color: var(--letrauno);
+    padding: 0px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    margin: 10px auto;
+    height: 50px;
+    border-radius: 15px;
+    gap: 15px;
+}
+
+#header-search {
+    flex: 1;
+    max-width: 500px;
+    position: relative;
+}
+
+#header-search-input {
+    width: 100%;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 20px;
+    font-size: 16px;
+    outline: none;
+}
+
+#header-search-results {
+    position: absolute;
+    width: 100%;
+    max-height: 400px;
+    overflow-y: auto;
+    background: var(--fondo);
+    border: 1px solid var(--letrados);
+    border-radius: 10px;
+    margin-top: 5px;
+    box-shadow: 0 5px 15px var(--sombra2);
+    z-index: 100;
+    display: none;
+}
+
+.header-search-result {
+    padding: 10px 15px;
+    border-bottom: 1px solid var(--letrados);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    color: var(--principal);
+}
+
+.header-search-result:hover {
+    background-color: var(--terciario);
+}
+
+.header-search-result img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    margin-right: 10px;
+}
+
+.no-results {
+    padding: 15px;
+    text-align: center;
+    color: var(--letrados);
+}
+
+.botones {
+    border-radius: 10px;
+    border: none;
+    padding: 5px;
+    width: max-content;
+    height: 30px;
+    font-size: 15px;
+    font-family: inherit;
+    box-shadow: 0 5px 10px 3px var(--sombra2);
+    cursor: pointer;
+    background-color: var(--blanco);
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+#user-info {
+    display: flex;
+    align-items: center;
+    padding: 10px 40px;
+    gap: 15px;
+}
+
+#profile-photo {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 50%; 
+    border: 2px solid var(--principal);
+}
+
+#productos-populares {
+    width: 90%;
+    margin: 20px auto;
+}
+
+#productos-populares h2 {
+    color: var(--principal);
+    padding-left: 20px;
+}
+
+#cart-count {
+    background-color: var(--secundario);
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 0.8em;
+    margin-left: 5px;
+}
+
+#cart-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    width: 90%;
+    max-width: 800px;
+    max-height: 80vh;
+    overflow-y: auto;
+    border-radius: 10px;
+}
+
+#cart-modal h2 {
+    color: var(--principal);
+    margin-top: 0;
+}
+
+#cart-modal table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#cart-modal th {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+#cart-modal td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+#cart-modal button {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#cart-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+.productos-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.producto {
+    border: 1px solid var(--letrados);
+    border-radius: 10px;
+    padding: 15px;
+    cursor: pointer;
+    transition: transform 0.3s;
+    background-color: white;
+}
+
+.producto:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px var(--sombra2);
+}
+
+.producto img {
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+    border-radius: 5px;
+}
+
+.producto h3 {
+    margin: 10px 0;
+    color: var(--principal);
+}
+
+.producto .precio {
+    font-weight: bold;
+    color: var(--secundario);
+    font-size: 1.2em;
+}
+
+.producto .vendidos {
+    font-size: 0.9em;
+    color: var(--letrados);
+}
+
+.producto .stock {
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+.producto .stock.disponible {
+    color: var(--principal);
+}
+
+.producto .stock.agotado {
+    color: red;
+}
+
+#user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background-color: white;
+    border-radius: 10px;
+    margin: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+#profile-photo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+#user-name {
+    font-weight: bold;
+    color: var(--principal);
+    margin: 0;
+}
+
+.admin-panel {
+    background-color: white;
+    border-radius: 10px;
+    margin: 20px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.admin-panel h2 {
+    color: var(--principal);
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--letrados);
+}
+
+.admin-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.admin-action {
+    border: 1px solid var(--letrados);
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.admin-action:hover {
+    background-color: var(--terciario);
+    transform: translateY(-5px);
+}
+
+.admin-action i {
+    font-size: 2em;
+    color: var(--principal);
+    margin-bottom: 10px;
+}

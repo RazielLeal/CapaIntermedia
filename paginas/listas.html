@@ -5,47 +5,362 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markline - Listas</title>
     <link rel="stylesheet" href="listas.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Estilos para el modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: var(--principal);
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: var(--letrados);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input, 
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--letrados);
+            border-radius: 5px;
+            font-family: inherit;
+        }
+        
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        
+        .submit-btn {
+            background-color: var(--principal);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            width: 100%;
+        }
+        
+        .submit-btn:hover {
+            background-color: var(--secundario);
+        }
+        
+        /* Estilo para el botón de crear lista */
+        .crear-lista-btn {
+            background-color: var(--principal);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-bottom: 20px;
+        }
+        
+        .crear-lista-btn:hover {
+            background-color: var(--secundario);
+        }
+        
+        /* Nuevos estilos para el icono de lista vacía */
+        .lista-vacia-icono {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            color: var(--letrados);
+            font-size: 24px;
+        }
+        
+        .lista-info {
+            flex: 1;
+        }
+        
+        .producto {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .producto:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
 <body>
     <header>
-        <h1><a href="main.css">Markline</a></h1>
+        <h1><a href="main.html">Markline</a></h1>
         <div class="user-icon">
-            <img src="avatar.png" alt="Usuario">
+            <img id="profile-photo" src="avatar.png" alt="Usuario">
         </div>
     </header>
 
     <section class="perfil-container">
         <div class="perfil-info">
             <div class="datos">
-                <h2>"Nickname" <button class="botones" id="listas-btn" onclick="window.location.href='perfil.html'">Regresar</button> </h2>
-                <p>Listas:"</p>
-                
+                <h2 id="user-nickname">Cargando... <button class="botones" id="listas-btn" onclick="window.location.href='perfil.html'">Regresar</button></h2>
+                <p>Listas:</p>
+                <button class="crear-lista-btn" id="crear-lista-btn">Crear Nueva Lista</button>
             </div>
         </div>
 
-
-            <div class="grid" id="Listas">
-                <div class="producto" data-fecha="2024-02-01">
-                    <img src="Lista1.jpg" alt="Listas 1" class="imagen-producto">
-                    <p>Lista 1<br><br>Productos:</br></p>
-                </div>
-                <div class="producto" data-fecha="2024-01-25">
-                    <img src="Lista2.jpg" alt="Listas 2" class="imagen-producto">
-                    <p>Lista 2<br><br>Productos:</strong></p>
-                </div>
-                <div class="producto" data-fecha="2024-01-15">
-                    <img src="Lista3.jpg" alt="Listas 3" class="imagen-producto">
-                    <p>Lista 3<br><br>Productos:</br></p>
-                </div>
-                <div class="producto" data-fecha="2023-12-30">
-                    <img src="Lista4.jpg" alt="Listas 4" class="imagen-producto">
-                    <p>Lista 4<br><br>Productos:</br></p>
-                </div>
-            </div>
-
+        <div class="grid" id="Listas">
+            <!-- Las listas se cargarán dinámicamente -->
         </div>
     </section>
 
-    <script src="perfil.js"></script>
+    <!-- Modal para crear lista -->
+    <div id="crear-lista-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Crear Nueva Lista</h3>
+                <button class="close-btn" id="close-modal">&times;</button>
+            </div>
+            <form id="lista-form">
+                <input type="hidden" id="user-id" value="">
+                <div class="form-group">
+                    <label for="lista-nombre">Nombre de la lista:</label>
+                    <input type="text" id="lista-nombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="lista-descripcion">Descripción:</label>
+                    <textarea id="lista-descripcion"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="lista-status">Visibilidad:</label>
+                    <select id="lista-status" required>
+                        <option value="Publica">Pública</option>
+                        <option value="Privada">Privada</option>
+                    </select>
+                </div>
+                <button type="submit" class="submit-btn">Crear Lista</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let userId = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obtener elementos del DOM
+            const userNicknameElement = document.getElementById('user-nickname');
+            const profilePhotoElement = document.getElementById('profile-photo');
+            const crearListaBtn = document.getElementById('crear-lista-btn');
+            const closeModalBtn = document.getElementById('close-modal');
+            const modal = document.getElementById('crear-lista-modal');
+            const listaForm = document.getElementById('lista-form');
+            const listasContainer = document.getElementById('Listas');
+            
+            // Obtener el usuario de sessionStorage
+            const username = sessionStorage.getItem('username');
+            
+            if (!username) {
+                alert('No hay usuario registrado en la sesión.');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Mostrar el nickname inmediatamente
+            userNicknameElement.innerHTML = `${username} <button class="botones" id="listas-btn" onclick="window.location.href='perfil.html'">Regresar</button>`;
+            
+            // Cargar datos adicionales del usuario
+            fetch(`login.php?user=${encodeURIComponent(username)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Guardar el ID del usuario
+                        userId = data.id;
+                        document.getElementById('user-id').value = userId;
+                        
+                        // Actualizar foto de perfil si existe
+                        if (data.photo) {
+                            profilePhotoElement.src = 'data:image/jpeg;base64,' + data.photo;
+                        }
+                        
+                        // Cargar las listas del usuario
+                        cargarListasUsuario(userId);
+                    } else {
+                        console.error('Error en los datos recibidos:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al cargar datos del usuario:', error);
+                });
+            
+            // Manejar el botón de crear lista
+            crearListaBtn.addEventListener('click', function() {
+                modal.style.display = 'flex';
+            });
+            
+            // Manejar el cierre del modal
+            closeModalBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+            
+            // Cerrar modal al hacer clic fuera del contenido
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+            
+            // Manejar el envío del formulario
+            listaForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const nombre = document.getElementById('lista-nombre').value;
+                const descripcion = document.getElementById('lista-descripcion').value;
+                const status = document.getElementById('lista-status').value;
+                
+                crearLista(userId, nombre, descripcion, status);
+            });
+        });
+        
+        // Función para cargar las listas del usuario
+        function cargarListasUsuario(userId) {
+            fetch(`get_listas.php?user_id=${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const listasContainer = document.getElementById('Listas');
+                        listasContainer.innerHTML = '';
+                        
+                        if (data.listas.length === 0) {
+                            listasContainer.innerHTML = '<p>No tienes listas creadas. Crea tu primera lista.</p>';
+                            return;
+                        }
+                        
+                        data.listas.forEach(lista => {
+                            const listaElement = document.createElement('div');
+                            listaElement.className = 'producto';
+                            
+                            // Determinar el contenido de la imagen
+                            let imagenHTML = '';
+                            if (lista.primerProductoImagen) {
+                                imagenHTML = `<img src="${lista.primerProductoImagen}" alt="${lista.Nombre}" class="imagen-producto">`;
+                            } else {
+                                imagenHTML = `<div class="lista-vacia-icono"><i class="fas fa-list"></i></div>`;
+                            }
+                            
+                            listaElement.innerHTML = `
+                                ${imagenHTML}
+                                <div class="lista-info">
+                                    <h3>${lista.Nombre}</h3>
+                                    <p>${lista.Descripcion || 'Sin descripción'}</p>
+                                    <p><strong>Estado:</strong> ${lista.Status}</p>
+                                    <p><strong>Productos:</strong> ${lista.cantidadProductos || 0}</p>
+                                </div>
+                            `;
+                            
+                            // Hacer que la lista sea clickeable
+                            listaElement.addEventListener('click', function() {
+                                window.location.href = `listadetalle.html?id=${lista.ID}`;
+                            });
+                            
+                            listasContainer.appendChild(listaElement);
+                        });
+                    } else {
+                        console.error('Error al cargar listas:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+        
+        // Función para crear una nueva lista
+        function crearLista(userId, nombre, descripcion, status) {
+            const data = {
+                user_id: userId,
+                nombre: nombre,
+                descripcion: descripcion,
+                status: status
+            };
+
+            fetch('crear_lista.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    return response.text().then(text => {
+                        throw new Error(`Respuesta no JSON: ${text}`);
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    alert('Lista creada exitosamente');
+                    document.getElementById('crear-lista-modal').style.display = 'none';
+                    document.getElementById('lista-form').reset();
+                    cargarListasUsuario(userId);
+                } else {
+                    throw new Error(data.error || 'Error desconocido al crear la lista');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert(`Error al crear la lista: ${error.message}`);
+            });
+        }
+    </script>
 </body>
 </html>

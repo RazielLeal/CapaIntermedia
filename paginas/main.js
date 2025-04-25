@@ -1,3 +1,4 @@
+// Función para registrar un usuario (ya existente en tu código)
 document.getElementById("registroForm").addEventListener("submit", function (event) {
     event.preventDefault();
 
@@ -46,5 +47,21 @@ document.getElementById("registroForm").addEventListener("submit", function (eve
         formData.append("foto", foto);
     }
 
-
+    // Aquí iría el fetch para enviar los datos al servidor
+    // fetch('registro.php', { method: 'POST', body: formData })
+    // .then(response => response.json())
+    // .then(data => {
+    //     if (data.success) {
+    //         alert('Registro exitoso');
+    //         window.location.href = 'index.html';
+    //     } else {
+    //         alert('Error: ' + data.error);
+    //     }
+    // })
+    // .catch(error => {
+    //     console.error('Error:', error);
+    // });
 });
+
+// Las funciones relacionadas con el carrito ya están en el main.html
+// para asegurar su disponibilidad inmediata al cargar la página

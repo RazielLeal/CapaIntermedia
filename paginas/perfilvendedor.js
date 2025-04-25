@@ -1,180 +1,306 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Elementos del DOM
-    const userNameElement = document.getElementById('user-name');
-    const userEmailElement = document.getElementById('user-email');
-    const registerDateElement = document.getElementById('register-date');
-    const profilePhoto = document.getElementById('profile-photo');
-    const cerrarBtn = document.getElementById('cerrar-btn');
-    const productosContainer = document.getElementById('productos');
-    const paginacionContainer = document.getElementById('paginacion');
+document.addEventListener('DOMContentLoaded', () => {
+  // Elementos del DOM
+  const nameEl = document.getElementById('user-name');
+  const emailEl = document.getElementById('user-email');
+  const regEl = document.getElementById('register-date');
+  const photoEl = document.getElementById('profile-photo');
+  const closeBtn = document.getElementById('cerrar-btn');
+  const prodEl = document.getElementById('productos');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const pageInfo = document.getElementById('page-info');
+  const statusFilter = document.getElementById('filtro-status');
+  const categoriaFilter = document.getElementById('filtro-categoria');
+  const ordenFilter = document.getElementById('filtro-orden');
+
+  // Variables de paginación
+  let currentPage = 1;
+  const productsPerPage = 4;
+  let allProducts = [];
+  let totalPages = 1;
+  let categorias = [];
+  let currentFilters = {
+    status: 'todos',
+    categoria: 'todas',
+    orden: 'recientes'
+  };
+
+  // Verificar sesión
+  const username = sessionStorage.getItem('username');
+  if (!username) {
+    console.error('No hay sesión activa');
+    alert('No hay sesión activa. Redirigiendo al login...');
+    return location.href = 'index.html';
+  }
+
+  // Inicializar
+  init();
+
+  async function init() {
+    try {
+      await loadCategorias();
+      await loadUserData();
+    } catch (error) {
+      console.error('Error en inicialización:', error);
+      showError(`Error inicial: ${error.message}`);
+    }
+  }
+
+  async function loadUserData() {
+    try {
+      console.log('Cargando datos del usuario...');
+      const userUrl = buildUrl('login.php', { user: username });
+      const userData = await fetchData(userUrl);
+      
+      if (!userData.id) {
+        throw new Error('ID de usuario no recibido');
+      }
+
+      displayUserInfo(userData);
+      await loadProducts(userData.id);
+    } catch (error) {
+      console.error('Error cargando datos usuario:', error);
+      throw error;
+    }
+  }
+
+  async function loadCategorias() {
+    try {
+      console.log('Cargando categorías...');
+      const url = 'obtenerCategorias.php';
+      categorias = await fetchData(url);
+      populateCategoriaFilter();
+    } catch (error) {
+      console.error('Error cargando categorías:', error);
+      // Continuamos aunque falle, mostrando solo "Todas las categorías"
+    }
+  }
+
+  function buildUrl(base, params = {}) {
+    const query = Object.entries(params)
+      .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+      .join('&');
+    return query ? `${base}?${query}` : base;
+  }
+
+  async function fetchData(url) {
+    try {
+      console.log(`Fetching: ${url}`);
+      const response = await fetch(url);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText || 'Error desconocido'}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      
+      return data;
+    } catch (error) {
+      console.error(`Error en fetch a ${url}:`, error);
+      throw error;
+    }
+  }
+
+  async function loadProducts(userId) {
+    try {
+        console.log(`Cargando productos para usuario ${userId}...`);
+        
+        // Construir URL sin parámetros undefined
+        const params = new URLSearchParams();
+        params.append('user_id', userId);
+        
+        if (currentFilters.status !== 'todos') {
+            params.append('status', currentFilters.status);
+        }
+        if (currentFilters.categoria !== 'todas') {
+            params.append('categoria', currentFilters.categoria);
+        }
+        params.append('orden', currentFilters.orden);
+
+        const url = `obtener_productos_filtrados.php?${params.toString()}`;
+        console.log('URL completa:', url);
+
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Datos recibidos:', data); // Depuración
+
+        if (!data.success) {
+            throw new Error(data.error || 'Error en datos de productos');
+        }
+
+        allProducts = data.productos || [];
+        console.log(`Productos recibidos:`, allProducts); // Depuración
+        
+        totalPages = Math.ceil(allProducts.length / productsPerPage);
+        currentPage = 1;
+        renderProducts();
+    } catch (error) {
+        console.error('Error cargando productos:', error);
+        showError(`Error al cargar productos: ${error.message}`);
+    }
+}
+
+  function displayUserInfo(data) {
+    nameEl.textContent = data.username || 'Usuario';
+    emailEl.textContent = `Email: ${data.email || 'No disponible'}`;
+    emailEl.dataset.userId = data.id;
+    regEl.textContent = `Registro: ${data.register_date || 'Fecha desconocida'}`;
     
-    // Variables de estado
-    let currentPage = 1;
-    const itemsPerPage = 4;
-    let totalProducts = 0;
-    let userId = null;
-    const username = sessionStorage.getItem('username');
+    if (data.photo) {
+      photoEl.src = `data:image/jpeg;base64,${data.photo}`;
+    } else {
+      photoEl.src = 'avatar.png';
+    }
+  }
 
-    // Validar sesión
-    if (!username) {
-        alert('No hay sesión activa. Redirigiendo al login...');
-        window.location.href = 'index.html';
-        return;
+  function populateCategoriaFilter() {
+    categoriaFilter.innerHTML = '<option value="todas">Todas las categorías</option>';
+    
+    if (categorias && categorias.length > 0) {
+      categorias.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat.ID;
+        option.textContent = cat.Nombre;
+        categoriaFilter.appendChild(option);
+      });
+    }
+  }
+
+  function renderProducts() {
+    console.log(`Renderizando productos (página ${currentPage} de ${totalPages})`);
+    prodEl.innerHTML = '';
+
+    if (!allProducts || allProducts.length === 0) {
+      prodEl.innerHTML = '<p class="no-products">No hay productos publicados.</p>';
+      updatePaginationControls();
+      return;
     }
 
-    // Cargar datos del usuario
-    fetch(`login.php?user=${encodeURIComponent(username)}`)
-        .then(response => {
-            if (!response.ok) throw new Error('Error en la respuesta del servidor');
-            return response.json();
-        })
-        .then(data => {
-            if (data.success && data.id) {
-                displayUserData(data);
-                userId = data.id;
-                loadProducts(userId, currentPage);
-            } else {
-                throw new Error(data.error || 'Error al cargar datos de usuario');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showError('Error al cargar datos de usuario', error);
-        });
+    const startIndex = (currentPage - 1) * productsPerPage;
+    const endIndex = Math.min(startIndex + productsPerPage, allProducts.length);
+    const productsToShow = allProducts.slice(startIndex, endIndex);
 
-    // Mostrar datos del usuario
-    function displayUserData(userData) {
-        userNameElement.textContent = userData.username || 'Usuario';
-        userEmailElement.textContent = `Email: ${userData.email || 'No disponible'}`;
-        registerDateElement.textContent = `Registro: ${userData.register_date || 'No disponible'}`;
-        
-        if (userData.photo) {
-            profilePhoto.src = `data:image/jpeg;base64,${userData.photo}`;
-        }
-    }
+    productsToShow.forEach(p => {
+      try {
+        const price = safeConvertPrice(p.Precio);
+        const productDiv = document.createElement('div');
+        productDiv.className = 'producto-simple';
 
-    // Cargar productos del vendedor
-    function loadProducts(userId, page) {
-        fetch(`getproducts.php?userId=${userId}&page=${page}&perPage=${itemsPerPage}`)
-            .then(response => {
-                if (!response.ok) throw new Error('Error al cargar productos');
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    renderProducts(data.products);
-                    totalProducts = data.total;
-                    updatePagination();
-                } else {
-                    throw new Error(data.error || 'Error en los datos de productos');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showError('Error al cargar productos', error);
-            });
-    }
-
-    // Mostrar productos en el grid
-    function renderProducts(products) {
-        productosContainer.innerHTML = '';
-        
-        if (products.length === 0) {
-            productosContainer.innerHTML = '<p class="no-products">No se encontraron productos.</p>';
-            return;
-        }
-
-        products.forEach(product => {
-            const productElement = document.createElement('div');
-            productElement.className = 'producto';
-            
-            productElement.innerHTML = `
-                <div class="producto-imagen">
-                    ${product.imagen ? 
-                        `<img src="${product.imagen}" alt="${product.nombre}" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\'sin-imagen\'>Imagen no disponible</div>'">` : 
-                        '<div class="sin-imagen">Sin imagen</div>'}
-                </div>
-                <div class="producto-info">
-                    <h3>${product.nombre}</h3>
-                    <p class="precio">$${product.precio}</p>
-                    <p class="categoria">${product.categoria}</p>
-                    ${product.descripcion ? `<p class="descripcion">${product.descripcion}</p>` : ''}
-                </div>
-            `;
-            
-            productosContainer.appendChild(productElement);
-        });
-    }
-
-    // Actualizar controles de paginación
-    function updatePagination() {
-        paginacionContainer.innerHTML = '';
-        const totalPages = Math.ceil(totalProducts / itemsPerPage);
-
-        if (totalPages <= 1) return;
-
-        // Botón Anterior
-        const prevButton = document.createElement('button');
-        prevButton.textContent = '«';
-        prevButton.disabled = currentPage === 1;
-        prevButton.addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                loadProducts(userId, currentPage);
-            }
-        });
-        paginacionContainer.appendChild(prevButton);
-
-        // Botones de página
-        for (let i = 1; i <= totalPages; i++) {
-            const pageButton = document.createElement('button');
-            pageButton.textContent = i;
-            if (i === currentPage) pageButton.classList.add('active');
-            pageButton.addEventListener('click', () => {
-                currentPage = i;
-                loadProducts(userId, currentPage);
-            });
-            paginacionContainer.appendChild(pageButton);
-        }
-
-        // Botón Siguiente
-        const nextButton = document.createElement('button');
-        nextButton.textContent = '»';
-        nextButton.disabled = currentPage === totalPages;
-        nextButton.addEventListener('click', () => {
-            if (currentPage < totalPages) {
-                currentPage++;
-                loadProducts(userId, currentPage);
-            }
-        });
-        paginacionContainer.appendChild(nextButton);
-    }
-
-    // Mostrar mensaje de error
-    function showError(message, error) {
-        productosContainer.innerHTML = `
-            <div class="error-message">
-                <h4>${message}</h4>
-                <p>${error.message}</p>
-                <button onclick="location.reload()">Reintentar</button>
-            </div>
+        productDiv.innerHTML = `
+          <h3>${escapeHtml(p.Nombre) || 'Sin nombre'}</h3>
+          <div class="producto-imagen">
+            ${p.FotoPrincipal ? 
+              `<img src="data:image/jpeg;base64,${p.FotoPrincipal}" alt="${escapeHtml(p.Nombre)}" />` : 
+              '<p class="sin-imagen">Sin imagen</p>'}
+          </div>
+          <p class="precio">${formatCurrency(price)}</p>
+          <small>Estado: ${p.Status || 'Desconocido'}</small>
         `;
+
+        productDiv.addEventListener('click', () => {
+          sessionStorage.setItem('editProductId', p.ID);
+          location.href = 'editarproducto.html';
+        });
+
+        productDiv.style.cursor = 'pointer';
+        prodEl.appendChild(productDiv);
+      } catch (e) {
+        console.error('Error renderizando producto:', p, e);
+      }
+    });
+
+    updatePaginationControls();
+  }
+
+  function updatePaginationControls() {
+    totalPages = Math.ceil(allProducts.length / productsPerPage);
+    prevBtn.disabled = currentPage <= 1;
+    nextBtn.disabled = currentPage >= totalPages;
+    pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
+    document.querySelector('.paginacion').style.display = totalPages <= 1 ? 'none' : 'flex';
+  }
+
+  function safeConvertPrice(price) {
+    if (price === null || price === undefined || isNaN(price)) return 0;
+    return parseFloat(price);
+  }
+
+  function formatCurrency(amount) {
+    if (isNaN(amount)) return 'Precio no disponible';
+    return new Intl.NumberFormat('es-MX', {
+      style: 'currency',
+      currency: 'MXN',
+      minimumFractionDigits: 2
+    }).format(amount);
+  }
+
+  function escapeHtml(unsafe) {
+    if (!unsafe) return '';
+    return unsafe
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function showError(msg) {
+    console.error('Mostrando error:', msg);
+    prodEl.innerHTML = `<p class="error">Error: ${escapeHtml(msg)}</p>`;
+    document.querySelector('.paginacion').style.display = 'none';
+  }
+
+  function logout() {
+    sessionStorage.clear();
+    location.href = 'index.html';
+  }
+
+  // Event listeners
+  closeBtn.addEventListener('click', logout);
+  
+  prevBtn.addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage--;
+      renderProducts();
     }
+  });
+  
+  nextBtn.addEventListener('click', () => {
+    if (currentPage < totalPages) {
+      currentPage++;
+      renderProducts();
+    }
+  });
 
-    // Event Listeners
-    cerrarBtn.addEventListener('click', () => {
-        sessionStorage.clear();
-        window.location.href = 'index.html';
-    });
+  statusFilter.addEventListener('change', async (e) => {
+    currentFilters.status = e.target.value;
+    await reloadProducts();
+  });
 
-    // Filtros
-    document.getElementById('categoria').addEventListener('change', function() {
-        currentPage = 1;
-        loadProducts(userId, currentPage);
-    });
+  categoriaFilter.addEventListener('change', async (e) => {
+    currentFilters.categoria = e.target.value;
+    await reloadProducts();
+  });
 
-    document.getElementById('fecha').addEventListener('change', function() {
-        currentPage = 1;
-        loadProducts(userId, currentPage);
-    });
+  ordenFilter.addEventListener('change', async (e) => {
+    currentFilters.orden = e.target.value;
+    await reloadProducts();
+  });
+
+  async function reloadProducts() {
+    const userId = emailEl.dataset.userId;
+    if (userId) {
+      console.log('Recargando productos con filtros:', currentFilters);
+      await loadProducts(userId);
+    }
+  }
 });

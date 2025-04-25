@@ -1,0 +1,97 @@
+:root {
+    --principal: rgb(116, 0, 0); 
+    --secundario: rgb(196, 92, 92); 
+    --terciario: rgb(245, 157, 157);
+    --blanco: rgb(255, 255, 255);
+    --fondo: rgb(255, 255, 255);
+    --letrauno: rgb(207, 207, 207);
+    --letrados: rgb(179, 179, 179);
+    --sombra: rgba(132, 189, 255, 0.1);
+    --sombra2: rgba(50, 72, 97, 0.568);
+}
+
+body, html {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 20px;
+    width: 100%;
+    height: 100%;
+    background-color: var(--fondo);
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: var(--principal);
+    color: var(--letrauno);
+    padding: 0px 15px 0px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    justify-self: center;
+    height: 50px;
+    border-radius: 15px;
+    margin: 10px auto;
+}
+
+.categoria-container {
+    background: var(--secundario);
+    padding: 20px;
+    width: 50%;
+    margin: 20px auto;
+    border-radius: 10px;
+}
+
+#formCategoriaContainer {
+    background-color: var(--terciario);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+input, textarea {
+    padding: 10px;
+    border: 1px solid var(--letrados);
+    border-radius: 5px;
+    font-family: inherit;
+    font-size: 16px;
+    width: 95%;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.botones-form {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.botones {
+    border-radius: 10px;
+    border: none;
+    padding: 8px 15px;
+    font-size: 15px;
+    font-family: inherit;
+    box-shadow: 0 5px 10px 3px var(--sombra2);
+    cursor: pointer;
+    background-color: var(--blanco);
+}
+
+.botones:hover {
+    background-color: var(--principal);
+    color: var(--blanco);
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}

@@ -97,21 +97,24 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!response.ok) throw new Error('Error en la respuesta del servidor');
             return response.json();
         })
-        .then(data => {
-            if (data.success) {
-                sessionStorage.setItem('username', data.username);
-                sessionStorage.setItem('userRole', data.role);
-                sessionStorage.setItem('userPhoto', data.photo || '');
+        // Reemplaza la parte del login en index.js con esto:
+.then(data => {
+    if (data.success) {
+        sessionStorage.setItem('username', data.username);
+        sessionStorage.setItem('userRole', data.role);
+        sessionStorage.setItem('userPhoto', data.photo || '');
 
-                if (data.role === 'Vendedor') {
-                    window.location.href = 'mainvendedor.html';
-                } else {
-                    window.location.href = 'main.html';
-                }
-            } else {
-                alert(data.error || 'Credenciales incorrectas');
-            }
-        })
+        if (data.role === 'Vendedor') {
+            window.location.href = 'mainvendedor.html';
+        } else if (data.role === 'Admin') {
+            window.location.href = 'mainadministrador.html';
+        } else {
+            window.location.href = 'main.html';
+        }
+    } else {
+        alert(data.error || 'Credenciales incorrectas');
+    }
+})
         .catch(error => {
             console.error('Error:', error);
             alert('Error al conectar con el servidor. Intenta más tarde.');

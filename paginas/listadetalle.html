@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markline - Detalle de Lista</title>
+    <link rel="stylesheet" href="listas.css">
+    <style>
+        .lista-header {
+            background-color: var(--terciario);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .lista-title {
+            color: var(--principal);
+            margin: 0;
+        }
+        
+        .lista-status {
+            color: var(--letrados);
+            font-size: 0.9em;
+        }
+        
+        .lista-descripcion {
+            margin: 15px 0;
+            color: #666;
+        }
+        
+        .producto-lista {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .producto-lista:hover {
+            transform: translateY(-3px);
+        }
+        
+        .producto-precio {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background-color: rgba(0, 116, 31, 0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+        
+        .empty-list {
+            text-align: center;
+            padding: 40px;
+            color: var(--letrados);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="main.html">Markline</a></h1>
+        <div class="user-icon">
+            <img id="profile-photo" src="avatar.png" alt="Usuario">
+        </div>
+    </header>
+
+    <section class="perfil-container">
+        <div class="lista-header">
+            <h1 class="lista-title" id="lista-nombre"></h1>
+            <p class="lista-status" id="lista-status"></p>
+            <p class="lista-descripcion" id="lista-descripcion"></p>
+        </div>
+
+        <div class="grid" id="productos-lista">
+            <!-- Productos se cargarán dinámicamente -->
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const listaId = urlParams.get('id');
+            
+            if (!listaId) {
+                alert('Lista no especificada');
+                window.history.back();
+                return;
+            }
+
+            // Cargar datos de la lista
+            fetch(`get_lista_detalle.php?id=${listaId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Actualizar header
+                        document.getElementById('lista-nombre').textContent = data.lista.Nombre;
+                        document.getElementById('lista-status').textContent = `Visibilidad: ${data.lista.Status}`;
+                        document.getElementById('lista-descripcion').textContent = data.lista.Descripcion || 'Sin descripción';
+                        
+                        // Cargar productos
+                        const container = document.getElementById('productos-lista');
+                        if (data.productos.length === 0) {
+                            container.innerHTML = `
+                                <div class="empty-list">
+                                    <div class="lista-vacia-icono" style="margin: 0 auto;">
+                                        <i class="fas fa-box-open"></i>
+                                    </div>
+                                    <p>Esta lista está vacía</p>
+                                </div>
+                            `;
+                            return;
+                        }
+                        
+                        data.productos.forEach(producto => {
+                            const productoDiv = document.createElement('div');
+                            productoDiv.className = 'producto producto-lista';
+                            productoDiv.innerHTML = `
+                                ${producto.FotoPrincipal ? 
+                                    `<img src="data:image/jpeg;base64,${producto.FotoPrincipal}" class="imagen-producto">` : 
+                                    `<div class="lista-vacia-icono"><i class="fas fa-box"></i></div>`
+                                }
+                                <div class="producto-precio">$${producto.Precio}</div>
+                                <div class="lista-info">
+                                    <h3>${producto.Nombre}</h3>
+                                    <p>${producto.Descripcion?.substring(0, 50) || ''}...</p>
+                                </div>
+                            `;
+                            
+                            productoDiv.addEventListener('click', () => {
+                                window.location.href = `producto.html?id=${producto.ID}`;
+                            });
+                            
+                            container.appendChild(productoDiv);
+                        });
+                    } else {
+                        alert('Error: ' + data.error);
+                        window.history.back();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al cargar la lista');
+                    window.history.back();
+                });
+        });
+    </script>
+</body>
+</html>

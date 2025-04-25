@@ -22,15 +22,9 @@
                 <label>Descripción</label>
                 <textarea name="descripcion" id="descripcion" rows="4" required></textarea>
     
-                <label>Categoría</label>
-                <select name="categoria" id="categoria" required>
-                    <option value="">Selecciona una categoría</option>
-                    <option value="Electrónica">Electrónica</option>
-                    <option value="Ropa">Ropa</option>
-                    <option value="Hogar">Hogar</option>
-                    <option value="Deportes">Deportes</option>
-                    <option value="Juguetes">Juguetes</option>
-                    <option value="Otros">Otros</option>
+                <label>Categorías <small>(mantén Ctrl/Cmd para multipl.</small>)</label>
+                <!-- select vacío; lo rellenamos por JS -->
+                <select name="categorias[]" id="categoria" multiple required size="5">
                 </select>
     
                 <label>Precio ($)</label>
@@ -53,7 +47,9 @@
                 
                 <div id="botonesContainer">
                     <button class="botones" type="submit" id="btnpublicar">Publicar</button>
-                    <button class="botones" type="button" id="btncancelar"><a href="mainvendedor.html">Cancelar</a></button>    
+                    <button class="botones" type="button" id="btncancelar">
+                        <a href="mainvendedor.html">Cancelar</a>
+                    </button>    
                 </div>
             </form>
         </div>

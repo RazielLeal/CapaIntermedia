@@ -1,132 +1,118 @@
 <?php
 session_start();
+header("Content-Type: application/json; charset=UTF-8");
 
-header("Content-Type: application/json");
-header("Access-Control-Allow-Origin: http://localhost:8080");
-header("Access-Control-Allow-Methods: POST");
-header("Access-Control-Allow-Headers: Content-Type");
-
-// Establecer la codificación de caracteres
-header('Content-Type: text/html; charset=utf-8');
-mb_internal_encoding('UTF-8');
-
-$conn = new mysqli("localhost", "root", "", "PWInter");
-
-// Verificar conexión y establecer charset
-if ($conn->connect_error) {
-    die(json_encode([
-        "success" => false, 
-        "error" => "Error de conexión: " . $conn->connect_error
-    ]));
+// Solo POST
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    echo json_encode(["success" => false, "error" => "Método no válido"]);
+    exit;
 }
+
+// Verificamos ID de usuario según tu login.php
+if (!isset($_SESSION['usuario_id'])) {
+    echo json_encode(["success" => false, "error" => "Usuario no autenticado"]);
+    exit;
+}
+
+require 'conexion.php';
+$conn = conectarDB();
 $conn->set_charset("utf8");
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Verificar sesión
-    if (!isset($_SESSION['user_id'])) {
-        echo json_encode([
-            "success" => false, 
-            "error" => "Usuario no autenticado"
-        ]);
+// Recoger campos del formulario
+$nombre      = trim($_POST['nombre'] ?? '');
+$descripcion = trim($_POST['descripcion'] ?? '');
+$precio      = floatval($_POST['precio'] ?? 0);
+$stock       = intval($_POST['stock'] ?? 0);
+$catsPost    = $_POST['categorias'] ?? [];
+
+// Validaciones
+if ($nombre === '' || $descripcion === '' || $precio <= 0 || $stock < 0 || !is_array($catsPost) || count($catsPost) === 0) {
+    echo json_encode(["success" => false, "error" => "Todos los campos son requeridos y válidos."]);
+    exit;
+}
+
+// Foto principal (obligatoria)
+if (empty($_FILES["fotoPrincipal"]["tmp_name"]) || $_FILES["fotoPrincipal"]["error"] !== UPLOAD_ERR_OK) {
+    echo json_encode(["success" => false, "error" => "La imagen principal es requerida"]);
+    exit;
+}
+$fotoPrincipal = file_get_contents($_FILES["fotoPrincipal"]["tmp_name"]);
+
+// Fotos extra (opcionales)
+$fotoExtra1 = (isset($_FILES["fotoExtra1"]) && $_FILES["fotoExtra1"]["error"] === UPLOAD_ERR_OK)
+    ? file_get_contents($_FILES["fotoExtra1"]["tmp_name"])
+    : null;
+$fotoExtra2 = (isset($_FILES["fotoExtra2"]) && $_FILES["fotoExtra2"]["error"] === UPLOAD_ERR_OK)
+    ? file_get_contents($_FILES["fotoExtra2"]["tmp_name"])
+    : null;
+
+// Video (opcional)
+$video_path = null;
+if (isset($_FILES["video"]) && $_FILES["video"]["error"] === UPLOAD_ERR_OK) {
+    $video_dir  = "uploads/videos/";
+    if (!file_exists($video_dir)) mkdir($video_dir, 0777, true);
+    $video_name = uniqid() . '_' . basename($_FILES["video"]["name"]);
+    $video_path = $video_dir . $video_name;
+    if (!move_uploaded_file($_FILES["video"]["tmp_name"], $video_path)) {
+        echo json_encode(["success" => false, "error" => "No se pudo guardar el video"]);
         exit;
     }
+}
 
-    // Obtener datos del formulario (manera segura para multipart/form-data)
-    $nombre = isset($_POST['nombre']) ? trim($conn->real_escape_string($_POST['nombre'])) : '';
-    $descripcion = isset($_POST['descripcion']) ? trim($conn->real_escape_string($_POST['descripcion'])) : '';
-    $categoria = isset($_POST['categoria']) ? trim($conn->real_escape_string($_POST['categoria'])) : '';
-    $precio = isset($_POST['precio']) ? floatval($_POST['precio']) : 0;
-    $stock = isset($_POST['stock']) ? intval($_POST['stock']) : 0;
+// Usamos la primera categoría como principal
+$categoriaPrincipal = intval($catsPost[0]);
 
-    // Validación exhaustiva
-    if (empty($nombre) || empty($descripcion) || empty($categoria) || $precio <= 0 || $stock < 0) {
-        echo json_encode([
-            "success" => false, 
-            "error" => "Todos los campos son requeridos y deben ser válidos"
-        ]);
-        exit;
-    }
+// Insertar en Producto
+$sql = "INSERT INTO Producto
+    (Nombre, Descripcion, FotoPrincipal, FotoExtra1, FotoExtra2, Video, Precio, Stock, ID_CategoriaPrincipal, ID_Usuario)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    // Validar imagen principal
-    if (empty($_FILES["fotoPrincipal"]["tmp_name"]) || $_FILES["fotoPrincipal"]["error"] != UPLOAD_ERR_OK) {
-        echo json_encode([
-            "success" => false, 
-            "error" => "La imagen principal del producto es requerida"
-        ]);
-        exit;
-    }
+$stmt = $conn->prepare($sql);
+if (!$stmt) {
+    echo json_encode(["success" => false, "error" => "Error al preparar consulta: ".$conn->error]);
+    exit;
+}
 
-    // Procesar imágenes
-    $fotoPrincipal = file_get_contents($_FILES["fotoPrincipal"]["tmp_name"]);
-    $fotoExtra1 = (!empty($_FILES["fotoExtra1"]["tmp_name"]) && $_FILES["fotoExtra1"]["error"] == UPLOAD_ERR_OK) 
-        ? file_get_contents($_FILES["fotoExtra1"]["tmp_name"]) 
-        : NULL;
-    $fotoExtra2 = (!empty($_FILES["fotoExtra2"]["tmp_name"]) && $_FILES["fotoExtra2"]["error"] == UPLOAD_ERR_OK) 
-        ? file_get_contents($_FILES["fotoExtra2"]["tmp_name"]) 
-        : NULL;
+// Configuramos bind_param con placeholders 'b' para BLOBs
+$null = null;
+$stmt->bind_param(
+    "ssbbbsdiii",
+    $nombre,
+    $descripcion,
+    $null,           // FotoPrincipal (se envía con send_long_data)
+    $null,           // FotoExtra1
+    $null,           // FotoExtra2
+    $video_path,     // Ruta al video o NULL
+    $precio,
+    $stock,
+    $categoriaPrincipal,
+    $_SESSION['usuario_id']  // Aquí está la clave corregida
+);
 
-    // Procesar video (opcional)
-    $video_path = NULL;
-    if (!empty($_FILES["video"]["tmp_name"]) && $_FILES["video"]["error"] == UPLOAD_ERR_OK) {
-        $video_dir = "uploads/videos/";
-        if (!file_exists($video_dir)) {
-            mkdir($video_dir, 0777, true);
-        }
-        $video_name = uniqid() . '_' . basename($_FILES["video"]["name"]);
-        $video_path = $video_dir . $video_name;
-        move_uploaded_file($_FILES["video"]["tmp_name"], $video_path);
-    }
+// Enviamos los datos binarios
+$stmt->send_long_data(2, $fotoPrincipal);
+if ($fotoExtra1 !== null) $stmt->send_long_data(3, $fotoExtra1);
+if ($fotoExtra2 !== null) $stmt->send_long_data(4, $fotoExtra2);
 
-    // DEBUG: Mostrar datos antes de insertar
-    error_log("Datos a insertar:");
-    error_log("Categoría: " . $categoria);
-    error_log("Tipo de categoría: " . gettype($categoria));
-    error_log("Longitud categoría: " . strlen($categoria));
-
-    // Consulta SQL alternativa para verificar el problema
-    $sql = "INSERT INTO Producto (Nombre, Descripcion, FotoPrincipal, Categoria, Precio, Stock, ID_Usuario) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)";
-    
-    $stmt = $conn->prepare($sql);
-    if ($stmt === false) {
-        echo json_encode([
-            "success" => false, 
-            "error" => "Error al preparar la consulta: " . $conn->error
-        ]);
-        exit;
-    }
-
-    // Enlazar parámetros de forma simplificada
-    $null = NULL;
-    $stmt->bind_param("ssbsdii", 
-        $nombre, 
-        $descripcion, 
-        $null,
-        $categoria,
-        $precio, 
-        $stock, 
-        $_SESSION['user_id']
-    );
-
-    // Enviar BLOB
-    $stmt->send_long_data(2, $fotoPrincipal);
-
-    // Ejecutar consulta
-    if ($stmt->execute()) {
-        echo json_encode(["success" => true]);
-    } else {
-        echo json_encode([
-            "success" => false, 
-            "error" => "Error al publicar: " . $stmt->error
-        ]);
-    }
-
+if (!$stmt->execute()) {
+    echo json_encode(["success" => false, "error" => "Error al publicar: ".$stmt->error]);
     $stmt->close();
     $conn->close();
-} else {
-    echo json_encode([
-        "success" => false, 
-        "error" => "Método de solicitud no válido"
-    ]);
+    exit;
 }
-?>
+
+$productoId = $conn->insert_id;
+$stmt->close();
+
+// Insertar en Producto_Categoria (relación muchos a muchos)
+$relSql = "INSERT INTO Producto_Categoria (ID_Producto, ID_Categoria) VALUES (?, ?)";
+$relStmt = $conn->prepare($relSql);
+foreach ($catsPost as $catId) {
+    $c = intval($catId);
+    $relStmt->bind_param("ii", $productoId, $c);
+    $relStmt->execute();
+}
+$relStmt->close();
+
+$conn->close();
+echo json_encode(["success" => true]);

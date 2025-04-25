@@ -1,61 +1,121 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markline - Perfil</title>
-    <link rel="stylesheet" href="perfilvendedor.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markline - Perfil Vendedor</title>
+  <link rel="stylesheet" href="perfilvendedor.css">
+  <style>
+    .productos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .producto-simple {
+      border: 1px solid #ddd;
+      padding: 15px;
+      border-radius: 8px;
+      background: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .producto-simple:hover {
+      transform: translateY(-5px);
+    }
+
+    .producto-simple h3 {
+      margin: 0 0 10px 0;
+      font-size: 1.1em;
+      color: #333;
+      text-align: center;
+    }
+
+    .producto-simple .precio {
+      font-weight: bold;
+      color: #2a9d8f;
+      margin: 10px 0 0 0;
+      font-size: 1.2em;
+    }
+
+    .no-products {
+      text-align: center;
+      color: #666;
+      padding: 20px;
+      grid-column: 1 / -1;
+    }
+
+    .error {
+      color: #e76f51;
+      padding: 20px;
+      text-align: center;
+      grid-column: 1 / -1;
+    }
+
+    .sin-imagen {
+      color: #777;
+      font-size: 0.9em;
+      padding: 10px;
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <h1><a href="mainvendedor.html">Markline</a></h1>
-        <div class="user-icon">
-            <img src="avatar.png" alt="Usuario">
-        </div>
-    </header>
+  <header>
+    <h1><a href="mainvendedor.html">Markline</a></h1>
+    <div class="user-icon"><img src="avatar.png" alt="Usuario"></div>
+  </header>
 
-    <section class="perfil-container">
-        <div class="perfil-info">
-            <img id="profile-photo" src="avatar.png" alt="Avatar" class="avatar">
-            <div class="datos">
-                <h2 id="user-name">"Nickname"</h2>
-                <p id="user-email">Email: </p>
-                <p id="register-date">Fecha de Registro: </p>
-            </div>
-            <button class="botones" id="editar-btn" onclick="window.location.href='editarperfil.html'">Editar Perfil</button>
-            <button class="botones" id="listas-btn" onclick="window.location.href='listas.html'">Ver Listas</button>
-            <button class="botones" id="cerrar-btn">Cerrar Sesión</button>
-        </div>
+  <section class="perfil-container">
+    <div class="perfil-info">
+      <img id="profile-photo" src="avatar.png" alt="Avatar" class="avatar">
+      <div class="datos">
+        <h2 id="user-name">Nickname</h2>
+        <p id="user-email">Email: </p>
+        <p id="register-date">Fecha de Registro: </p>
+      </div>
+      <button class="botones" onclick="location.href='editarperfil.html'">Editar Perfil</button>
+      <button class="botones" onclick="location.href='listas.html'">Ver Listas</button>
+      <button class="botones" id="cerrar-btn">Cerrar Sesión</button>
+    </div>
 
-        <div class="publicaciones">
-            <h2>Publicaciones</h2>
-            <div class="filtros">
-                <label for="categoria">Categoría:</label>
-                <select id="categoria">
-                    <option value="">Seleccionar</option>
-                    <option value="ropa">Ropa</option>
-                    <option value="electronica">Electrónica</option>
-                    <option value="hogar">Hogar</option>
-                    <option value="juguetes">Juguetes</option>
-                </select>
+    <div class="publicaciones">
+      <h2>Mis Productos</h2>
+      <div class="filtros">
+        <select id="filtro-status" class="filtro-select">
+          <option value="todos">Todos los estados</option>
+          <option value="Aceptado">Aceptados</option>
+          <option value="No aceptado">No aceptados</option>
+          <option value="Rechazado">Rechazados</option>
+        </select>
+        
+        <select id="filtro-categoria" class="filtro-select">
+          <option value="todas">Todas las categorías</option>
+        </select>
+        
+        <select id="filtro-orden" class="filtro-select">
+          <option value="recientes">Más recientes</option>
+          <option value="antiguos">Más antiguos</option>
+          <option value="precio_asc">Precio: menor a mayor</option>
+          <option value="precio_desc">Precio: mayor a menor</option>
+        </select>
+      </div>
+      <div class="productos-grid" id="productos">
+        <!-- Los productos se cargarán dinámicamente aquí -->
+      </div>
+      <div class="paginacion">
+        <button id="prev-btn" disabled>&larr; Anterior</button>
+        <span id="page-info">Página 1</span>
+        <button id="next-btn">Siguiente &rarr;</button>
+      </div>
+    </div>
+  </section>
 
-                <label for="fecha">Fecha:</label>
-                <select id="fecha">
-                    <option value="recientes">Recientes</option>
-                    <option value="ultimos">Últimos</option>
-                </select>
-            </div>
-
-            <div class="grid" id="productos">
-                <!-- Los productos se cargarán dinámicamente aquí -->
-            </div>
-
-            <div class="paginacion" id="paginacion">
-                <!-- La paginación se generará dinámicamente aquí -->
-            </div>
-        </div>
-    </section>
-
-    <script src="perfilvendedor.js"></script>
+  <script src="perfilvendedor.js"></script>
 </body>
 </html>

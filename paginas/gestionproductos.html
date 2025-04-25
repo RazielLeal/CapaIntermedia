@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markline - Gestión de Productos</title>
+    <link rel="stylesheet" href="mainadministrador.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .status-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--letrados);
+        }
+        .status-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: var(--letrauno);
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+        }
+        .status-tab.active {
+            background-color: var(--principal);
+            color: white;
+        }
+        .product-section {
+            display: none;
+        }
+        .product-section.active {
+            display: block;
+        }
+        .product-card {
+            border: 1px solid var(--letrados);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: white;
+        }
+        .product-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .accept-btn {
+            background-color: var(--principal);
+            color: white;
+        }
+        .reject-btn {
+            background-color: #ff4444;
+            color: white;
+        }
+        .delete-btn {
+            background-color: #ff4444;
+            color: white;
+        }
+        .product-image {
+            max-width: 100px;
+            max-height: 100px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="mainadministrador.html">Markline</a></h1>
+        <nav>
+            <button class="botones" onclick="location.href='perfiladmin.html'"><i class="fas fa-user-cog"></i> Perfil</button>
+            <button class="botones" onclick="location.href='mainadministrador.html'"><i class="fas fa-arrow-left"></i> Volver</button>
+        </nav>
+    </header>
+
+    <section id="user-info">
+        <img id="profile-photo" alt="Foto de perfil" />
+        <p id="user-name"></p>
+    </section>
+
+    <section class="admin-panel">
+        <h2>Gestión de Productos</h2>
+        
+        <div class="status-tabs">
+            <div class="status-tab active" onclick="showSection('pending')">Pendientes</div>
+            <div class="status-tab" onclick="showSection('accepted')">Aceptados</div>
+            <div class="status-tab" onclick="showSection('rejected')">Rechazados</div>
+        </div>
+
+        <div id="pending-section" class="product-section active">
+            <h3>Productos Pendientes de Aprobación</h3>
+            <div id="pending-products"></div>
+        </div>
+
+        <div id="accepted-section" class="product-section">
+            <h3>Productos Aceptados</h3>
+            <div id="accepted-products"></div>
+        </div>
+
+        <div id="rejected-section" class="product-section">
+            <h3>Productos Rechazados</h3>
+            <div id="rejected-products"></div>
+        </div>
+    </section>
+
+    <script>
+        // Mostrar sección seleccionada
+        function showSection(sectionId) {
+            document.querySelectorAll('.status-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.product-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.querySelector(`.status-tab[onclick="showSection('${sectionId}')"]`).classList.add('active');
+            document.getElementById(`${sectionId}-section`).classList.add('active');
+            
+            loadProducts(sectionId);
+        }
+
+        // Cargar productos por estado
+        function loadProducts(status) {
+            let endpoint = '';
+            switch(status) {
+                case 'pending':
+                    endpoint = 'get_products_by_status.php?status=No aceptado';
+                    break;
+                case 'accepted':
+                    endpoint = 'get_products_by_status.php?status=Aceptado';
+                    break;
+                case 'rejected':
+                    endpoint = 'get_products_by_status.php?status=Rechazado';
+                    break;
+            }
+
+            fetch(endpoint)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        renderProducts(data.products, status);
+                    } else {
+                        console.error('Error:', data.error);
+                        document.getElementById(`${status}-products`).innerHTML = 
+                            '<p>Error al cargar los productos. Intente más tarde.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById(`${status}-products`).innerHTML = 
+                        '<p>Error al conectar con el servidor</p>';
+                });
+        }
+
+        // Renderizar productos
+        function renderProducts(products, status) {
+            const container = document.getElementById(`${status}-products`);
+            container.innerHTML = '';
+
+            if (products.length === 0) {
+                container.innerHTML = '<p>No hay productos en esta sección</p>';
+                return;
+            }
+
+            products.forEach(product => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                
+                let imageHtml = product.FotoPrincipal 
+                    ? `<img src="data:image/jpeg;base64,${product.FotoPrincipal}" class="product-image" alt="${product.Nombre}">`
+                    : '<div class="no-image">Sin imagen</div>';
+                
+                let actionsHtml = '';
+                if (status === 'pending') {
+                    actionsHtml = `
+                        <div class="product-actions">
+                            <button class="action-btn accept-btn" onclick="updateProductStatus(${product.ID}, 'Aceptado')">
+                                <i class="fas fa-check"></i> Aceptar
+                            </button>
+                            <button class="action-btn reject-btn" onclick="updateProductStatus(${product.ID}, 'Rechazado')">
+                                <i class="fas fa-times"></i> Rechazar
+                            </button>
+                        </div>
+                    `;
+                } else if (status === 'accepted') {
+                    actionsHtml = `
+                        <div class="product-actions">
+                            <button class="action-btn delete-btn" onclick="deleteProduct(${product.ID})">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </div>
+                    `;
+                }
+
+                productCard.innerHTML = `
+                    <div style="display: flex; gap: 15px;">
+                        ${imageHtml}
+                        <div>
+                            <h3>${product.Nombre}</h3>
+                            <p><strong>Categoría:</strong> ${product.Categoria}</p>
+                            <p><strong>Precio:</strong> $${product.Precio}</p>
+                            <p><strong>Stock:</strong> ${product.Stock}</p>
+                            <p><strong>Vendedor ID:</strong> ${product.ID_Usuario}</p>
+                            <p><strong>Descripción:</strong> ${product.Descripcion || 'Sin descripción'}</p>
+                        </div>
+                    </div>
+                    ${actionsHtml}
+                `;
+                
+                container.appendChild(productCard);
+            });
+        }
+
+        // Actualizar estado del producto
+        function updateProductStatus(productId, newStatus) {
+            if (!confirm(`¿Estás seguro de querer ${newStatus === 'Aceptado' ? 'aceptar' : 'rechazar'} este producto?`)) {
+                return;
+            }
+
+            fetch('update_product_status.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    productId: productId,
+                    newStatus: newStatus
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`Producto ${newStatus === 'Aceptado' ? 'aceptado' : 'rechazado'} correctamente`);
+                    loadProducts('pending');
+                    loadProducts('accepted');
+                    loadProducts('rejected');
+                } else {
+                    alert('Error: ' + (data.error || 'No se pudo actualizar el producto'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al conectar con el servidor');
+            });
+        }
+
+        // Eliminar producto
+        function deleteProduct(productId) {
+            if (!confirm('¿Estás seguro de querer eliminar este producto permanentemente?')) {
+                return;
+            }
+
+            fetch('delete_product.php', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    productId: productId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Producto eliminado correctamente');
+                    loadProducts('accepted');
+                } else {
+                    alert('Error: ' + (data.error || 'No se pudo eliminar el producto'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al conectar con el servidor');
+            });
+        }
+
+        // Cargar datos del usuario al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            const username = sessionStorage.getItem('username');
+            const userNameElement = document.getElementById('user-name');
+            const profilePhoto = document.getElementById('profile-photo');
+
+            if (username) {
+                userNameElement.textContent = username;
+
+                fetch(`login.php?user=${encodeURIComponent(username)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            if (data.photo) {
+                                profilePhoto.src = 'data:image/jpeg;base64,' + data.photo;
+                            }
+                        }
+                    });
+
+                // Cargar productos pendientes por defecto
+                loadProducts('pending');
+            } else {
+                alert('No hay usuario registrado en la sesión.');
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

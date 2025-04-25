@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_result($id, $nickname, $correo, $diaderegistro, $avatar, $rol);
         $stmt->fetch();
 
-        $_SESSION['user_id'] = $id;
+        $_SESSION['usuario_id'] = $id;
         $_SESSION['username'] = $nickname;
         $_SESSION['role'] = $rol;
 
@@ -45,7 +45,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             "email" => $correo,
             "register_date" => $diaderegistro,
             "photo" => $avatarBase64,
-            "role" => $rol
+            "role" => $rol,
+            "token" => $id // En producción usar JWT
         ]);
     } else {
         echo json_encode(["success" => false, "error" => "Credenciales incorrectas"]);
@@ -67,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['user'])) {
         $stmt->bind_result($id, $nickname, $correo, $diaderegistro, $avatar, $rol);
         $stmt->fetch();
 
-        $_SESSION['user_id'] = $id;
+        $_SESSION['usuario_id'] = $id;
         $_SESSION['username'] = $nickname;
         $_SESSION['role'] = $rol;
 
@@ -80,7 +81,8 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['user'])) {
             "email" => $correo,
             "register_date" => $diaderegistro,
             "photo" => $avatarBase64,
-            "role" => $rol
+            "role" => $rol,
+            "token" => $id
         ]);
     } else {
         echo json_encode(["success" => false, "error" => "Usuario no encontrado"]);
