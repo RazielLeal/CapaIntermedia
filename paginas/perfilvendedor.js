@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Variables de paginación
   let currentPage = 1;
-  const productsPerPage = 4;
+  const productsPerPage = 6;
   let allProducts = [];
   let totalPages = 1;
   let categorias = [];
