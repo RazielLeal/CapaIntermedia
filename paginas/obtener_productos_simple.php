@@ -19,7 +19,7 @@ try {
             ID, 
             Nombre, 
             CAST(Precio AS DECIMAL(10,2)) AS Precio,
-            FotoPrincipal 
+            FotoPrincipal
         FROM Producto 
         WHERE ID_Usuario = ?
     ");
@@ -32,6 +32,7 @@ try {
     // Forzar precios como tipo numérico
     foreach ($products as &$p) {
         $p['Precio'] = (float)$p['Precio'];
+        $p['Calificacion'] = (int)$p['Calificacion'];
         if ($p['FotoPrincipal']) {
             $p['FotoPrincipal'] = base64_encode($p['FotoPrincipal']);
         }

@@ -21,7 +21,9 @@ try {
                 p.Nombre, 
                 p.Precio,
                 p.FotoPrincipal,
-                p.Status
+                p.Status,
+                p.Stock,
+                p.Calificacion
             FROM Producto p
             WHERE p.ID_Usuario = ?";
 

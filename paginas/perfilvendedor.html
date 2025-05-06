@@ -68,7 +68,11 @@
 <body>
   <header>
     <h1><a href="mainvendedor.html">Markline</a></h1>
-    <div class="user-icon"><img src="avatar.png" alt="Usuario"></div>
+    <nav>
+      <button class="botones" onclick="location.href='publicar.html'">Publicar Producto</button>
+
+    </nav>
+
   </header>
 
   <section class="perfil-container">
@@ -79,8 +83,7 @@
         <p id="user-email">Email: </p>
         <p id="register-date">Fecha de Registro: </p>
       </div>
-      <button class="botones" onclick="location.href='editarperfil.html'">Editar Perfil</button>
-      <button class="botones" onclick="location.href='listas.html'">Ver Listas</button>
+      <!-- <button class="botones" onclick="location.href='editarperfil.html'">Editar Perfil</button> -->
       <button class="botones" id="cerrar-btn">Cerrar Sesión</button>
     </div>
 
@@ -92,6 +95,7 @@
           <option value="Aceptado">Aceptados</option>
           <option value="No aceptado">No aceptados</option>
           <option value="Rechazado">Rechazados</option>
+          <option value="Eliminado">Eliminados</option>
         </select>
         
         <select id="filtro-categoria" class="filtro-select">

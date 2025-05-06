@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const statusFilter = document.getElementById('filtro-status');
   const categoriaFilter = document.getElementById('filtro-categoria');
   const ordenFilter = document.getElementById('filtro-orden');
+  
 
   // Variables de paginación
   let currentPage = 1;
@@ -189,6 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const endIndex = Math.min(startIndex + productsPerPage, allProducts.length);
     const productsToShow = allProducts.slice(startIndex, endIndex);
 
+    prodEl.innerHTML = "";
     productsToShow.forEach(p => {
       try {
         const price = safeConvertPrice(p.Precio);
@@ -204,19 +206,62 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           <p class="precio">${formatCurrency(price)}</p>
           <small>Estado: ${p.Status || 'Desconocido'}</small>
-        `;
+          <small>Stock: ${p.Stock}</small>
 
-        productDiv.addEventListener('click', () => {
-          sessionStorage.setItem('editProductId', p.ID);
-          location.href = 'editarproducto.html';
-        });
+            ${p.Status !== "Eliminado" ?
 
-        productDiv.style.cursor = 'pointer';
+          `<form class="agregarstock" method="post" action="actualizarproducto.php">
+            <button type="submit" name="btnagregar" class="botones btnagregar">Agregar stock</button>
+            <button type="button" class="botones btnmenos" > - </button>
+            <input type="number" name="cantidadstock" class="cantidadstock" value="0"/>
+            <button type="button" class="botones btnmas"> + </button>
+          
+
+             <button type="submit" name="btneliminar" class="botones btneliminar">Eliminar producto</button>`
+            : ""
+            }
+
+
+            <input type="hidden" name="id_producto" value="${p.ID}"/>
+
+          </form>
+          `
+
+        ;
+        
+
         prodEl.appendChild(productDiv);
+
+        const btnMenos = productDiv.querySelector(".btnmenos");
+        const btnMas = productDiv.querySelector(".btnmas");
+        const inputCantidad = productDiv.querySelector(".cantidadstock");
+
+        btnMenos.addEventListener("click", function (event) {
+          event.preventDefault();
+          let valorActual = parseInt(inputCantidad.value, 10);
+          if (valorActual > 0) {
+            inputCantidad.value = valorActual - 1;
+          }
+        });
+    
+        btnMas.addEventListener("click", function (event) {
+          event.preventDefault();
+          let valorActual = parseInt(inputCantidad.value, 10);
+          console.log(`btnMas de producto ${p.Nombre} disparado. Valor actual: ${valorActual}`);
+  
+          inputCantidad.value = valorActual + 1;
+        });
+    
+    
       } catch (e) {
         console.error('Error renderizando producto:', p, e);
       }
     });
+
+
+
+
+    
 
     updatePaginationControls();
   }

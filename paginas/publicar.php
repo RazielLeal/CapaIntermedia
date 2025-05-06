@@ -114,5 +114,51 @@ foreach ($catsPost as $catId) {
 }
 $relStmt->close();
 
-$conn->close();
+//INSERCION DE CATEGORIAS NUEVAS
+
+$nombreCategoria = trim($_POST["nombreCategoria"] ?? '');
+$descripcionCategoria = trim($_POST["descripcionCategoria"] ?? '');
+
+// Verificar si la categoría ya existe
+$check_sql = "SELECT ID FROM Categoria WHERE Nombre = ?";
+$check_stmt = $conn->prepare($check_sql);
+$check_stmt->bind_param("s", $nombreCategoria);
+$check_stmt->execute();
+$check_stmt->store_result();
+
+if ($check_stmt->num_rows > 0) {
+    echo json_encode([
+        "success" => false,
+        "error" => "Ya existe una categoría con ese nombre"
+    ]);
+    $check_stmt->close();
+    exit;
+}
+
+$check_stmt->close();
+
+// Verificar si los valores enviados están vacíos
+if (empty($nombreCategoria) || empty($descripcionCategoria)) {
+    echo json_encode([
+        "success" => false,
+    ]);
+    exit;
+}
+
+// Insertar nueva categoría
+$insert_sql = "INSERT INTO Categoria (Nombre, Descripcion) VALUES (?, ?)";
+$insert_stmt = $conn->prepare($insert_sql);
+$insert_stmt->bind_param("ss", $nombreCategoria, $descripcionCategoria);
+
+if ($insert_stmt->execute()) {
+    echo json_encode(["success" => true]);
+} else {
+    echo json_encode([
+        "success" => false,
+        "error" => "Error al crear categoría: " . $insert_stmt->error
+    ]);
+}
+
+$insert_stmt->close();
+    
 echo json_encode(["success" => true]);

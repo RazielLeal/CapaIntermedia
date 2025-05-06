@@ -119,3 +119,11 @@ h2{
     margin: 0px;
     padding: 0px;
 }
+
+#descripcionCategoria#descripcionCategoria {
+    resize: none;
+}
+#descripcion{
+    resize: none;
+
+}

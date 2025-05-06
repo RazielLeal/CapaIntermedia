@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markline - Publicar Producto</title>
-    <link rel="stylesheet" href="registrate.css">
+    <link rel="stylesheet" href="publicar.css">
+
 </head>
 <body>
     <header>
-        <h1><a href="main.html">Markline</a></h1>
+        <h1><a href="mainvendedor.html">Markline</a></h1>
     </header>
 
     <section class="registro-container">
@@ -19,7 +20,7 @@
                 <label>Nombre del Producto</label>
                 <input type="text" name="nombre" id="nombre" required>
     
-                <label>Descripción</label>
+                <label>Descripción del producto</label>
                 <textarea name="descripcion" id="descripcion" rows="4" required></textarea>
     
                 <label>Categorías <small>(mantén Ctrl/Cmd para multipl.</small>)</label>
@@ -27,6 +28,14 @@
                 <select name="categorias[]" id="categoria" multiple required size="5">
                 </select>
     
+                <h3>Añade una nueva categoría</h3>
+    
+                <label>Nombre de la categoría</label>
+                <input type="text" name="nombreCategoria" id="nombreCategoria" placeholder="Nombre de la categoría">
+                    
+                <label>Descripción de la categoría</label>
+                <textarea name="descripcionCategoria" id="descripcionCategoria" rows="4" placeholder="Añade una descipción para la nueva categoría"></textarea>                                                      
+                    
                 <label>Precio ($)</label>
                 <input type="number" name="precio" id="precio" min="0" step="0.01" required>
     
@@ -37,13 +46,13 @@
                 <input type="file" name="fotoPrincipal" id="fotoPrincipal" accept="image/*" required>
     
                 <label>Imagen extra 1 (opcional)</label>
-                <input type="file" name="fotoExtra1" id="fotoExtra1" accept="image/*">
+                <input type="file" name="fotoExtra1" id="fotoExtra1" accept="image/*" >
                 
                 <label>Imagen extra 2 (opcional)</label>
-                <input type="file" name="fotoExtra2" id="fotoExtra2" accept="image/*">
+                <input type="file" name="fotoExtra2" id="fotoExtra2" accept="image/*" >
     
                 <label>Video del producto (opcional)</label>
-                <input type="file" name="video" id="video" accept="video/*">
+                <input type="file" name="video" id="video" accept="video/*" >
                 
                 <div id="botonesContainer">
                     <button class="botones" type="submit" id="btnpublicar">Publicar</button>

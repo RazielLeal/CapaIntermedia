@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(result => {
             if (result.success) {
                 alert('Registro exitoso');
-                window.location.href = '../index.html'; 
+                window.location.href = 'index.html'; 
             } else {
                 alert('Error en el registro: ' + result.error);
             }

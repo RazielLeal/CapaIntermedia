@@ -70,4 +70,28 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('btnpublicar').disabled = false;
         });
     });
+
+    // Validar campos requeridos dinámicamente
+    const descripcionCategoria = document.getElementById('descripcionCategoria');
+    const nombreCategoria = document.getElementById('nombreCategoria');
+
+    function toggleRequiredFields() {
+        if (selectCat.value) {
+            descripcionCategoria.required = false;
+            nombreCategoria.required = false;
+        } else if (descripcionCategoria.value || nombreCategoria.value) {
+            selectCat.required = false;
+        } else {
+            selectCat.required = true;
+            descripcionCategoria.required = true;
+            nombreCategoria.required = true;
+        }
+    }
+
+    selectCat.addEventListener('change', toggleRequiredFields);
+    descripcionCategoria.addEventListener('input', toggleRequiredFields);
+    nombreCategoria.addEventListener('input', toggleRequiredFields);
+
+    // Inicializar validación al cargar la página
+    toggleRequiredFields();
 });
