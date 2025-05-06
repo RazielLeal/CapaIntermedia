@@ -23,19 +23,24 @@
                 <label>Descripción del producto</label>
                 <textarea name="descripcion" id="descripcion" rows="4" required></textarea>
     
-                <label>Categorías <small>(mantén Ctrl/Cmd para multipl.</small>)</label>
-                <!-- select vacío; lo rellenamos por JS -->
+                <label>Categorías <small>(Mantén Ctrl Para Seleccionar Varias.</small>)</label>
                 <select name="categorias[]" id="categoria" multiple required size="5">
                 </select>
-    
-                <h3>Añade una nueva categoría</h3>
-    
-                <label>Nombre de la categoría</label>
-                <input type="text" name="nombreCategoria" id="nombreCategoria" placeholder="Nombre de la categoría">
+                
+                <!-- Campo Categorias -->
+                <div class="nueva-categoria-container">
+                    <h3>Añade una nueva categoría</h3>
                     
-                <label>Descripción de la categoría</label>
-                <textarea name="descripcionCategoria" id="descripcionCategoria" rows="4" placeholder="Añade una descipción para la nueva categoría"></textarea>                                                      
+                    <label>Nombre de la categoría</label>
+                    <input type="text" name="nombreCategoria" id="nombreCategoria" placeholder="Nombre de la categoría">
                     
+                    <label>Descripción de la categoría</label>
+                    <textarea name="descripcionCategoria" id="descripcionCategoria" rows="4" placeholder="Añade una descripción para la nueva categoría"></textarea>
+                    
+                    <button type="button" id="btnCrearCategoria" class="botones crear">Crear Categoría</button>
+                </div>
+
+                
                 <label>Precio ($)</label>
                 <input type="number" name="precio" id="precio" min="0" step="0.01" required>
     

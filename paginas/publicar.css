@@ -127,3 +127,68 @@ h2{
     resize: none;
 
 }
+
+
+
+
+
+
+/* CREAR CATEGORIA */
+.nueva-categoria-container {
+    background-color: var(--secundario);
+    padding: 20px;
+    border-radius: 15px;
+    margin: 20px 0;
+    box-shadow: 0 4px 8px var(--sombra2);
+    border: 2px solid var(--secundario);
+}
+
+.nueva-categoria-container h3 {
+    color: var(--blanco);
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.nueva-categoria-container input[type="text"],
+.nueva-categoria-container textarea {
+    background-color: var(--blanco);
+    border: 2px solid var(--secundario);
+    padding: 12px;
+    font-size: 18px;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.nueva-categoria-container input[type="text"]:focus,
+.nueva-categoria-container textarea:focus {
+    outline: none;
+    border-color: var(--blanco);
+    box-shadow: 0 0 8px var(--secundario);}
+
+
+
+/* CREAR CATEGORIA BOTON */
+#btnCrearCategoria {
+    background-color: var(--principal);
+    color: var(--blanco);
+    margin-top: 15px;
+    padding: 12px 25px;
+    font-size: 18px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    width: 100%;
+    border: none;}
+
+#btnCrearCategoria:hover {
+    background-color: var(--secundario);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px var(--sombra2);}
+
+

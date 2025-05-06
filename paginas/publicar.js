@@ -1,28 +1,84 @@
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('publicarForm');
     const selectCat = document.getElementById('categoria');
+    const btnCrearCategoria = document.getElementById('btnCrearCategoria');
+    const nombreCategoria = document.getElementById('nombreCategoria');
+    const descripcionCategoria = document.getElementById('descripcionCategoria');
 
-    // → 1) Cargar categorías dinámicamente
-    fetch('obtenerCategorias.php')
-        .then(response => response.json())
-        .then(cats => {
-            cats.forEach(cat => {
-                const opt = document.createElement('option');
-                opt.value = cat.ID;
-                opt.textContent = cat.Nombre;
-                selectCat.appendChild(opt);
+    // 1) Cargar categorías dinámicamente
+    function cargarCategorias() {
+        fetch('obtenerCategorias.php')
+            .then(response => response.json())
+            .then(cats => {
+                selectCat.innerHTML = '';
+                cats.forEach(cat => {
+                    const opt = document.createElement('option');
+                    opt.value = cat.ID;
+                    opt.textContent = cat.Nombre;
+                    selectCat.appendChild(opt);
+                });
+                toggleRequiredFields();
+            })
+            .catch(err => {
+                console.error('Error cargando categorías:', err);
+                alert('No se pudieron cargar las categorías.');
             });
-        })
-        .catch(err => {
-            console.error('Error cargando categorías:', err);
-            alert('No se pudieron cargar las categorías.');
-        });
+    }
+    cargarCategorias();
 
+    // 2) Manejar creación de categorías
+    btnCrearCategoria.addEventListener('click', function() {
+        const nombre = nombreCategoria.value.trim();
+        const desc = descripcionCategoria.value.trim();
+
+        if (!nombre || !desc) {
+            alert('Por favor, complete ambos campos para crear una categoría.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('nombreCategoria', nombre);
+        formData.append('descripcionCategoria', desc);
+
+        fetch('crearCategoria.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) throw new Error(data.error || 'Error al crear categoría');
+            
+            // Limpiar campos y actualizar lista
+            nombreCategoria.value = '';
+            descripcionCategoria.value = '';
+            cargarCategorias();
+            alert('Categoría creada exitosamente!');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(error.message);
+        });
+    });
+
+    // 3) Validación de campos requeridos
+    function toggleRequiredFields() {
+        if (selectCat.options.length > 0) {
+            selectCat.required = true;
+            nombreCategoria.required = false;
+            descripcionCategoria.required = false;
+        } else {
+            selectCat.required = false;
+            nombreCategoria.required = true;
+            descripcionCategoria.required = true;
+        }
+    }
+
+    // 4) Manejar envío del formulario principal
     form.addEventListener('submit', function (event) {
         event.preventDefault();
 
-        // Validar tamaño máximo de imágenes
-        const maxSize = 5 * 1024 * 1024; // 5MB
+        // Validación de tamaño de imágenes
+        const maxSize = 5 * 1024 * 1024;
         const fotoPrincipal = document.getElementById('fotoPrincipal').files[0];
         const fotoExtra1 = document.getElementById('fotoExtra1').files[0];
         const fotoExtra2 = document.getElementById('fotoExtra2').files[0];
@@ -40,19 +96,19 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Desactivar botón para evitar dobles envíos
-        document.getElementById('btnpublicar').disabled = true;
+        // Desactivar botón
+        const btnSubmit = document.getElementById('btnpublicar');
+        btnSubmit.disabled = true;
 
+        // Enviar formulario
         const formData = new FormData(form);
-
+        
         fetch('publicar.php', {
             method: 'POST',
             body: formData
         })
         .then(response => {
-            if (!response.ok) {
-                throw new Error('Error en la respuesta del servidor');
-            }
+            if (!response.ok) throw new Error('Error en la respuesta del servidor');
             return response.json();
         })
         .then(result => {
@@ -60,38 +116,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert('Producto publicado exitosamente');
                 window.location.href = 'mainvendedor.html'; 
             } else {
-                alert('Error al publicar: ' + (result.error || 'Desconocido'));
-                document.getElementById('btnpublicar').disabled = false;
+                throw new Error(result.error || 'Error desconocido');
             }
         })
         .catch(error => {
-            console.error('Error en la solicitud:', error);
-            alert('Hubo un problema con la conexión: ' + error.message);
-            document.getElementById('btnpublicar').disabled = false;
+            console.error('Error:', error);
+            alert('Error al publicar: ' + error.message);
+        })
+        .finally(() => {
+            btnSubmit.disabled = false;
         });
     });
 
-    // Validar campos requeridos dinámicamente
-    const descripcionCategoria = document.getElementById('descripcionCategoria');
-    const nombreCategoria = document.getElementById('nombreCategoria');
-
-    function toggleRequiredFields() {
-        if (selectCat.value) {
-            descripcionCategoria.required = false;
-            nombreCategoria.required = false;
-        } else if (descripcionCategoria.value || nombreCategoria.value) {
-            selectCat.required = false;
-        } else {
-            selectCat.required = true;
-            descripcionCategoria.required = true;
-            nombreCategoria.required = true;
-        }
-    }
-
+    // Event listeners para validación dinámica
     selectCat.addEventListener('change', toggleRequiredFields);
-    descripcionCategoria.addEventListener('input', toggleRequiredFields);
     nombreCategoria.addEventListener('input', toggleRequiredFields);
-
-    // Inicializar validación al cargar la página
-    toggleRequiredFields();
+    descripcionCategoria.addEventListener('input', toggleRequiredFields);
+    toggleRequiredFields(); // Estado inicial
 });
