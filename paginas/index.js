@@ -108,8 +108,10 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = 'mainvendedor.html';
         } else if (data.role === 'Admin') {
             window.location.href = 'mainadministrador.html';
-        } else {
+        } else if(data.role === 'Usuario'){
             window.location.href = 'main.html';
+        }else{
+            window.location.href = 'mainSA.html'
         }
     } else {
         alert(data.error || 'Credenciales incorrectas');

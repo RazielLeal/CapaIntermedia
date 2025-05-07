@@ -17,6 +17,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Validar campos obligatorios
     $required_fields = ["nombre", "apellidoP", "email", "password", "username", "nacimiento", "genero", "rol"];
     foreach ($required_fields as $field) {
+
+        
         if (empty($_POST[$field])) {
             echo json_encode([
                 "success" => false, 
