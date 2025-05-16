@@ -1,6 +1,6 @@
 :root{
-    --principal: rgb(0, 116, 31); 
-    --secundario:rgb(92, 196, 114); 
+    --principal: rgb(0, 116, 31);
+    --secundario:rgb(92, 196, 114);
     --terciario: rgb(157, 245, 159);
     --blanco: rgb(255, 255, 255);
     --fondo:rgb(255, 255, 255);
@@ -121,19 +121,29 @@ a {
     width: 80px;
     height: 80px;
     object-fit: cover;
-    border-radius: 50%; 
+    border-radius: 50%;
     border: 2px solid var(--principal);
 }
 
+/* RE-APLICADO: Estilos para la sección Productos más vendidos */
 #productos-populares {
-    width: 90%;
-    margin: 20px auto;
+    background-color: white; /* Fondo blanco */
+    border-radius: 10px; /* Bordes redondeados */
+    margin: 20px auto; /* Margen y centrado */
+    padding: 20px; /* Espaciado interno */
+    box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Sombra suave */
+    width: 90%; /* Ancho consistente */
 }
 
 #productos-populares h2 {
     color: var(--principal);
-    padding-left: 20px;
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--letrados); /* Línea debajo del título */
+    padding-left: 0; /* Asegurar que no haya padding extra aquí */
+    text-align: left; /* Asegurar alineación izquierda */
 }
+
 
 /* Estilos para el contador del carrito */
 #cart-count {
@@ -217,6 +227,7 @@ a {
     cursor: pointer;
     transition: transform 0.3s;
     background-color: white;
+    text-align: center;
 }
 
 .producto:hover {
@@ -260,41 +271,203 @@ a {
     color: red;
 }
 
-#user-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 15px;
+/* Estilos para las nuevas secciones de búsqueda avanzada */
+.advanced-search-section {
+    width: 90%;
+    margin: 20px auto;
     background-color: white;
     border-radius: 10px;
-    margin: 20px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
-#profile-photo {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-#user-name {
-    font-weight: bold;
-    color: var(--principal);
-    margin: 0;
-}
-
-#productos-populares {
-    background-color: white;
-    border-radius: 10px;
-    margin: 20px;
     padding: 20px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-#productos-populares h2 {
+.advanced-search-section h2 {
     color: var(--principal);
     margin-top: 0;
     padding-bottom: 10px;
     border-bottom: 1px solid var(--letrados);
+    text-align: left;
+    padding-left: 0;
 }
+
+.advanced-search-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.advanced-search-filters label {
+    font-weight: bold;
+    margin-right: 5px;
+    color: var(--principal);
+    font-size: 18px;
+}
+
+.advanced-search-filters input[type="text"],
+.advanced-search-filters select {
+    padding: 8px 15px;
+    border: 1px solid var(--letrados);
+    border-radius: 20px;
+    font-size: 16px;
+    outline: none;
+    flex: 1;
+    max-width: 300px;
+}
+
+/* Estilo específico para las tarjetas de usuario avanzada */
+.user-card-advanced img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+    border: 2px solid var(--principal);
+}
+
+.user-card-advanced .name {
+    font-size: 1em;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.user-card-advanced .role {
+    font-size: 0.9em;
+    color: var(--secundario);
+    font-weight: bold;
+}
+
+/* Estilos de Paginación */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+    gap: 10px;
+    flex-wrap: wrap; /* Permite que los botones se envuelvan en pantallas pequeñas */
+}
+
+.pagination-controls button {
+    background-color: var(--blanco);
+    color: var(--principal);
+    border: 1px solid var(--principal);
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.pagination-controls button:hover:not(:disabled),
+.pagination-controls button.active {
+    background-color: var(--principal);
+    color: var(--blanco);
+    border-color: var(--principal);
+}
+
+.pagination-controls button:disabled {
+    background-color: var(--letrauno);
+    color: var(--blanco);
+    border-color: var(--letrauno);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.pagination-controls span {
+    color: var(--principal);
+    font-weight: bold;
+    margin: 0 5px;
+}
+
+
+/* Ajustes para móviles */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+    }
+    #header-search {
+        width: 100%;
+        max-width: none;
+        margin-bottom: 10px;
+    }
+    header nav {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 5px;
+    }
+    .botones {
+        width: 100%;
+    }
+    #user-info, #productos-populares,
+    .advanced-search-section {
+        width: 95%;
+        margin: 15px auto;
+        padding: 15px;
+    }
+    .productos-container {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        padding: 10px;
+        gap: 15px;
+    }
+    .advanced-search-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .advanced-search-filters input[type="text"],
+    .advanced-search-filters select {
+        max-width: 100%;
+    }
+    .pagination-controls {
+        gap: 5px;
+    }
+    .pagination-controls button {
+        padding: 6px 10px;
+        font-size: 0.9em;
+    }
+}
+
+
+
+/* ... (Código CSS existente) ... */
+
+/* Estilos para los controles de cantidad en el carrito */
+.cantidad-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.cantidad-control .cantidad-btn {
+    background-color: var(--secundario);
+    color: white;
+    border: none;
+    border-radius: 3px;
+    width: 25px;
+    height: 25px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1; /* Elimina el espacio extra vertical */
+}
+
+.cantidad-control .cantidad-btn:hover {
+    background-color: var(--principal);
+}
+
+.cantidad-control span {
+    min-width: 20px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* ... (Resto del código CSS existente) ... */

@@ -1,50 +1,62 @@
 <?php
-header("Access-Control-Allow-Origin: http://localhost:8080"); 
-header("Access-Control-Allow-Methods: GET");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-header('Content-Type: application/json');
+header("Access-Control-Allow-Origin: http://localhost:8080");
+header("Content-Type: application/json");
 
 require_once 'conexion.php';
+
 $conn = conectarDB();
 
-if ($_SERVER["REQUEST_METHOD"] == "GET") {
-    $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 12;
+// Obtener parámetros de paginación
+$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+$limit = isset($_GET['limit']) ? intval($_GET['limit']) : 8; // Default a 8 por página
 
-    $productQuery = "SELECT ID, Nombre, Descripcion, FotoPrincipal, Precio, Vendidos, Stock 
-                    FROM Producto 
-                    WHERE Status = 'Aceptado'
-                    ORDER BY Vendidos DESC
-                    LIMIT ?";
-    
-    $stmtProducts = $conn->prepare($productQuery);
-    $stmtProducts->bind_param("i", $limit);
-    $stmtProducts->execute();
-    $productsResult = $stmtProducts->get_result();
-    
+$offset = ($page - 1) * $limit;
+
+try {
+    // Consulta para obtener el total de productos (para la paginación)
+    $countSql = "SELECT COUNT(ID) AS total FROM Producto WHERE Status = 'Aceptado'";
+    $countResult = $conn->query($countSql);
+    $totalItems = $countResult->fetch_assoc()['total'];
+
+    // Consulta para obtener los productos populares con paginación
+    $sql = "
+        SELECT
+            ID,
+            Nombre as nombre,
+            Precio as precio,
+            Stock as stock,
+            FotoPrincipal as imagen,
+            Vendidos as vendidos
+        FROM
+            Producto
+        WHERE
+            Status = 'Aceptado'
+        ORDER BY
+            Vendidos DESC
+        LIMIT ?, ?
+    ";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ii", $offset, $limit);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
     $products = [];
-    while ($row = $productsResult->fetch_assoc()) {
-        $imagenBase64 = null;
-        if (!empty($row['FotoPrincipal'])) {
-            $imagenBase64 = base64_encode($row['FotoPrincipal']);
-        }
-        
+    while ($row = $result->fetch_assoc()) {
         $products[] = [
             'id' => $row['ID'],
-            'nombre' => $row['Nombre'],
-            'descripcion' => $row['Descripcion'],
-            'precio' => number_format($row['Precio'], 2),
-            'vendidos' => $row['Vendidos'],
-            'stock' => (int)$row['Stock'],
-            'imagen' => $imagenBase64 ? 'data:image/jpeg;base64,' . $imagenBase64 : null,
-            'status' => 'Aceptado' // Añadido para referencia
+            'nombre' => $row['nombre'],
+            'precio' => $row['precio'],
+            'stock' => $row['stock'],
+            'imagen' => $row['imagen'] ? 'data:image/jpeg;base64,' . base64_encode($row['imagen']) : 'avatar.png',
+            'vendidos' => $row['vendidos']
         ];
     }
-    $stmtProducts->close();
 
-    echo json_encode([
-        "success" => true,
-        "products" => $products
-    ]);
+    echo json_encode(["success" => true, "products" => $products, "total_items" => $totalItems]);
+
+} catch (Exception $e) {
+    echo json_encode(["success" => false, "error" => $e->getMessage()]);
 }
 
 $conn->close();

@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markline - Registro</title>
     <link rel="stylesheet" href="registrate.css">
-    <link rel="estilos SA" href="mainSA.css">
+    <link rel="stylesheet" href="mainSA.css">
 </head>
 <body>
     <header>
         <h1><a href="">Markline</a></h1>
+        <button class="botones" type="button" id="btncancelar"><a href="index.html">Cerrar Sesión</a></button>
     </header>
 
     <section class="registro-container">
@@ -19,40 +20,40 @@
 
                 <label>Nombre/s</label>
                 <input type="text" name="nombre" id="nombre" required>
-    
+
                 <label>Apellido Paterno</label>
                 <input type="text" name="apellidoP" id="apellidoP" required>
-    
+
                 <label>Apellido Materno</label>
                 <input type="text" name="apellidoM" id="apellidoM" required>
-    
+
                 <label>Correo</label>
                 <input type="email" name="email" id="email" required>
-    
+
                 <label>Contraseña</label>
                 <input type="password" name="password" id="password" required>
-    
+
                 <label>Username</label>
                 <input type="text" name="username" id="username" required>
-        
+
                 <label>Fecha de Nacimiento</label>
                 <input type="date" name="nacimiento" id="nacimiento" required>
-                
-                <!-- Nuevo campo para seleccionar el rol con radio buttons -->
+
                 <label hidden>Tipo de cuenta</label>
                 <div class="rol-options">
-                    <input type="radio" name="rol" value="Superadmin" id="rol-usuario" checked required hidden>
+                    <input type="radio" name="rol" value="Admin" id="rol-usuario" checked required hidden>
                 </div>
-    
+
                 <div id="botonesContainer">
                     <button class="botones" type="submit" id="btnregistrarse">Registrarse</button>
-                    <button class="botones" type="button" id="btncancelar"><a href="index.html">Cancelar</a></button>    
+                    
                 </div>
-    
+
             </form>
-    
+
         </div>
     </section>
 
+    <script src="mainSA.js"></script>
 </body>
 </html>

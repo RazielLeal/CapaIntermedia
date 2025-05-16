@@ -10,7 +10,7 @@
     <header>
         <h1><a href="main.html">Markline</a></h1>
         <div id="header-search">
-            <input type="text" id="header-search-input" placeholder="Buscar productos..." autocomplete="off">
+            <input type="text" id="header-search-input" placeholder="Buscar productos o usuarios..." autocomplete="off">
             <div id="header-search-results"></div>
         </div>
         <nav>
@@ -27,28 +27,68 @@
     <section id="productos-populares">
         <h2>Productos más vendidos</h2>
         <div class="productos-container" id="productos-container">
-            <!-- Los productos se cargarán aquí dinámicamente -->
+            </div>
+        <div class="pagination-controls" id="popular-products-pagination"></div>
+    </section>
+
+    <section id="advanced-product-search" class="advanced-search-section">
+        <h2>Búsqueda Avanzada de Productos</h2>
+        <div class="advanced-search-filters">
+            <input type="text" id="product-search-input" placeholder="Buscar producto..." autocomplete="off">
+            <label for="product-sort-by">Ordenar por:</label>
+            <select id="product-sort-by">
+                <option value="calificacion_desc">Mejor Calificados</option> <option value="vendidos_desc">Más Vendidos</option>
+                <option value="vendidos_asc">Menos Vendidos</option>
+                <option value="precio_asc">Menor Precio</option>
+                <option value="precio_desc">Mayor Precio</option>
+            </select>
         </div>
+        <div id="advanced-product-results" class="productos-container">
+            </div>
+        <div class="pagination-controls" id="advanced-product-pagination"></div>
+    </section>
+
+    <section id="advanced-user-search" class="advanced-search-section">
+        <h2>Búsqueda Avanzada de Usuarios</h2>
+        <div class="advanced-search-filters">
+            <input type="text" id="user-search-input" placeholder="Buscar usuario..." autocomplete="off">
+            <label for="user-role-filter">Filtrar por Rol:</label>
+            <select id="user-role-filter">
+                <option value="">Todos</option>
+                <option value="Vendedor">Vendedor</option>
+                <option value="Usuario">Comprador</option>
+            </select>
+            <label for="user-sort-by">Ordenar por Nombre:</label>
+            <select id="user-sort-by">
+                <option value="asc">A-Z</option>
+                <option value="desc">Z-A</option>
+            </select>
+        </div>
+        <div id="advanced-user-results" class="productos-container">
+            </div>
+        <div class="pagination-controls" id="advanced-user-pagination"></div>
     </section>
 
     <div id="cart-overlay" onclick="closeCart()"></div>
     <div id="cart-modal"></div>
 
     <script>
-        // Función para abrir el carrito
+        const ITEMS_PER_PAGE = 8; // Número de elementos por página
+
+        // Función para abrir el carrito (sin cambios)
         function openCart() {
             document.getElementById('cart-overlay').style.display = 'block';
             document.getElementById('cart-modal').style.display = 'block';
             updateCartModal();
         }
-        
-        // Función para cerrar el carrito
+
+        // Función para cerrar el carrito (sin cambios)
         function closeCart() {
             document.getElementById('cart-overlay').style.display = 'none';
             document.getElementById('cart-modal').style.display = 'none';
         }
-        
-        // Función para actualizar el modal del carrito
+
+        // Función para actualizar el modal del carrito (MODIFICADA)
         function updateCartModal() {
             const username = sessionStorage.getItem('username');
             if (!username) {
@@ -64,14 +104,14 @@
             .then(response => response.json())
             .then(data => {
                 const modal = document.getElementById('cart-modal');
-                
+
                 if (!data.success) {
                     modal.innerHTML = '<p>Error al cargar el carrito: ' + (data.error || '') + '</p>';
                     return;
                 }
 
                 let html = '<h2>Tu Carrito</h2>';
-                
+
                 if (data.carrito.length === 0) {
                     html += '<p>Tu carrito está vacío</p>';
                 } else {
@@ -89,33 +129,39 @@
                                 </tr>
                             </thead>
                             <tbody>`;
-                    
+
                     data.carrito.forEach(item => {
                         const subtotal = parseFloat(item.Total);
                         total += subtotal;
-                        
+
                         html += `
                         <tr>
                             <td style="display:flex; align-items:center;">
-                                <img src="${item.FotoPrincipal ? 'data:image/jpeg;base64,' + item.FotoPrincipal : 'avatar.png'}" 
-                                     style="width:50px; height:50px; object-fit:contain; margin-right:10px;">
+                                <img src="${item.FotoPrincipal ? 'data:image/jpeg;base64,' + item.FotoPrincipal : 'avatar.png'}"
+                                            style="width:50px; height:50px; object-fit:contain; margin-right:10px;">
                                 ${item.Nombre}
                             </td>
-                            <td style="text-align:right;">$${item.Precio}</td>
-                            <td style="text-align:center;">${item.Cantidad}</td>
+                            <td style="text-align:right;">$${parseFloat(item.Precio).toFixed(2)}</td>
+                            <td style="text-align:center;">
+                                <div class="cantidad-control">
+                                    <button class="cantidad-btn" onclick="updateQuantity(${item.ID}, ${item.Cantidad - 1}, ${item.Stock})">-</button>
+                                    <span id="cantidad-${item.ID}">${item.Cantidad}</span>
+                                    <button class="cantidad-btn" onclick="updateQuantity(${item.ID}, ${item.Cantidad + 1}, ${item.Stock})">+</button>
+                                </div>
+                            </td>
                             <td style="text-align:right;">$${subtotal.toFixed(2)}</td>
                             <td style="text-align:center;">
                                 <button onclick="removeFromCart(${item.ID})" style="background:none; border:none; cursor:pointer; color:red;">✖</button>
                             </td>
                         </tr>`;
                     });
-                    
+
                     html += `
                             </tbody>
                             <tfoot>
                                 <tr>
                                     <td colspan="3" style="text-align:right; font-weight:bold;">Total:</td>
-                                    <td style="text-align:right; font-weight:bold;">$${total.toFixed(2)}</td>
+                                    <td style="text-align:right; font-weight:bold;" id="cart-total-amount">$${total.toFixed(2)}</td>
                                     <td></td>
                                 </tr>
                             </tfoot>
@@ -123,10 +169,10 @@
                     </div>
                     <button onclick="checkout()" style="background-color:var(--principal); color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; width:100%;">Proceder al Pago</button>`;
                 }
-                
+
                 html += '<button onclick="closeCart()" style="margin-top:15px; width:100%;">Seguir Comprando</button>';
                 modal.innerHTML = html;
-                
+
                 updateCartCount();
             })
             .catch(error => {
@@ -134,8 +180,61 @@
                 document.getElementById('cart-modal').innerHTML = '<p>Error al cargar el carrito</p>';
             });
         }
-        
-        // Función para eliminar un producto del carrito
+
+        // NUEVA FUNCIÓN: Para actualizar la cantidad de un producto en el carrito
+        function updateQuantity(carritoId, newQuantity, maxStock) {
+            const username = sessionStorage.getItem('username');
+            if (!username) {
+                alert('Debes iniciar sesión para modificar el carrito');
+                return;
+            }
+
+            if (newQuantity < 1) {
+                removeFromCart(carritoId); // Si la cantidad es 0 o menos, eliminar el producto
+                return;
+            }
+
+            if (newQuantity > maxStock) {
+                alert('No hay suficiente stock para esta cantidad. Stock disponible: ' + maxStock);
+                return;
+            }
+
+            fetch('carrito_api.php', {
+                method: 'PUT', // Usamos PUT para actualizar un recurso existente
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + username
+                },
+                body: JSON.stringify({
+                    carritoId: carritoId,
+                    cantidad: newQuantity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Actualizar la cantidad en el modal sin recargar todo el carrito
+                    const cantidadSpan = document.getElementById(`cantidad-${carritoId}`);
+                    if (cantidadSpan) {
+                        cantidadSpan.textContent = newQuantity;
+                    }
+                    
+                    // Recalcular y actualizar el total del subtotal para ese producto y el total general
+                    // Esto es más eficiente que llamar a updateCartModal() que recarga todo.
+                    updateCartModal(); // Recargamos todo el modal para asegurar que todos los totales y flechas se actualicen correctamente.
+                                        // Si se desea una actualización más granular se podría implementar la lógica aquí.
+                    updateCartCount(); // Actualizar el contador del carrito
+                } else {
+                    alert('Error al actualizar la cantidad: ' + (data.error || ''));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al actualizar la cantidad');
+            });
+        }
+
+        // Función para eliminar un producto del carrito (sin cambios)
         function removeFromCart(carritoId) {
             const username = sessionStorage.getItem('username');
             if (!username) {
@@ -166,8 +265,8 @@
                 alert('Error al eliminar del carrito');
             });
         }
-        
-        // Función para el proceso de pago
+
+        // Función para el proceso de pago (sin cambios)
         function checkout() {
             const username = sessionStorage.getItem('username');
             if (!username) {
@@ -227,7 +326,7 @@
             });
         }
 
-        // Función para actualizar el contador del carrito
+        // Función para actualizar el contador del carrito (sin cambios)
         function updateCartCount() {
             const username = sessionStorage.getItem('username');
             if (!username) {
@@ -253,15 +352,90 @@
             });
         }
 
-        // Función para cargar productos
-        function loadProducts() {
-            fetch('get_popular_products.php')
+        // **Función para generar controles de paginación**
+        function createPaginationControls(currentPage, totalItems, containerId, loadFunction) {
+            const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+            const paginationContainer = document.getElementById(containerId);
+            paginationContainer.innerHTML = '';
+
+            if (totalPages <= 1) {
+                return; // No mostrar paginación si solo hay una página
+            }
+
+            const maxVisiblePages = 5; // Número máximo de botones de página visibles
+
+            // Botón "Anterior"
+            const prevButton = document.createElement('button');
+            prevButton.textContent = '←';
+            prevButton.disabled = currentPage === 1;
+            prevButton.onclick = () => loadFunction(currentPage - 1);
+            paginationContainer.appendChild(prevButton);
+
+            // Botones de números de página
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+            // Ajustar startPage si endPage alcanza el totalPages
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+
+
+            if (startPage > 1) {
+                const firstPage = document.createElement('button');
+                firstPage.textContent = '1';
+                firstPage.onclick = () => loadFunction(1);
+                firstPage.className = 'pagination-button';
+                paginationContainer.appendChild(firstPage);
+                if (startPage > 2) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.textContent = '...';
+                    paginationContainer.appendChild(ellipsis);
+                }
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.textContent = i;
+                pageButton.className = 'pagination-button';
+                if (i === currentPage) {
+                    pageButton.classList.add('active');
+                }
+                pageButton.onclick = () => loadFunction(i);
+                paginationContainer.appendChild(pageButton);
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.textContent = '...';
+                    paginationContainer.appendChild(ellipsis);
+                }
+                const lastPage = document.createElement('button');
+                lastPage.textContent = totalPages;
+                lastPage.onclick = () => loadFunction(totalPages);
+                lastPage.className = 'pagination-button';
+                paginationContainer.appendChild(lastPage);
+            }
+
+            // Botón "Siguiente"
+            const nextButton = document.createElement('button');
+            nextButton.textContent = '→';
+            nextButton.disabled = currentPage === totalPages;
+            nextButton.onclick = () => loadFunction(currentPage + 1);
+            paginationContainer.appendChild(nextButton);
+        }
+
+
+        // Función para cargar productos populares (con paginación)
+        function loadProducts(page = 1) {
+            fetch(`get_popular_products.php?page=${page}&limit=${ITEMS_PER_PAGE}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
                         const container = document.getElementById('productos-container');
                         container.innerHTML = '';
-                        
+
                         data.products.forEach(product => {
                             const productElement = document.createElement('div');
                             productElement.className = 'producto';
@@ -279,58 +453,206 @@
                             });
                             container.appendChild(productElement);
                         });
+                        createPaginationControls(page, data.total_items, 'popular-products-pagination', loadProducts);
                     } else {
-                        console.error('Error al cargar productos:', data.error);
+                        console.error('Error al cargar productos populares:', data.error);
+                        document.getElementById('productos-container').innerHTML = `<p>${data.error || 'No se pudieron cargar los productos populares.'}</p>`;
+                        document.getElementById('popular-products-pagination').innerHTML = '';
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
+                    document.getElementById('productos-container').innerHTML = '<p>Error al cargar los productos populares.</p>';
+                    document.getElementById('popular-products-pagination').innerHTML = '';
                 });
         }
 
-        // Función para buscar productos
-        function searchProducts(query) {
+        // Función para la búsqueda rápida (sin cambios)
+        async function searchAll(query) {
             if (query.length < 2) {
                 document.getElementById('header-search-results').style.display = 'none';
                 return;
             }
 
-            fetch(`search_products.php?q=${encodeURIComponent(query)}`)
+            const resultsContainer = document.getElementById('header-search-results');
+            resultsContainer.innerHTML = '';
+
+            let allResults = [];
+
+            // Buscar productos
+            try {
+                const productResponse = await fetch(`search_products.php?q=${encodeURIComponent(query)}`);
+                const productData = await productResponse.json();
+                if (productData.success && productData.products.length > 0) {
+                    allResults = allResults.concat(productData.products.map(p => ({...p, type: 'product'})));
+                }
+            } catch (error) {
+                console.error('Error al buscar productos:', error);
+            }
+
+            // Buscar usuarios
+            try {
+                const userResponse = await fetch(`search_users.php?q=${encodeURIComponent(query)}`);
+                const userData = await userResponse.json();
+                if (userData.success && userData.users.length > 0) {
+                    allResults = allResults.concat(userData.users.map(u => ({...u, type: 'user'})));
+                }
+            } catch (error) {
+                console.error('Error al buscar usuarios:', error);
+            }
+
+            if (allResults.length > 0) {
+                // Mostrar resultados de productos
+                const productSection = document.createElement('div');
+                productSection.innerHTML = '<h3>Productos</h3>';
+                const productsFound = allResults.filter(item => item.type === 'product');
+                if (productsFound.length > 0) {
+                    productsFound.forEach(product => {
+                        const item = document.createElement('div');
+                        item.className = 'header-search-result';
+                        item.innerHTML = `
+                            <img src="${product.imagen}" alt="${product.nombre}">
+                            <div style="flex:1;">
+                                <div style="font-weight:bold;">${product.nombre}</div>
+                                <div style="color:var(--secundario);">$${product.precio}</div>
+                                <div style="font-size:0.8em; color:${product.stock > 0 ? 'var(--principal)' : 'red'}">
+                                    ${product.stock > 0 ? 'Disponible' : 'Agotado'}
+                                </div>
+                            </div>
+                        `;
+                        item.addEventListener('click', () => {
+                            window.location.href = `producto.html?id=${product.id}`;
+                        });
+                        productSection.appendChild(item);
+                    });
+                } else {
+                    productSection.innerHTML += '<p>No se encontraron productos.</p>';
+                }
+                resultsContainer.appendChild(productSection);
+
+                // Mostrar resultados de usuarios
+                const userSection = document.createElement('div');
+                userSection.innerHTML = '<h3>Usuarios</h3>';
+                const usersFound = allResults.filter(item => item.type === 'user');
+                if (usersFound.length > 0) {
+                    usersFound.forEach(user => {
+                        const item = document.createElement('div');
+                        item.className = 'header-search-result';
+                        item.innerHTML = `
+                            <img src="${user.avatar}" alt="${user.nickname}" style="border-radius: 50%;">
+                            <div style="flex:1;">
+                                <div style="font-weight:bold;">${user.nickname}</div>
+                                <div style="font-size:0.9em; color:grey;">${user.nombre} ${user.apellidoPaterno}</div>
+                            </div>
+                        `;
+                        item.addEventListener('click', () => {
+                            alert(`Ver perfil de ${user.nickname}`);
+                            // window.location.href = `perfil_usuario.html?id=${user.id}`; // Ejemplo de redirección
+                        });
+                        userSection.appendChild(item);
+                    });
+                } else {
+                    userSection.innerHTML += '<p>No se encontraron usuarios.</p>';
+                }
+                resultsContainer.appendChild(userSection);
+
+                resultsContainer.style.display = 'block';
+            } else {
+                const noResults = document.createElement('div');
+                noResults.className = 'no-results';
+                noResults.textContent = 'No se encontraron productos o usuarios.';
+                resultsContainer.appendChild(noResults);
+                resultsContainer.style.display = 'block';
+            }
+        }
+
+        // Función para la búsqueda avanzada de productos (con paginación)
+        function advancedSearchProducts(page = 1) {
+            const query = document.getElementById('product-search-input').value.trim();
+            const sortBy = document.getElementById('product-sort-by').value;
+            const resultsContainer = document.getElementById('advanced-product-results');
+            resultsContainer.innerHTML = ''; // Limpiar resultados anteriores
+
+            let url = `advanced_search_products.php?q=${encodeURIComponent(query)}&sort_by=${encodeURIComponent(sortBy)}&page=${page}&limit=${ITEMS_PER_PAGE}`;
+
+            fetch(url)
                 .then(response => response.json())
                 .then(data => {
-                    const resultsContainer = document.getElementById('header-search-results');
-                    resultsContainer.innerHTML = '';
-
                     if (data.success && data.products.length > 0) {
                         data.products.forEach(product => {
-                            const item = document.createElement('div');
-                            item.className = 'header-search-result';
-                            item.innerHTML = `
+                            const productElement = document.createElement('div');
+                            productElement.className = 'producto';
+                            productElement.innerHTML = `
                                 <img src="${product.imagen}" alt="${product.nombre}">
-                                <div style="flex:1;">
-                                    <div style="font-weight:bold;">${product.nombre}</div>
-                                    <div style="color:var(--secundario);">$${product.precio}</div>
-                                    <div style="font-size:0.8em; color:${product.stock > 0 ? 'var(--principal)' : 'red'}">
-                                        ${product.stock > 0 ? 'Disponible' : 'Agotado'}
-                                    </div>
+                                <h3>${product.nombre}</h3>
+                                <div class="precio">$${product.precio}</div>
+                                <div class="stock ${product.stock > 0 ? 'disponible' : 'agotado'}">
+                                    ${product.stock > 0 ? `Disponibles: ${product.stock}` : 'AGOTADO'}
                                 </div>
+                                <div class="vendidos">${product.vendidos} vendidos</div>
+                                ${product.calificacion !== null && parseFloat(product.calificacion) > 0 ? `<div class="rating">⭐ ${parseFloat(product.calificacion).toFixed(2)}</div>` : ''}
                             `;
-                            item.addEventListener('click', () => {
+                            productElement.addEventListener('click', () => {
                                 window.location.href = `producto.html?id=${product.id}`;
                             });
-                            resultsContainer.appendChild(item);
+                            resultsContainer.appendChild(productElement);
                         });
-                        resultsContainer.style.display = 'block';
+                        createPaginationControls(page, data.total_items, 'advanced-product-pagination', advancedSearchProducts);
                     } else {
-                        const noResults = document.createElement('div');
-                        noResults.className = 'no-results';
-                        noResults.textContent = 'No se encontraron productos';
+                        const noResults = document.createElement('p');
+                        noResults.textContent = data.error || 'No se encontraron productos con esos criterios.';
                         resultsContainer.appendChild(noResults);
-                        resultsContainer.style.display = 'block';
+                        document.getElementById('advanced-product-pagination').innerHTML = '';
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
+                    console.error('Error en la búsqueda avanzada de productos:', error);
+                    resultsContainer.innerHTML = '<p>Error al cargar los productos.</p>';
+                    document.getElementById('advanced-product-pagination').innerHTML = '';
+                });
+        }
+
+        // Función para la búsqueda avanzada de usuarios (con paginación)
+        function advancedSearchUsers(page = 1) {
+            const query = document.getElementById('user-search-input').value.trim();
+            const roleFilter = document.getElementById('user-role-filter').value;
+            const sortBy = document.getElementById('user-sort-by').value;
+            const resultsContainer = document.getElementById('advanced-user-results');
+            resultsContainer.innerHTML = ''; // Limpiar resultados anteriores
+
+            let url = `advanced_search_users.php?q=${encodeURIComponent(query)}&role=${encodeURIComponent(roleFilter)}&sort_by=${encodeURIComponent(sortBy)}&page=${page}&limit=${ITEMS_PER_PAGE}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.users.length > 0) {
+                        data.users.forEach(user => {
+                            const userElement = document.createElement('div');
+                            userElement.className = 'producto user-card-advanced';
+                            userElement.innerHTML = `
+                                <img src="${user.avatar}" alt="${user.nickname}" style="height: 150px; width: 150px; border-radius: 50%; object-fit: cover; margin-bottom: 10px;">
+                                <h3>${user.nickname}</h3>
+                                <div class="name">${user.nombre} ${user.apellidoPaterno}</div>
+                                <div class="role" style="color: var(--secundario); font-weight: bold;">Rol: ${user.rol === 'Usuario' ? 'Comprador' : user.rol}</div>
+                            `;
+                            userElement.addEventListener('click', () => {
+                                alert(`Ver perfil de ${user.nickname}`);
+                                // window.location.href = `perfil_usuario.html?id=${user.id}`; // Ejemplo de redirección
+                            });
+                            resultsContainer.appendChild(userElement);
+                        });
+                        createPaginationControls(page, data.total_items, 'advanced-user-pagination', advancedSearchUsers);
+                    } else {
+                        const noResults = document.createElement('p');
+                        noResults.textContent = data.error || 'No se encontraron usuarios con esos criterios.';
+                        resultsContainer.appendChild(noResults);
+                        document.getElementById('advanced-user-pagination').innerHTML = '';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error en la búsqueda avanzada de usuarios:', error);
+                    resultsContainer.innerHTML = '<p>Error al cargar los usuarios.</p>';
+                    document.getElementById('advanced-user-pagination').innerHTML = '';
                 });
         }
 
@@ -341,8 +663,6 @@
             const profilePhoto = document.getElementById('profile-photo');
 
             if (username) {
-                userNameElement.textContent = username;
-
                 fetch(`login.php?user=${encodeURIComponent(username)}`)
                     .then(response => response.json())
                     .then(data => {
@@ -354,11 +674,20 @@
                             } else {
                                 profilePhoto.src = 'avatar.png';
                             }
-                            
-                            // Si el rol es usuario, cargar productos
-                            if (data.role === 'Usuario') {
-                                loadProducts();
+
+                            // Si el rol es usuario, cargar productos populares
+                            if (data.role === 'Usuario' || data.role === 'Vendedor' || data.role === 'Admin') {
+                                loadProducts(); // Cargar productos populares (primera página)
                                 updateCartCount();
+                                // Cargar todos los productos/usuarios por defecto al cargar la página (primera página)
+                                advancedSearchProducts();
+                                advancedSearchUsers();
+                            } else {
+                                // Si no es un rol que pueda ver productos, no cargar.
+                                document.getElementById('productos-populares').style.display = 'none';
+                                document.getElementById('advanced-product-search').style.display = 'none';
+                                document.getElementById('advanced-user-search').style.display = 'none';
+                                alert('Tu rol no tiene permisos para ver el contenido de la tienda.');
                             }
 
                             // Abrir carrito automáticamente si hay #openCart en la URL
@@ -367,31 +696,44 @@
                             }
                         } else {
                             alert('Error al cargar el usuario.');
+                            window.location.href = 'index.html'; // Redirigir si el usuario no es válido
                         }
                     })
                     .catch(error => {
                         console.error('Error al cargar los datos del usuario:', error);
                         alert('No se pudo cargar la información del usuario.');
+                        window.location.href = 'index.html'; // Redirigir si hay un error de fetch
                     });
             } else {
                 alert('No hay usuario registrado en la sesión.');
                 window.location.href = 'index.html';
             }
 
-            // Inicializar el buscador
+            // Inicializar el buscador rápido
             const searchInput = document.getElementById('header-search-input');
             const searchResults = document.getElementById('header-search-results');
-            
+
             searchInput.addEventListener('input', function() {
-                searchProducts(this.value);
+                searchAll(this.value);
             });
-            
-            // Cerrar resultados al hacer clic fuera
+
+            // Cerrar resultados de búsqueda rápida al hacer clic fuera
             document.addEventListener('click', function(e) {
                 if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
                     searchResults.style.display = 'none';
                 }
             });
+
+            // Event Listeners para la búsqueda avanzada de productos
+            // Al cambiar el input o el filtro, se recarga la primera página
+            document.getElementById('product-search-input').addEventListener('input', () => advancedSearchProducts(1));
+            document.getElementById('product-sort-by').addEventListener('change', () => advancedSearchProducts(1));
+
+            // Event Listeners para la búsqueda avanzada de usuarios
+            // Al cambiar el input o el filtro, se recarga la primera página
+            document.getElementById('user-search-input').addEventListener('input', () => advancedSearchUsers(1));
+            document.getElementById('user-role-filter').addEventListener('change', () => advancedSearchUsers(1));
+            document.getElementById('user-sort-by').addEventListener('change', () => advancedSearchUsers(1));
         });
     </script>
 </body>
