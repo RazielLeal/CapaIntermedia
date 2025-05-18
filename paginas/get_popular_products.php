@@ -48,7 +48,7 @@ try {
             'nombre' => $row['nombre'],
             'precio' => $row['precio'],
             'stock' => $row['stock'],
-            'imagen' => $row['imagen'] ? 'data:image/jpeg;base64,' . base64_encode($row['imagen']) : 'avatar.png',
+            'imagen' => $row['imagen'] ? 'data:image/jpeg;base64,' . base64_encode($row['imagen']) : 'avatar2.png',
             'vendidos' => $row['vendidos']
         ];
     }

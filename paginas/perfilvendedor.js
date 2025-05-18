@@ -49,7 +49,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function loadUserData() {
     try {
-      console.log('Cargando datos del usuario...');
       const userUrl = buildUrl('login.php', { user: username });
       const userData = await fetchData(userUrl);
       
@@ -67,7 +66,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function loadCategorias() {
     try {
-      console.log('Cargando categorías...');
       const url = 'obtenerCategorias.php';
       categorias = await fetchData(url);
       populateCategoriaFilter();
@@ -109,7 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function loadProducts(userId) {
     try {
-        console.log(`Cargando productos para usuario ${userId}...`);
         
         // Construir URL sin parámetros undefined
         const params = new URLSearchParams();
@@ -124,7 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
         params.append('orden', currentFilters.orden);
 
         const url = `obtener_productos_filtrados.php?${params.toString()}`;
-        console.log('URL completa:', url);
 
         const response = await fetch(url);
         if (!response.ok) {
@@ -132,7 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const data = await response.json();
-        console.log('Datos recibidos:', data); // Depuración
 
         if (!data.success) {
             throw new Error(data.error || 'Error en datos de productos');
@@ -348,4 +343,305 @@ document.addEventListener('DOMContentLoaded', () => {
       await loadProducts(userId);
     }
   }
+
+
+  const notificacion = document.getElementById('notificacion');
+  
+    function verificarMensajesPendientes() {
+        fetch('get_mensajes.php')
+            .then(response => response.text()) // Obtener la respuesta como texto
+            .then(text => {
+                return JSON.parse(text); // Intentar convertirlo a JSON
+            })
+            .then(data => {
+                console.log("Arreglo de mensajes:", data.mensajes); // Ver JSON limpio
+                if (!data.success || !data.mensajes) {
+                    throw new Error(data.message || "Error al obtener mensajes.");
+                }
+
+                // Mostrar número de mensajes no leídos
+                const cantidadMensajes = data.mensajes.length;
+                if (cantidadMensajes > 0) {
+                    notificacion.textContent = cantidadMensajes;
+                    notificacion.classList.remove('hidden'); // Mostrar la burbuja de notificación
+                } else {
+                    notificacion.classList.add('hidden'); // Ocultar si no hay mensajes
+                }
+            })
+            .catch(error => console.error('Error al obtener mensajes:', error));
+    }
+
+    // Llamar a la función al cargar la página
+    verificarMensajesPendientes();
+    const mensajesBtn = document.getElementById('mensajes-btn');
+    const chatPendientesBody = document.getElementById('chat-pendientes-body');
+    const chatPendientesModal = document.getElementById('chat-pendientes-modal');
+    const chatPendientesClose = document.getElementById('chat-pendientes-close');
+
+    const chatModal = document.getElementById('chat-modal');
+    const chatTitle = document.getElementById('chat-title');
+    const chatUsuario = document.getElementById('chat-usuario');
+    const chatBody = document.getElementById('chat-body');
+    const chatClose = document.getElementById('chat-close');
+
+    mensajesBtn.addEventListener('click', function () {
+        chatPendientesModal.classList.add('visible');
+
+        // Obtener chats pendientes
+        fetch('get_chats_pendientes.php')
+            .then(response => response.json())
+            .then(data => {
+                chatPendientesBody.innerHTML = '';
+                if (data.chats.length === 0) {
+                    chatPendientesBody.innerHTML = '<p style="color:#888;text-align:center;">No hay chats pendientes.</p>';
+                    return;
+                }
+
+                data.chats.forEach(chat => {
+                    const chatElement = document.createElement('div');
+                    chatElement.className = 'chat-pendiente';
+                    chatElement.dataset.chatId = chat.id_chat;
+                    chatElement.innerHTML = `
+                        <div style="padding: 10px; border-bottom: 1px solid #ddd;">
+                            <strong>${chat.nombre_usuario}</strong>
+                            <p style="color: #666;">Último mensaje: ${chat.ultimo_mensaje}</p>
+                        </div>
+                    `;
+                    chatPendientesBody.appendChild(chatElement);
+                });
+
+                // Agregar evento para abrir el chat
+                document.querySelectorAll('.chat-pendiente').forEach(element => {
+                    element.addEventListener('click', function () {
+                        const chatId = this.dataset.chatId;
+
+                        abrirChat(chatId);
+                    });
+                });
+            })
+            .catch(error => console.error('Error al obtener chats:', error));
+    });
+
+    function abrirChat(chatId) {
+        chatModal.classList.add('visible');
+        chatModal.classList.remove('hidden');
+        chatBody.innerHTML = '<p style="color:#888;text-align:center;margin-top:30px;">Cargando mensajes...</p>';
+        chatBody.dataset.chatId = chatId;
+
+        let refreshInterval;
+        refreshInterval = setInterval(refreshChatMessages, 300);
+        // Obtener detalles del producto y asignar `productId` al dataset
+        // Obtener detalles del producto asociado al chat
+        fetch(`get_producto_chat.php?id_chat=${chatId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    chatBody.dataset.productId = data.producto.id; // ✅ Guardar el ID del producto correctamente
+                } else {
+                    console.error("Error al obtener detalles del producto:", data.error);
+                }
+            })
+          .catch(error => console.error('Error al obtener detalles del producto:', error));
+
+
+        // Obtener mensajes del chat
+        fetch(`get_mensajes_chat.php?id_chat=${chatId}`)
+            .then(response => response.json())
+            .then(data => {
+                chatBody.innerHTML = ''; // Limpiar contenido previo
+                if (data.mensajes.length === 0) {
+                    chatBody.innerHTML = '<p style="color:#888;text-align:center;">No hay mensajes aún.</p>';
+                    return;
+                }
+
+                
+            })
+            .catch(error => console.error('Error al obtener mensajes:', error));
+    }
+
+    function refreshChatMessages() {
+        const chatId = chatBody.dataset.chatId; // Asegúrate que este valor se asigna al abrir el chat.
+        if (!chatId) return;
+            
+        fetch(`get_mensajes_chat.php?id_chat=${chatId}`)
+            .then(response => response.json())
+            .then(data => {
+              chatBody.innerHTML = '';
+              if (data.mensajes.length === 0) {
+                chatBody.innerHTML = '<p style="color:#888;text-align:center;">No hay mensajes aún.</p>';
+                return;
+              } else {
+                  data.mensajes.forEach(msg => {
+                    const mensajeElement = document.createElement('div');
+                    mensajeElement.className = `chat-message ${msg.es_usuario ? 'user' : ''}`;
+                    mensajeElement.textContent = msg.mensaje;
+                    chatBody.appendChild(mensajeElement);
+                  });  
+                }
+
+            })
+            .catch(error => console.error('Error al refrescar mensajes:', error));
+    }
+
+    // Cerrar modal de chats
+    chatPendientesClose.addEventListener('click', function () {
+        chatPendientesModal.classList.remove('visible');
+    });
+
+
+    // Cerrar modal de chat
+    chatClose.addEventListener('click', function () {
+        chatModal.classList.remove('visible');
+    });
+
+    function sendMessage(chatId, mensaje) {
+      if (!chatId) {
+        console.error("Error: chatId no está definido.");
+        return;
+      }
+      if (!mensaje) return;
+
+      fetch('enviar_mensaje.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `id_chat=${encodeURIComponent(chatId)}&mensaje=${encodeURIComponent(mensaje)}`
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              // Actualizar el chat (asumiendo que #chat-body es donde se muestran los mensajes)
+              const chatBody = document.getElementById('chat-body');
+              const mensajeElement = document.createElement('div');
+              mensajeElement.className = 'chat-message user';
+              mensajeElement.textContent = mensaje;
+              chatBody.appendChild(mensajeElement);
+              chatBody.scrollTop = chatBody.scrollHeight;
+          } else {
+              alert(data.message);
+          }
+      })
+      .catch(error => console.error('Error al enviar mensaje:', error));
+    }
+
+    document.getElementById('chat-send').addEventListener('click', function () {
+      const chatInput = document.getElementById('chat-input');
+      const chatBody = document.getElementById('chat-body');
+      const mensaje = chatInput.value.trim();
+      const chatId = chatBody.dataset.chatId; // Obtener el ID del chat activo
+
+      if (!mensaje) return;
+
+      // Llamada a función común para enviar el mensaje
+      sendMessage(chatId, mensaje);
+      chatInput.value = '';
+   });
+
+// Obtener elementos del modal de cotización
+const cotizacionModal = document.getElementById('cotizacion-modal');
+const cotizacionClose = document.getElementById('cotizacion-close');
+const cotizacionProducto = document.getElementById('cotizacion-producto');
+const cotizacionPrecio = document.getElementById('cotizacion-precio');
+const cotizacionDetalles = document.getElementById('cotizacion-detalles');
+const cotizacionEnviar = document.getElementById('cotizacion-enviar');
+const cotizacionBtn = document.getElementById('cotizacion-btn');
+
+// Mostrar el modal cuando se hace clic en el botón de cotización
+cotizacionBtn.addEventListener('click', function() {
+    const productId = chatBody.dataset.productId; // Usar el ID del producto guardado
+
+    // Obtén y muestra el contenedor
+    const container = document.querySelector('.modal-cotizacion-container');
+    if (container) {
+      container.classList.remove('hidden');
+    }
+    // Luego, muéstrale al modal
+    const cotizacionModal = document.getElementById('cotizacion-modal');
+    cotizacionModal.classList.remove('hidden');
+    cotizacionModal.classList.add('visible');
+     // Asegúrate que este valor se asigna al abrir el chat.
+
+    if (!productId) {
+        console.error("Error: No se encontró el ID del producto.");
+        return;
+    }
+
+    // Obtener los detalles del producto
+    fetch(`get_product_details.php?id=${productId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                cotizacionProducto.textContent = data.product.nombre;
+                cotizacionModal.classList.add('visible');
+            } else {
+                console.error("Error al obtener detalles del producto:", data.error);
+            }
+        })
+        .catch(error => console.error('Error al obtener detalles del producto:', error));
 });
+
+// Cerrar el modal de cotización
+cotizacionClose.addEventListener('click', function() {
+  // Ocultar el modal de cotización
+  const cotizacionModal = document.getElementById('cotizacion-modal');
+  cotizacionModal.classList.remove('visible');
+  cotizacionModal.classList.add('hidden');
+  
+  // Ocultar también el contenedor del modal
+  const container = document.querySelector('.modal-cotizacion-container');
+  if (container) {
+    container.classList.add('hidden');
+  }
+});
+
+function appendChatMessage(sender, text, isUser) {
+    const chatBody = document.getElementById('chat-body');
+    if (!chatBody) return;
+    
+    const mensajeElement = document.createElement('div');
+    mensajeElement.classList.add('chat-message');
+    if (isUser) {
+        mensajeElement.classList.add('user');
+    }
+    mensajeElement.textContent = text;
+    chatBody.appendChild(mensajeElement);
+    chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+// Enviar la cotización como mensaje
+cotizacionEnviar.addEventListener('click', function() {
+    const chatBody = document.getElementById('chat-body');
+    const chatId = chatBody.dataset.chatId; // Asegurar que haya un chat activo
+    
+    if (!chatId) {
+        console.error("Error: No hay un chat activo.");
+        return;
+    }
+
+    const cotizacionProducto = document.getElementById('cotizacion-producto').textContent;
+    const cotizacionPrecio = parseFloat(document.getElementById('cotizacion-precio').value);
+    const cotizacionDetalles = document.getElementById('cotizacion-detalles').value.trim();
+
+    if (isNaN(cotizacionPrecio) || cotizacionPrecio <= 0) {
+        alert("El precio debe ser un número positivo.");
+        return;
+    }
+    if (!cotizacionDetalles) {
+        alert("Debes ingresar los detalles de la cotización.");
+        return;
+    }
+
+    // Construir el mensaje con los datos de cotización
+    const mensajeCotizacion = `Cotización para ${cotizacionProducto}:
+    Precio: $${cotizacionPrecio.toFixed(2)}
+    Detalles: ${cotizacionDetalles}`;
+
+    // Usar la función común para enviar el mensaje
+    sendMessage(chatId, mensajeCotizacion);
+
+    // Cerrar el modal de cotización (agrega las clases o estilos que uses para ocultarlo)
+    document.getElementById('cotizacion-modal').classList.remove('visible');
+    document.querySelector('.modal-cotizacion-container').classList.add('hidden');
+});
+
+});
+

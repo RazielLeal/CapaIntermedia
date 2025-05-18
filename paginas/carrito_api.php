@@ -8,6 +8,13 @@ require_once 'conexion.php';
 
 $conn = conectarDB();
 
+if ($conn->connect_error) {
+    echo json_encode(["success" => false, "error" => "Error de conexión: " . $conn->connect_error]);
+    exit();
+}
+
+
+
 function obtenerUsuarioId() {
     if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
         $token = str_replace('Bearer ', '', $_SERVER['HTTP_AUTHORIZATION']);
@@ -19,6 +26,8 @@ function obtenerUsuarioId() {
     session_start();
     if (isset($_SESSION['usuario_id'])) {
         return $_SESSION['usuario_id'];
+        // Log de usuario_id para depuración
+        echo "<script>console.log('usuario_id: " . $_SESSION['usuario_id'] . "');</script>";
     }
     
     return null;

@@ -12,4 +12,6 @@ function conectarDB() {
     }
     return $conn;
 }
+
+
 ?>

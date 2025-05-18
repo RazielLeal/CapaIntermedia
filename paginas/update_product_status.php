@@ -4,6 +4,7 @@ header("Content-Type: application/json");
 
 require_once 'conexion.php';
 
+
 $data = json_decode(file_get_contents('php://input'), true);
 
 if (!isset($data['productId']) || !isset($data['newStatus'])) {

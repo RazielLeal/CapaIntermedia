@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     productoElement.className = 'product-card';
                     productoElement.innerHTML = `
                         <div class="product-image-container">
-                            <img class="product-image" src="${producto.Foto || 'img/placeholder.jpg'}" alt="${producto.Nombre}" onerror="this.src='img/placeholder.jpg'">
+                            <img class="product-image" src="${producto.Foto || 'img/placeholder.jpg'}" alt="${producto.Nombre}">
                         </div>
                         <div class="product-info">
                             <h3 class="product-name">${producto.Nombre}</h3>
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function() {
         sessionStorage.setItem('userPhoto', data.photo || '');
 
         if (data.role === 'Vendedor') {
-            window.location.href = 'mainvendedor.html';
+            window.location.href = 'perfilvendedor.html';
         } else if (data.role === 'Admin') {
             window.location.href = 'mainadministrador.html';
         } else if(data.role === 'Usuario'){

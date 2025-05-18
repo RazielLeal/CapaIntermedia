@@ -67,7 +67,7 @@
 </head>
 <body>
   <header>
-    <h1><a href="mainvendedor.html">Markline</a></h1>
+    <h1><a href="">Markline</a></h1>
     <nav>
       <button class="botones" onclick="location.href='publicar.html'">Publicar Producto</button>
 
@@ -83,8 +83,16 @@
         <p id="user-email">Email: </p>
         <p id="register-date">Fecha de Registro: </p>
       </div>
-      <!-- <button class="botones" onclick="location.href='editarperfil.html'">Editar Perfil</button> -->
-      <button class="botones" id="cerrar-btn">Cerrar Sesión</button>
+      <div class="containerdebotones">
+        <button class="botonesgrandes" id="mensajes-btn">
+            <img src="avatar2.png" alt="Mensajes">
+              <h3>MENSAJES PENDIENTES</h3>
+            <span id="notificacion" class="notificacion hidden">3</span> <!-- Número de mensajes sin leer -->
+        </button>
+        
+        <button class="botones" id="cerrar-btn">Cerrar Sesión</button>
+
+      </div>
     </div>
 
     <div class="publicaciones">
@@ -120,6 +128,56 @@
     </div>
   </section>
 
-  <script src="perfilvendedor.js"></script>
+  <!-- Modal de chats pendientes -->
+  <div id="chat-pendientes-modal" class="modal-lateral hidden">
+      <div class="modal-header">
+          <h2>Chats Pendientes</h2>
+          <button class="botones" id="chat-pendientes-close">X</button>
+      </div>
+      <div id="chat-pendientes-body" class="modal-body">
+          <p style="color:#888;text-align:center;margin-top:30px;">Cargando chats...</p>
+      </div>
+  </div>
+
+  <!-- Modal del chat seleccionado -->
+<div id="chat-modal" class="modal-chat hidden">
+    <div class="modal-header">
+        <h2 id="chat-title">Chat con <span id="chat-usuario"></span></h2>
+        <button class="botones" id="chat-close">X</button>
+    </div>
+    <div id="chat-body" class="modal-body">
+        <p style="color:#888;text-align:center;margin-top:30px;">Cargando mensajes...</p>
+    </div>
+    <div class="modal-footer">
+        <input type="text" id="chat-input" placeholder="Escribe tu mensaje..." autocomplete="off" />
+        <button id="chat-send" class="botones">Enviar</button>
+        <br>
+    </div>
+    
+    <button id="cotizacion-btn" class="botones">Ingresa datos de cotización</button>
+</div>
+
+<!-- Modal de cotización -->
+<div class="modal-cotizacion-container hidden">
+  <div id="cotizacion-modal" class="modal-cotizacion hidden">
+    <div class="modal-header">
+      <h2>Cotización para <span id="cotizacion-producto"></span></h2>
+      <button class="botones" id="cotizacion-close">X</button>
+    </div>
+    <div class="modal-body">
+      <label for="cotizacion-precio">Precio cotizado:</label>
+      <input type="number" id="cotizacion-precio" min="1" step="0.01" required>
+      <label for="cotizacion-detalles">Detalles de la cotización:</label>
+      <textarea id="cotizacion-detalles" required></textarea>
+    </div>
+    <div class="modal-footer">
+      <button id="cotizacion-enviar" class="botones">Enviar Cotización</button>
+    </div>
+  </div>
+</div>
+
+
+<script src="cotizacion.js"></script>
+<script src="perfilvendedor.js"></script>
 </body>
 </html>

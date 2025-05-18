@@ -22,9 +22,10 @@ $descripcion = trim($_POST['descripcion'] ?? '');
 $precio = floatval($_POST['precio'] ?? 0);
 $stock = intval($_POST['stock'] ?? 0);
 $catsPost = $_POST['categorias'] ?? [];
+$tipo = trim($_POST['metodo_venta'] ?? '');
 
 // Validaciones 
-if (empty($nombre) || empty($descripcion) || $precio <= 0 || $stock < 0 || empty($catsPost)) {
+if (empty($nombre) || empty($descripcion) || $precio <= 0 || $stock < 0 || empty($catsPost) || empty($tipo)) {
     echo json_encode(["success" => false, "error" => "Datos del producto inválidos"]);
     exit;
 }
@@ -82,8 +83,9 @@ try {
         Precio, 
         Stock, 
         ID_CategoriaPrincipal, 
-        ID_Usuario
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        ID_Usuario,
+        tipo
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
 
     $stmtProducto = $conn->prepare($sqlProducto);
     if (!$stmtProducto) {
@@ -93,7 +95,7 @@ try {
     $categoriaPrincipal = $categoriasValidas[0];
     $null = null;
     $stmtProducto->bind_param(
-        "ssbbbsdiii",
+        "ssbbbsdiiis",
         $nombre,
         $descripcion,
         $null,
@@ -103,7 +105,8 @@ try {
         $precio,
         $stock,
         $categoriaPrincipal,
-        $_SESSION['usuario_id']
+        $_SESSION['usuario_id'],
+        $tipo
     );
 
     // Enviar datos BLOB
