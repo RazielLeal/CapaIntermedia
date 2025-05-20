@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Elementos del DOM
     const loginButton = document.querySelector('#btnis a');
     const contLP = document.querySelector('.ContLP');
     const popupIScont = document.querySelector('.popupIScont');
@@ -12,10 +11,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const inputcorreo = document.getElementById('inputcorreo');
     const productosContainer = document.getElementById('productosContainer');
 
-    // Cargar productos al iniciar
     cargarProductosAleatorios();
 
-    // Función para cargar productos aleatorios
     function cargarProductosAleatorios() {
         fetch('get_random_products.php')
             .then(response => {
@@ -51,7 +48,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // Mostrar popup de inicio de sesión
     loginButton.addEventListener('click', function(event) {
         event.preventDefault();
         contLP.classList.add('blur');
@@ -59,7 +55,6 @@ document.addEventListener('DOMContentLoaded', function() {
         overlay.classList.add('show');
     });
 
-    // Cerrar popup
     function closepopup() {
         overlay.classList.remove('show');
         popupIScont.classList.remove('show-popup');
@@ -69,14 +64,12 @@ document.addEventListener('DOMContentLoaded', function() {
     overlay.addEventListener('click', closepopup);
     cancelISbtn.addEventListener('click', closepopup);
 
-    // Mostrar/Ocultar contraseña
     checkboxContainer.addEventListener('click', function() {
         const isChecked = checkboxContainer.classList.toggle('checked');
         inputcontra.type = isChecked ? 'text' : 'password';
         cambiartexto.textContent = isChecked ? 'Ocultar contraseña' : 'Mostrar contraseña';
     });
 
-    // Manejo del login
     btnformis.addEventListener('click', function() {
         const correo = inputcorreo.value.trim();
         const contrasena = inputcontra.value.trim();
@@ -97,7 +90,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!response.ok) throw new Error('Error en la respuesta del servidor');
             return response.json();
         })
-        // Reemplaza la parte del login en index.js con esto:
 .then(data => {
     if (data.success) {
         sessionStorage.setItem('username', data.username);

@@ -3,7 +3,6 @@ require_once 'conexion.php';
 
 header('Content-Type: application/json');
 
-// Obtener datos del formulario
 $current_username = $_POST['current_username'] ?? '';
 $nombre = $_POST['nombre'] ?? null;
 $apellidoP = $_POST['apellidoP'] ?? null;
@@ -11,7 +10,6 @@ $apellidoM = $_POST['apellidoM'] ?? null;
 $username = $_POST['username'] ?? null;
 $genero = $_POST['genero'] ?? null;
 
-// Procesar imagen de avatar si se subió
 $avatar = null;
 if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
     $avatar = file_get_contents($_FILES['avatar']['tmp_name']);
@@ -19,7 +17,6 @@ if (isset($_FILES['avatar']) && $_FILES['avatar']['error'] === UPLOAD_ERR_OK) {
 
 $conn = conectarDB();
 
-// Construir la consulta SQL dinámicamente
 $sql = "UPDATE Usuario SET ";
 $params = [];
 $types = '';
@@ -44,7 +41,6 @@ if (!empty($apellidoM)) {
 }
 
 if (!empty($username)) {
-    // Verificar si el nuevo username ya existe
     $check_stmt = $conn->prepare("SELECT ID FROM Usuario WHERE Nickname = ? AND Nickname != ?");
     $check_stmt->bind_param("ss", $username, $current_username);
     $check_stmt->execute();
@@ -83,7 +79,6 @@ $types .= 's';
 
 $stmt = $conn->prepare($sql);
 
-// Vincular parámetros dinámicamente
 $bind_names[] = $types;
 for ($i = 0; $i < count($params); $i++) {
     $bind_name = 'bind' . $i;

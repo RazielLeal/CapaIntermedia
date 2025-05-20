@@ -14,8 +14,9 @@ CREATE TABLE Usuario (
     Nacimiento DATE NOT NULL,
     Rol ENUM('Admin', 'Usuario', 'Vendedor') DEFAULT 'Usuario',
     Avatar LONGBLOB,
-    Genero ENUM('Masculino', 'Femenino)
-); 
+    Genero ENUM('Masculino', 'Femenino'),
+    Estatus ENUM('Publico', 'Privado') DEFAULT 'Publico' NOT NULL
+);
 
 -- Tabla Categoria
 CREATE TABLE Categoria (
@@ -51,13 +52,13 @@ CREATE TABLE Producto (
     Vendidos INT DEFAULT 0,
     Calificacion DECIMAL(3,2) DEFAULT 0.0,
     Comentarios TEXT,
-    Status ENUM('Aceptado', 'No aceptado', 'Rechazado') DEFAULT 'No aceptado',
+    Status ENUM('Aceptado', 'No aceptado', 'Rechazado', 'Eliminado') DEFAULT 'No aceptado',
     ID_CategoriaPrincipal INT,
     ID_Usuario INT,
+    tipo ENUM('Cotizacion', 'Venta') NOT NULL DEFAULT 'Venta',  
     FOREIGN KEY (ID_CategoriaPrincipal) REFERENCES Categoria(ID),
     FOREIGN KEY (ID_Usuario) REFERENCES Usuario(ID)
 );
-
 
 -- Muchos Productos en Muchas Listas
 CREATE TABLE Lista_Producto (
@@ -107,9 +108,11 @@ CREATE TABLE Mensajes (
     Fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     ID_Usuario INT,
     ID_Chat INT,
+    Estado ENUM('Activa', 'InactivaPositiva', 'InactivaNegativa') DEFAULT NULL, 
     FOREIGN KEY (ID_Usuario) REFERENCES Usuario(ID),
     FOREIGN KEY (ID_Chat) REFERENCES Chat(ID)
 );
+
 
 -- Tabla Multimedia
 CREATE TABLE Multimedia (
@@ -117,4 +120,20 @@ CREATE TABLE Multimedia (
     Archivo VARCHAR(255) NOT NULL,
     ID_Producto INT,
     FOREIGN KEY (ID_Producto) REFERENCES Producto(ID)
+);
+
+
+
+--- Tabla Venta (Muchos a Muchos entre Usuario y Producto)
+CREATE TABLE Venta (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    ID_Usuario INT NOT NULL,
+    ID_Producto INT NOT NULL,
+    Cantidad INT NOT NULL,
+    PrecioTotal DECIMAL(10,2) NOT NULL,
+    Comentario TEXT DEFAULT NULL,
+    Calificacion DECIMAL(2,1) DEFAULT NULL,
+    Fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (ID_Usuario) REFERENCES Usuario(ID) ON DELETE CASCADE,
+    FOREIGN KEY (ID_Producto) REFERENCES Producto(ID) ON DELETE CASCADE
 );

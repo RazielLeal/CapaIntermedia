@@ -1,11 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
     const categoriaForm = document.getElementById('categoriaForm');
 
-    // Manejar envío del formulario
     categoriaForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        // Validar campos antes de enviar
         const nombre = document.getElementById('nombreCategoria').value.trim();
         const descripcion = document.getElementById('descripcionCategoria').value.trim();
         
@@ -28,9 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(data => {
             if (data.success) {
-                // Mostrar mensaje de éxito
                 alert('Categoría Creada con Éxito');
-                // Redirigir después de aceptar el mensaje
                 window.location.href = 'mainadministrador.html';
             } else {
                 throw new Error(data.error || 'Error desconocido al crear categoría');

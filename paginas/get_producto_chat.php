@@ -4,7 +4,6 @@ session_start();
 require 'conexion.php';
 $conn = conectarDB();
 
-// Verificar que el parámetro `id_chat` se ha recibido correctamente
 if (!isset($_GET['id_chat'])) {
     echo json_encode(["success" => false, "error" => "ID de chat no proporcionado."]);
     exit();
@@ -12,7 +11,6 @@ if (!isset($_GET['id_chat'])) {
 
 $id_chat = intval($_GET['id_chat']);
 
-// Obtener el ID del producto asociado al chat
 $sqlGetProducto = "SELECT id_producto FROM chat WHERE id_chat = ?";
 $stmtGetProducto = $conn->prepare($sqlGetProducto);
 $stmtGetProducto->bind_param("i", $id_chat);
@@ -26,7 +24,6 @@ if (!$id_producto) {
     exit();
 }
 
-// Obtener detalles del producto
 $sqlGetDetalles = "SELECT p.ID, p.Nombre, p.Descripcion, p.Precio, p.Stock, p.Vendidos, u.Nombre as Vendedor
                    FROM Producto p
                    LEFT JOIN usuario u ON p.ID_Usuario = u.ID

@@ -20,7 +20,6 @@ if (!in_array($data['newStatus'], $allowedStatuses)) {
 
 $conn = conectarDB();
 
-// Verificar que el producto existe y está en estado "No aceptado"
 $checkQuery = "SELECT Status FROM Producto WHERE ID = ?";
 $checkStmt = $conn->prepare($checkQuery);
 $checkStmt->bind_param("i", $data['productId']);
@@ -38,7 +37,6 @@ if ($product['Status'] != 'No aceptado') {
     exit();
 }
 
-// Actualizar el estado
 $updateQuery = "UPDATE Producto SET Status = ? WHERE ID = ?";
 $updateStmt = $conn->prepare($updateQuery);
 $updateStmt->bind_param("si", $data['newStatus'], $data['productId']);

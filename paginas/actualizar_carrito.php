@@ -40,15 +40,14 @@ if (!in_array($nuevoEstado, ['Pendiente', 'Comprado', 'Cancelado'])) {
 try {
     $conn->begin_transaction();
 
-    // 1. Actualizar estado del carrito
     $update = "UPDATE Carrito SET Status = ? WHERE ID_Usuario = ? AND Status = 'Pendiente'";
     $stmt = $conn->prepare($update);
     $stmt->bind_param("si", $nuevoEstado, $usuarioId);
     $stmt->execute();
 
-    // 2. Si es una compra, actualizar stock y vendidos
+ 
     if ($nuevoEstado === 'Comprado') {
-        // Obtener items del carrito
+ 
         $query = "SELECT ID_Producto, Cantidad FROM Carrito WHERE ID_Usuario = ? AND Status = 'Comprado'";
         $stmt = $conn->prepare($query);
         $stmt->bind_param("i", $usuarioId);
@@ -56,7 +55,6 @@ try {
         $result = $stmt->get_result();
         
         while ($row = $result->fetch_assoc()) {
-            // Actualizar producto
             $updateProducto = "UPDATE Producto SET Stock = Stock - ?, Vendidos = Vendidos + ? WHERE ID = ?";
             $stmtUpdate = $conn->prepare($updateProducto);
             $stmtUpdate->bind_param("iii", $row['Cantidad'], $row['Cantidad'], $row['ID_Producto']);

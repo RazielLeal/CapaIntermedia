@@ -3,22 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markline - Inicio</title>
+    <title>Markline - Inicio Vendedor</title>
     <link rel="stylesheet" href="mainvendedor.css">
     <style>
-        #cart-modal {
+        main {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 20px auto;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .dashboard-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+        .dashboard-section h2 {
+            color: #333;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        .filters label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .filters select, .filters input[type="date"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+            min-width: 150px;
+        }
+        .filters button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .filters button:hover {
+            background-color: #0056b3;
+        }
+
+        #grouped-sales-results table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        #grouped-sales-results th, #grouped-sales-results td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        #grouped-sales-results th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        #grouped-sales-results tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        #grouped-sales-results tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        #detailed-sales-products {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .sold-product-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out;
+        }
+        .sold-product-card:hover {
+            transform: translateY(-5px);
+        }
+        .sold-product-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+        }
+        .sold-product-card-info {
+            padding: 15px;
+        }
+        .sold-product-card-info h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            color: #333;
+        }
+        .sold-product-card-info p {
+            margin: 5px 0;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        .pagination button {
+            padding: 8px 12px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .pagination button.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        #product-details-modal {
             display: none;
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             background: white;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            z-index: 1000;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            width: 90%;
+            max-width: 700px;
+            border-radius: 10px;
+            max-height: 90vh;
+            overflow-y: auto;
         }
-        #cart-modal button {
-            margin-top: 10px;
+        #product-details-modal h3 {
+            margin-top: 0;
+            color: #007bff;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        #product-details-content div {
+            margin-bottom: 10px;
+        }
+        #product-details-content p {
+            margin: 5px 0;
+        }
+        .sale-entry {
+            border: 1px solid #f0f0f0;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        .sale-entry strong {
+            color: #333;
+        }
+
+        #current-products-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .product-item-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            padding: 15px;
+        }
+        .product-item-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .product-item-card h3 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-size: 1.2em;
+            color: #333;
+        }
+        .product-item-card p {
+            margin: 5px 0;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .product-item-card .stock-info {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .product-item-card .stock-info.low-stock {
+            color: #dc3545;
         }
     </style>
 </head>
@@ -28,8 +225,6 @@
         <nav>
             <button class="botones" onclick="location.href='publicar.html'">Publicar Producto</button>
             <button class="botones" onclick="location.href='perfilvendedor.html'">Ver Perfil</button>
-            <!-- <button class="botones" onclick="openCart()"> 🛒 -->
-            </button>
         </nav>
     </header>
 
@@ -38,52 +233,122 @@
         <p id="user-name"></p>
     </section>
 
-    <div id="cart-modal">
-        <p>Este es tu carrito de compras.</p>
-        <button onclick="closeCart()">Salir</button>
+    <div id="product-details-modal">
+        <h3 id="modal-product-name"></h3>
+        <div id="product-details-content">
+        </div>
+        <button onclick="document.getElementById('product-details-modal').style.display = 'none';">Cerrar</button>
     </div>
 
-    <script>
-        function openCart() {
-            document.getElementById('cart-modal').style.display = 'block';
-        }
-        
-        function closeCart() {
-            document.getElementById('cart-modal').style.display = 'none';
-        }
+    <main>
+        <section class="dashboard-section">
+            <h2>Panel de Ventas</h2>
+            <div class="filters">
+                <div>
+                    <label for="filter-start-date">Fecha Inicio:</label>
+                    <input type="date" id="filter-start-date">
+                </div>
+                <div>
+                    <label for="filter-end-date">Fecha Fin:</label>
+                    <input type="date" id="filter-end-date">
+                </div>
+                <div>
+                    <label for="filter-category-sales">Categoría:</label>
+                    <select id="filter-category-sales">
+                        <option value="">Todas</option>
+                    </select>
+                </div>
+                <button onclick="loadSalesData()">Aplicar Filtros</button>
+            </div>
 
+            <div id="grouped-sales-section">
+                <h3>Consulta Agrupada de Ventas</h3>
+                <div id="grouped-sales-results">
+                    <p>Cargando datos agrupados...</p>
+                </div>
+            </div>
+
+            <div id="detailed-sales-section">
+                <h3>Consulta Detallada de Productos Vendidos</h3>
+                <div id="detailed-sales-products">
+                    <p>Cargando productos vendidos...</p>
+                </div>
+                <div class="pagination" id="detailed-sales-pagination">
+                </div>
+            </div>
+        </section>
+
+        <hr>
+
+        <section class="dashboard-section">
+            <h2>Productos Actuales en Venta</h2>
+            <div class="filters">
+                <div>
+                    <label for="filter-category-products">Categoría:</label>
+                    <select id="filter-category-products">
+                        <option value="">Todas</option>
+                    </select>
+                </div>
+                <button onclick="loadCurrentProducts()">Aplicar Filtro</button>
+            </div>
+            <div id="current-products-list">
+                <p>Cargando productos actuales...</p>
+            </div>
+        </section>
+    </main>
+
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
             const username = sessionStorage.getItem('username');
             const userNameElement = document.getElementById('user-name');
             const profilePhoto = document.getElementById('profile-photo');
-
+            
             if (username) {
-                userNameElement.textContent = username;
+                userNameElement.textContent = username; 
 
                 fetch(`login.php?user=${encodeURIComponent(username)}`)
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok ' + response.statusText);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         if (data.success) {
-                            userNameElement.textContent = data.username;
+                            userNameElement.textContent = data.username || username; 
 
                             if (data.photo) {
                                 profilePhoto.src = 'data:image/jpeg;base64,' + data.photo;
                             } else {
                                 profilePhoto.alt = 'Avatar no disponible';
                             }
+                            if (data.id) {
+                                sessionStorage.setItem('userId', data.id); 
+                                loadCategories();
+                                loadSalesData(); 
+                                loadCurrentProducts();
+                            } else {
+                                console.error('El ID de usuario no fue proporcionado por login.php');
+                                alert('Error: No se pudo obtener el ID de usuario para las operaciones.');
+                            }
+
                         } else {
-                            alert('Error al cargar el usuario.');
+                            alert('Error al cargar los datos del usuario: ' + (data.error || 'Desconocido'));
+
+                            window.location.href = 'index.html'; 
                         }
                     })
                     .catch(error => {
                         console.error('Error al cargar los datos del usuario:', error);
                         alert('No se pudo cargar la información del usuario.');
+                        window.location.href = 'index.html';
                     });
             } else {
-                alert('No hay usuario registrado en la sesión.');
+                alert('No hay usuario registrado en la sesión. Redirigiendo al inicio de sesión.');
                 window.location.href = 'index.html';
             }
         });
     </script>
+    <script src="vendedor_dashboard.js"></script>
 </body>
 </html>

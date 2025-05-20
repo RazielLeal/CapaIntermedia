@@ -29,7 +29,6 @@ try {
     $result = $stmt->get_result();
     $products = $result->fetch_all(MYSQLI_ASSOC);
 
-    // Forzar precios como tipo numérico
     foreach ($products as &$p) {
         $p['Precio'] = (float)$p['Precio'];
         $p['Calificacion'] = (int)$p['Calificacion'];

@@ -71,7 +71,6 @@
     <header>
         <h1><a href="mainadministrador.html">Markline</a></h1>
         <nav>
-            <button class="botones" onclick="location.href='perfiladmin.html'"><i class="fas fa-user-cog"></i> Perfil</button>
             <button class="botones" onclick="location.href='mainadministrador.html'"><i class="fas fa-arrow-left"></i> Volver</button>
         </nav>
     </header>
@@ -155,7 +154,6 @@
                 });
         }
 
-        // Renderizar productos
         function renderProducts(products, status) {
             const container = document.getElementById(`${status}-products`);
             container.innerHTML = '';
@@ -214,7 +212,6 @@
             });
         }
 
-        // Actualizar estado del producto
         function updateProductStatus(productId, newStatus) {
             if (!confirm(`¿Estás seguro de querer ${newStatus === 'Aceptado' ? 'aceptar' : 'rechazar'} este producto?`)) {
                 return;
@@ -247,7 +244,6 @@
             });
         }
 
-        // Eliminar producto
         function deleteProduct(productId) {
             if (!confirm('¿Estás seguro de querer eliminar este producto permanentemente?')) {
                 return;
@@ -277,7 +273,6 @@
             });
         }
 
-        // Cargar datos del usuario al iniciar
         document.addEventListener('DOMContentLoaded', function() {
             const username = sessionStorage.getItem('username');
             const userNameElement = document.getElementById('user-name');
@@ -296,7 +291,6 @@
                         }
                     });
 
-                // Cargar productos pendientes por defecto
                 loadProducts('pending');
             } else {
                 alert('No hay usuario registrado en la sesión.');

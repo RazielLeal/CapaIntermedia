@@ -6,19 +6,16 @@ require_once 'conexion.php';
 
 $conn = conectarDB();
 
-// Obtener parámetros de paginación
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
-$limit = isset($_GET['limit']) ? intval($_GET['limit']) : 8; // Default a 8 por página
+$limit = isset($_GET['limit']) ? intval($_GET['limit']) : 8;
 
 $offset = ($page - 1) * $limit;
 
 try {
-    // Consulta para obtener el total de productos (para la paginación)
     $countSql = "SELECT COUNT(ID) AS total FROM Producto WHERE Status = 'Aceptado'";
     $countResult = $conn->query($countSql);
     $totalItems = $countResult->fetch_assoc()['total'];
 
-    // Consulta para obtener los productos populares con paginación
     $sql = "
         SELECT
             ID,

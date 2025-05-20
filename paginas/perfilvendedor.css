@@ -1,6 +1,6 @@
-:root{
-    --principal: rgb(116, 108, 0); 
-    --secundario: rgb(196, 186, 92); 
+:root {
+    --principal: rgb(116, 108, 0);
+    --secundario: rgb(196, 186, 92);
     --terciario: rgb(245, 232, 157);
     --blanco: rgb(255, 255, 255);
     --fondo: rgb(255, 255, 255);
@@ -10,14 +10,13 @@
     --sombra2: rgba(50, 72, 97, 0.568);
 }
 
-body, html {
+body,
+html {
     font-family: 'Courier New', Courier, monospace;
     font-size: 20px;
     width: 100%;
     height: 100%;
     background-color: var(--fondo);
-    background-repeat: no-repeat;
-    background-size: 1920px 1080px;
 }
 
 header {
@@ -69,7 +68,7 @@ header {
     object-fit: cover;
 }
 
-.containerdebotones{
+.containerdebotones {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -77,14 +76,13 @@ header {
     width: 100%;
     height: 100%;
 }
+
+
 .botones {
     border-radius: 10px;
     border: none;
     padding: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 90%;
+    width: max-content;
     height: 30px;
     font-size: 15px;
     font-family: inherit;
@@ -93,7 +91,12 @@ header {
     background-color: var(--blanco);
 }
 
-.botonesgrandes{
+
+.botones:hover {
+    transform: translateY(-2px);
+}
+
+.botonesgrandes {
     border-radius: 10px;
     border: none;
     padding: 10px 5px;
@@ -102,26 +105,28 @@ header {
     align-items: center;
     justify-content: center;
     width: 50%;
-    min-height: 70px;
-    font-size: 15px;
+    min-height: 1%;
+    font-size: 12px;
     font-family: inherit;
     box-shadow: 0 5px 10px 3px var(--sombra2);
     cursor: pointer;
     background-color: var(--blanco);
     gap: 5px;
+    position: relative; 
 }
 
-#mensajes-btn{
+#mensajes-btn {
     transition: transform 0.2s ease;
 }
+
 #mensajes-btn:hover {
-    transform: scale(1.06); /* ~3px bigger for a 50px button */
+    transform: scale(1.06);
 }
 
 .modal-chat {
     position: fixed;
     bottom: 0;
-    right: -400px; /* Inicialmente oculto */
+    right: -400px;
     width: 350px;
     height: 80vh;
     background: var(--fondo);
@@ -155,20 +160,27 @@ header {
     color: var(--letrados);
     max-height: 60vh;
     overflow-y: auto;
+    display: flex; 
+    flex-direction: column; 
 }
 
 .chat-message {
     background: var(--terciario);
     padding: 10px;
-    margin: 10px 0;
-    border-radius: 5px;
-    box-shadow: 0 3px 6px var(--sombra);
+    margin: 5px 0;
+    border-radius: 15px; 
+    box-shadow: 0 1px 3px var(--sombra);
     color: black;
+    max-width: 85%; 
+    word-wrap: break-word; 
+    align-self: flex-start; 
 }
+
 .chat-message.user {
     background: var(--principal);
     color: var(--blanco);
     text-align: right;
+    align-self: flex-end;
 }
 
 .modal-footer {
@@ -177,7 +189,7 @@ header {
     border-top: 1px solid var(--principal);
 }
 
-#chat-close{
+#chat-close {
     background: #e74c3c;
     border: none;
     padding: 5px 10px;
@@ -190,6 +202,7 @@ header {
     height: 30px;
     width: 30px;
 }
+
 #chat-input {
     flex: 1;
     padding: 10px;
@@ -215,11 +228,13 @@ header {
     max-height: 64px;
 }
 
-.botonesgrandes span, .botonesgrandes p {
+.botonesgrandes span,
+.botonesgrandes p {
     margin: 0;
     padding: 0;
     text-align: center;
 }
+
 a {
     text-decoration: none;
     color: inherit;
@@ -227,33 +242,31 @@ a {
 
 .notificacion {
     position: absolute;
-    top: 5px;
-    right: 5px;
+    top: -5px;
+    right: -5px; 
     background-color: red;
     color: white;
     font-size: 12px;
     font-weight: bold;
-    padding: 5px 8px;
+    padding: 3px 7px; 
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     min-width: 20px;
     min-height: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    z-index: 10; 
 }
 
 .hidden {
     display: none;
 }
 
-.botonesgrandes {
-    position: relative; /* Para posicionar la burbuja respecto al botón */
-}
-
 .modal-lateral {
     position: fixed;
     top: 30px;
-    right: -350px; /* Inicialmente oculto */
+    right: -350px;
     width: 300px;
     height: 90vh;
     background: var(--fondo);
@@ -265,39 +278,40 @@ a {
     padding: 15px;
     border-left: 4px solid var(--principal);
     border-radius: 10px 0 0 10px;
+    z-index: 100; 
 }
 
 .modal-lateral.visible {
     right: 0;
 }
 
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
+.modal-lateral .modal-header { 
     background: var(--secundario);
     color: var(--blanco);
-    font-weight: bold;
+    padding: 10px 15px;
     border-bottom: 3px solid var(--principal);
+    border-radius: 8px 0 0 0; 
 }
 
-.modal-header h2 {
+
+.modal-lateral .modal-header h2 {
     margin: 0;
     font-size: 18px;
     color: var(--blanco);
 }
 
 #chat-pendientes-close {
-    background: var(--terciario);
+    background: #e74c3c; 
     border: none;
     padding: 5px 10px;
     font-size: 16px;
     cursor: pointer;
-    color: var(--principal);
+    color: white;
     border-radius: 5px;
     font-weight: bold;
     box-shadow: 0 2px 5px var(--sombra);
+    width: 30px;
+    height: 30px;
 }
 
 .modal-body {
@@ -312,7 +326,6 @@ a {
     color: var(--letrauno);
 }
 
-/* Mejorando la apariencia de los chats pendientes */
 .chat-pendiente {
     background: var(--terciario);
     padding: 10px;
@@ -322,6 +335,7 @@ a {
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 .chat-pendiente:hover {
     transform: scale(1.03);
     box-shadow: 0 6px 16px var(--sombra2);
@@ -337,81 +351,131 @@ a {
     font-size: 13px;
 }
 
-#chat-pendientes-close{
-    top: 10px;
-    right: 10px;
-    background-color: #e74c3c;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 5px;
-    width: 30px;
-    height: 30px;
-}
-
-#cotizacion-btn{
+#cotizacion-btn {
     display: flex;
     align-self: center;
     justify-self: center;
 }
 
-#cotizacion-close{
+#cotizacion-close {
     background: #e74c3c;
     width: 30px;
     height: 30px;
-}
-.modal-cotizacion-container .modal-cotizacion {
-    position: fixed;
-    bottom: 10%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 320px; /* 🔹 Reducir el ancho */
-    background: white;
-    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease-in-out;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
     display: flex;
-    flex-direction: column;
-    border-radius: 10px;
-    padding: 15px;
+    align-items: center;
+    justify-content: center;
 }
 
-.modal-cotizacion-container .modal-header {
-    font-size: 16px;
+.modal-cotizacion-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal-cotizacion-container.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-cotizacion {
+    background: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+    padding: 20px; 
+    width: 90%;
+    max-width: 380px;
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
+}
+
+.modal-cotizacion-container.visible .modal-cotizacion {
+    transform: translateY(0);
+}
+
+.modal-cotizacion .modal-header {
+    font-size: 18px; 
     font-weight: bold;
     padding-bottom: 10px;
+    margin-bottom: 15px; 
+    border-bottom: 1px solid #eee;
+    color: #333; 
+    background: none; 
 }
 
-.modal-cotizacion-container .modal-body {
+.modal-cotizacion .modal-header h2 {
+    font-size: 1.2em; 
+    color: var(--principal); 
+}
+
+.modal-cotizacion .modal-body {
     display: flex;
     flex-direction: column;
-    font-size: 14px; /* 🔹 Reducir tamaño del texto */
+    font-size: 15px;
+    padding: 0;
 }
 
-.modal-cotizacion-container .modal-footer {
+.modal-cotizacion .modal-footer {
     display: flex;
     justify-content: flex-end;
+    padding-top: 15px;
+    border-top: 1px solid #eee;
+    margin-top: 20px;
 }
 
-.modal-cotizacion-container #cotizacion-precio {
-    width: 100%;
-    padding: 6px;
-    font-size: 14px; /* 🔹 Reducir tamaño de input */
+.modal-cotizacion #cotizacion-precio,
+.modal-cotizacion #cotizacion-detalles {
+    width: calc(100% - 20px); 
+    padding: 10px;
+    font-size: 1em;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
 }
 
-.modal-cotizacion-container #cotizacion-detalles {
-    width: 100%;
-    height: 80px; /* 🔹 Disminuir altura */
-    resize: none;
-    font-size: 14px;
-}
-
-
-#cotizacion-detalles {
-    resize: none; /* Evita que el textarea se pueda modificar de tamaño */
+.modal-cotizacion #cotizacion-detalles {
     height: 100px;
+    resize: vertical; 
+}
+
+.modal-cotizacion button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
     width: 100%;
 }
+
+.modal-cotizacion button:hover {
+    background-color: #218838;
+}
+
+#cotizacion-producto {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: var(--principal);
+    text-align: center;
+}
+
 #editar-btn {
     padding: 10px;
     border: none;
@@ -425,6 +489,7 @@ a {
     border: none;
     cursor: pointer;
     border-radius: 5px;
+    color: white; 
 }
 
 #listas-btn {
@@ -433,18 +498,21 @@ a {
     border: none;
     cursor: pointer;
     border-radius: 5px;
+    color: #333; 
 }
 
 .publicaciones {
     background-color: var(--terciario);
     padding: 20px;
     border-radius: 15px;
+    margin-top: 20px; 
 }
 
 .publicaciones h2 {
     font-family: inherit;
-    margin: 0px 0px 15px 0px;
-    padding: 0px;
+    margin: 0 0 15px 0;
+    padding: 0;
+    color: var(--principal); 
 }
 
 .filtros {
@@ -452,6 +520,7 @@ a {
     gap: 15px;
     margin-bottom: 20px;
     flex-wrap: wrap;
+    justify-content: center; 
 }
 
 .filtro-select {
@@ -460,10 +529,12 @@ a {
     border: 1px solid var(--principal);
     background-color: var(--blanco);
     font-family: inherit;
-    font-size: 0.8em;
+    font-size: 0.9em; 
     cursor: pointer;
     flex: 1;
-    min-width: 150px;
+    min-width: 160px; 
+    max-width: 250px;
+    box-sizing: border-box;
 }
 
 .filtro-select:focus {
@@ -471,42 +542,53 @@ a {
     box-shadow: 0 0 0 2px var(--secundario);
 }
 
-.grid {
+.productos { 
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 30px; 
     margin-top: 20px;
+    padding: 0; 
 }
 
-.producto {
+.producto-simple { 
     background-color: white;
-    padding: 10px;
+    padding: 15px;
     text-align: center;
     border-radius: 10px;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     font-family: inherit;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    transition: transform 0.2s ease-in-out;
+}
+
+.producto-simple:hover {
+    transform: translateY(-5px);
+}
+
+.producto-simple h3 {
+    margin: 5px 0 5px 0;
+    font-size: 1.1em;
+    color: var(--principal);
 }
 
 .producto-imagen {
-    width: 160px;
-    height: 160px;
+    width: 100%; 
+    height: 180px; 
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 10px;
+    margin-bottom: 5px; 
     overflow: hidden;
-    border-radius: 0;
+    border-radius: 5px; 
     background-color: #f5f5f5;
 }
 
 .producto-imagen img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    border-radius: 0;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; 
+    border-radius: 5px;
 }
 
 .sin-imagen {
@@ -516,45 +598,124 @@ a {
     text-align: center;
 }
 
-.producto-info {
-    width: 100%;
-    padding: 5px;
-}
-
-.producto-info h3 {
-    margin: 5px 0;
-    font-size: 1em;
-    color: var(--principal);
-}
-
 .precio {
     font-weight: bold;
     color: #2a7f2a;
-    margin: 5px 0;
-    font-size: 0.95em;
+    margin: 5px 0; 
+    font-size: 1.1em; 
 }
 
-.categoria {
-    font-style: italic;
-    color: #666;
-    margin: 5px 0;
-    font-size: 0.85em;
+.producto-simple small {
+    color: #555;
+    margin-bottom: 2px; 
+    font-size: 0.9em;
 }
+
+
+.product-actions-form {
+    display: flex;
+    flex-direction: column; 
+    width: 100%;
+    margin-top: 10px; 
+    gap: 8px; 
+    align-items: center;
+}
+
+.stock-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    gap: 5px; 
+    margin: 0; 
+}
+
+.stock-controls .btnmenos,
+.stock-controls .btnmas {
+    background-color: #37a337;
+    color: white;
+    width: 32px; 
+    height: 32px;
+    font-size: 1.1em; 
+    flex-shrink: 0;
+    border-radius: 5px; 
+}
+
+.stock-controls .btnmenos:hover,
+.stock-controls .btnmas:hover {
+    background-color: #2a8a2a;
+}
+
+.stock-controls .cantidadstock {
+    width: 50px; 
+    padding: 6px 4px; 
+    font-size: 0.9em; 
+    text-align: center; 
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.stock-controls .cantidadstock::-webkit-inner-spin-button,
+.stock-controls .cantidadstock::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.action-buttons-group {
+    display: flex;
+    flex-direction: column; 
+    gap: 5px;
+    width: 100%;
+    align-items: center; 
+}
+
+.action-buttons-group .botones {
+    padding: 8px 15px;
+    font-size: 0.95em; 
+    width: 90%;
+    max-width: 250px;
+    margin: 0; 
+}
+
+.action-buttons-group .btnagregar {
+    background-color: #3495d6;
+    color: white;
+}
+.action-buttons-group .btnagregar:hover {
+    background-color: #2a7bb0;
+}
+
+.action-buttons-group .btneliminar {
+    background-color: #d14e4e;
+    color: white;
+}
+.action-buttons-group .btneliminar:hover {
+    background-color: #b03a3a;
+}
+
 
 .paginacion {
     display: flex;
     justify-content: center;
-    gap: 5px;
-    margin-top: 20px;
+    gap: 10px;
+    margin-top: 30px;
+    padding: 10px;
+    border-top: 1px solid #eee;
 }
 
 .paginacion button {
-    padding: 5px 10px;
+    padding: 8px 15px;
     border: none;
-    border-radius: 4px;
+    border-radius: 5px;
     background-color: var(--principal);
     color: white;
     cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+}
+
+.paginacion button:hover:not(:disabled) {
+    background-color: var(--secundario);
 }
 
 .paginacion button.active {
@@ -563,7 +724,7 @@ a {
 }
 
 .paginacion button:disabled {
-    opacity: 0.5;
+    opacity: 0.6;
     cursor: not-allowed;
 }
 
@@ -572,6 +733,7 @@ a {
     color: #666;
     grid-column: 1 / -1;
     padding: 20px;
+    font-size: 1.1em;
 }
 
 .error-message {
@@ -579,84 +741,5 @@ a {
     text-align: center;
     grid-column: 1 / -1;
     padding: 20px;
-}
-
-.agregarstock{
-    display: grid;
-    grid-template-columns: repeat(3,1fr);
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-    row-gap: 20px;
-}
-
-.btnmenos {
-    grid-column: 1/2;
-    background-color: #37a337;
-    width: 30px; /* Adjusted width */
-    height: 30px;
-    align-self: center;
-    justify-self: center;
-}
-
-.cantidadstock {
-    grid-column: 2/3;
-    text-align: center;
-    border-radius: 5px; /* Adjusted for rounded corners */
-    width: 50px; /* Adjusted width */
-    height: 30px;
-    padding: 0px;
-    align-self: center;
-    justify-self: center;
-
-}
-
-.cantidadstock::-webkit-inner-spin-button, 
-.cantidadstock::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-.btnmas{
-    grid-column: 3/4;
-    background-color: #37a337;
-    width: 30px; /* Adjusted width */
-    height: 30px;
-    align-self: center;
-    justify-self: center;
-
-}
-
-.btnagregar{
-    grid-column: 1/4;
-    background-color: #3495d6;
-    width: 100%;
-    height: 30px;
-    align-self: center;
-    justify-self: center;
-}
-
-.btneliminar{
-    grid-column: 1/4;
-    background-color: #d14e4e;
-    width: 100%;
-    height: 30px;
-    align-self: center;
-    justify-self: center;
-
-}
-
-@media (max-width: 768px) {
-    .filtros {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .filtro-select {
-        width: 100%;
-    }
-    
-    .productos-grid {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    }
+    font-weight: bold;
 }

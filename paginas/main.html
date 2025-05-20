@@ -18,7 +18,7 @@
             <button class="botones" onclick="openCart()"> 🛒 Carrito (<span id="cart-count">0</span>)</button>
         </nav>
     </header>
-
+    
     <section id="user-info">
         <img id="profile-photo" alt="Foto de perfil" />
         <p id="user-name"></p>
@@ -73,22 +73,19 @@
     <div id="cart-modal"></div>
 
     <script>
-        const ITEMS_PER_PAGE = 8; // Número de elementos por página
+        const ITEMS_PER_PAGE = 8; 
 
-        // Función para abrir el carrito (sin cambios)
         function openCart() {
             document.getElementById('cart-overlay').style.display = 'block';
             document.getElementById('cart-modal').style.display = 'block';
             updateCartModal();
         }
 
-        // Función para cerrar el carrito (sin cambios)
         function closeCart() {
             document.getElementById('cart-overlay').style.display = 'none';
             document.getElementById('cart-modal').style.display = 'none';
         }
 
-        // Función para actualizar el modal del carrito (MODIFICADA)
         function updateCartModal() {
             const username = sessionStorage.getItem('username');
             if (!username) {
@@ -181,7 +178,6 @@
             });
         }
 
-        // NUEVA FUNCIÓN: Para actualizar la cantidad de un producto en el carrito
         function updateQuantity(carritoId, newQuantity, maxStock) {
             const username = sessionStorage.getItem('username');
             if (!username) {
@@ -190,7 +186,7 @@
             }
 
             if (newQuantity < 1) {
-                removeFromCart(carritoId); // Si la cantidad es 0 o menos, eliminar el producto
+                removeFromCart(carritoId); 
                 return;
             }
 
@@ -200,7 +196,7 @@
             }
 
             fetch('carrito_api.php', {
-                method: 'PUT', // Usamos PUT para actualizar un recurso existente
+                method: 'PUT', 
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'Bearer ' + username
@@ -213,17 +209,14 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Actualizar la cantidad en el modal sin recargar todo el carrito
                     const cantidadSpan = document.getElementById(`cantidad-${carritoId}`);
                     if (cantidadSpan) {
                         cantidadSpan.textContent = newQuantity;
                     }
                     
-                    // Recalcular y actualizar el total del subtotal para ese producto y el total general
-                    // Esto es más eficiente que llamar a updateCartModal() que recarga todo.
-                    updateCartModal(); // Recargamos todo el modal para asegurar que todos los totales y flechas se actualicen correctamente.
-                                        // Si se desea una actualización más granular se podría implementar la lógica aquí.
-                    updateCartCount(); // Actualizar el contador del carrito
+                   updateCartModal(); 
+                                       
+                    updateCartCount();
                 } else {
                     alert('Error al actualizar la cantidad: ' + (data.error || ''));
                 }
@@ -233,7 +226,7 @@
                 alert('Error al actualizar la cantidad');
             });
         }
-
+        
         // Función para eliminar un producto del carrito (sin cambios)
         function removeFromCart(carritoId) {
             const username = sessionStorage.getItem('username');
@@ -266,67 +259,66 @@
             });
         }
 
-        // Función para el proceso de pago (sin cambios)
-        function checkout() {
-            const username = sessionStorage.getItem('username');
-            if (!username) {
-                alert('Debes iniciar sesión para realizar la compra');
-                return;
-            }
+function checkout() {
+    const username = sessionStorage.getItem('username');
+    if (!username) {
+        alert('Debes iniciar sesión para realizar la compra');
+        return;
+    }
 
-            fetch('carrito_api.php', {
-                headers: {
-                    'Authorization': 'Bearer ' + username
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.success || data.carrito.length === 0) {
-                    alert('No hay productos en el carrito');
-                    return;
-                }
-
-                // Verificar stock antes de comprar
-                const sinStock = data.carrito.some(item => item.Cantidad > item.Stock);
-                if (sinStock) {
-                    alert('Algunos productos no tienen suficiente stock');
-                    return;
-                }
-
-                // Actualizar el estado del carrito a "Comprado"
-                fetch('actualizar_carrito.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + username
-                    },
-                    body: JSON.stringify({
-                        nuevoEstado: 'Comprado'
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert('Compra realizada con éxito');
-                        closeCart();
-                        updateCartCount();
-                        loadProducts(); // Recargar productos para actualizar stock
-                    } else {
-                        alert('Error al realizar la compra: ' + (data.error || ''));
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('Error al realizar la compra');
-                });
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error al verificar el carrito');
-            });
+    fetch('carrito_api.php', {
+        headers: {
+            'Authorization': 'Bearer ' + username
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.success || data.carrito.length === 0) {
+            alert('No hay productos en el carrito para procesar el pago.');
+            return;
         }
 
-        // Función para actualizar el contador del carrito (sin cambios)
+        const sinStock = data.carrito.some(item => item.Cantidad > item.Stock);
+        if (sinStock) {
+            alert('Algunos productos en tu carrito exceden el stock disponible. Por favor, ajusta las cantidades.');
+           
+            updateCartModal();
+            return;
+        }
+
+        fetch('carrito_api.php', { 
+            method: 'POST', 
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + username
+            },
+            body: JSON.stringify({
+                action: 'process_payment'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('¡Compra realizada con éxito! Revisa tu historial de compras.');
+                closeCart();
+                updateCartCount(); 
+                loadProducts();
+            } else {
+                alert('Error al realizar la compra: ' + (data.error || 'Mensaje de error desconocido.'));
+                updateCartModal();
+            }
+        })
+        .catch(error => {
+            console.error('Error en la solicitud de pago:', error);
+            alert('Hubo un problema al intentar procesar su pago. Intente de nuevo.');
+        });
+    })
+    .catch(error => {
+        console.error('Error al verificar el carrito antes del pago:', error);
+        alert('Error al verificar los productos en el carrito. Intente de nuevo.');
+    });
+}
+
         function updateCartCount() {
             const username = sessionStorage.getItem('username');
             if (!username) {
@@ -352,30 +344,26 @@
             });
         }
 
-        // **Función para generar controles de paginación**
         function createPaginationControls(currentPage, totalItems, containerId, loadFunction) {
             const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
             const paginationContainer = document.getElementById(containerId);
             paginationContainer.innerHTML = '';
 
             if (totalPages <= 1) {
-                return; // No mostrar paginación si solo hay una página
+                return; 
             }
 
-            const maxVisiblePages = 5; // Número máximo de botones de página visibles
+            const maxVisiblePages = 5; 
 
-            // Botón "Anterior"
             const prevButton = document.createElement('button');
             prevButton.textContent = '←';
             prevButton.disabled = currentPage === 1;
             prevButton.onclick = () => loadFunction(currentPage - 1);
             paginationContainer.appendChild(prevButton);
 
-            // Botones de números de página
             let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
             let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
-            // Ajustar startPage si endPage alcanza el totalPages
             if (endPage - startPage + 1 < maxVisiblePages) {
                 startPage = Math.max(1, endPage - maxVisiblePages + 1);
             }
@@ -418,7 +406,6 @@
                 paginationContainer.appendChild(lastPage);
             }
 
-            // Botón "Siguiente"
             const nextButton = document.createElement('button');
             nextButton.textContent = '→';
             nextButton.disabled = currentPage === totalPages;
@@ -427,7 +414,6 @@
         }
 
 
-        // Función para cargar productos populares (con paginación)
         function loadProducts(page = 1) {
             fetch(`get_popular_products.php?page=${page}&limit=${ITEMS_PER_PAGE}`)
                 .then(response => response.json())
@@ -467,7 +453,6 @@
                 });
         }
 
-        // Función para la búsqueda rápida (sin cambios)
         async function searchAll(query) {
             if (query.length < 2) {
                 document.getElementById('header-search-results').style.display = 'none';
@@ -479,7 +464,6 @@
 
             let allResults = [];
 
-            // Buscar productos
             try {
                 const productResponse = await fetch(`search_products.php?q=${encodeURIComponent(query)}`);
                 const productData = await productResponse.json();
@@ -490,7 +474,6 @@
                 console.error('Error al buscar productos:', error);
             }
 
-            // Buscar usuarios
             try {
                 const userResponse = await fetch(`search_users.php?q=${encodeURIComponent(query)}`);
                 const userData = await userResponse.json();
@@ -530,7 +513,6 @@
                 }
                 resultsContainer.appendChild(productSection);
 
-                // Mostrar resultados de usuarios
                 const userSection = document.createElement('div');
                 userSection.innerHTML = '<h3>Usuarios</h3>';
                 const usersFound = allResults.filter(item => item.type === 'user');
@@ -547,7 +529,7 @@
                         `;
                         item.addEventListener('click', () => {
                             alert(`Ver perfil de ${user.nickname}`);
-                            // window.location.href = `perfil_usuario.html?id=${user.id}`; // Ejemplo de redirección
+                            
                         });
                         userSection.appendChild(item);
                     });
@@ -566,12 +548,11 @@
             }
         }
 
-        // Función para la búsqueda avanzada de productos (con paginación)
         function advancedSearchProducts(page = 1) {
             const query = document.getElementById('product-search-input').value.trim();
             const sortBy = document.getElementById('product-sort-by').value;
             const resultsContainer = document.getElementById('advanced-product-results');
-            resultsContainer.innerHTML = ''; // Limpiar resultados anteriores
+            resultsContainer.innerHTML = ''; 
 
             let url = `advanced_search_products.php?q=${encodeURIComponent(query)}&sort_by=${encodeURIComponent(sortBy)}&page=${page}&limit=${ITEMS_PER_PAGE}`;
 
@@ -612,13 +593,12 @@
                 });
         }
 
-        // Función para la búsqueda avanzada de usuarios (con paginación)
         function advancedSearchUsers(page = 1) {
             const query = document.getElementById('user-search-input').value.trim();
             const roleFilter = document.getElementById('user-role-filter').value;
             const sortBy = document.getElementById('user-sort-by').value;
             const resultsContainer = document.getElementById('advanced-user-results');
-            resultsContainer.innerHTML = ''; // Limpiar resultados anteriores
+            resultsContainer.innerHTML = ''; 
 
             let url = `advanced_search_users.php?q=${encodeURIComponent(query)}&role=${encodeURIComponent(roleFilter)}&sort_by=${encodeURIComponent(sortBy)}&page=${page}&limit=${ITEMS_PER_PAGE}`;
 
@@ -636,8 +616,7 @@
                                 <div class="role" style="color: var(--secundario); font-weight: bold;">Rol: ${user.rol === 'Usuario' ? 'Comprador' : user.rol}</div>
                             `;
                             userElement.addEventListener('click', () => {
-                                alert(`Ver perfil de ${user.nickname}`);
-                                // window.location.href = `perfil_usuario.html?id=${user.id}`; // Ejemplo de redirección
+                                window.location.href = `perfilotro.html?id=${user.id}`;
                             });
                             resultsContainer.appendChild(userElement);
                         });
@@ -656,7 +635,6 @@
                 });
         }
 
-        // Cargar datos del usuario y productos al iniciar
         document.addEventListener('DOMContentLoaded', function() {
             const username = sessionStorage.getItem('username');
             const userNameElement = document.getElementById('user-name');
@@ -674,42 +652,37 @@
                             } else {
                                 profilePhoto.src = 'avatar.png';
                             }
-
-                            // Si el rol es usuario, cargar productos populares
+                            
                             if (data.role === 'Usuario' || data.role === 'Vendedor' || data.role === 'Admin') {
-                                loadProducts(); // Cargar productos populares (primera página)
+                                loadProducts(); 
                                 updateCartCount();
-                                // Cargar todos los productos/usuarios por defecto al cargar la página (primera página)
                                 advancedSearchProducts();
                                 advancedSearchUsers();
                             } else {
-                                // Si no es un rol que pueda ver productos, no cargar.
                                 document.getElementById('productos-populares').style.display = 'none';
                                 document.getElementById('advanced-product-search').style.display = 'none';
                                 document.getElementById('advanced-user-search').style.display = 'none';
                                 alert('Tu rol no tiene permisos para ver el contenido de la tienda.');
                             }
 
-                            // Abrir carrito automáticamente si hay #openCart en la URL
                             if (window.location.hash === '#openCart') {
                                 openCart();
                             }
                         } else {
                             alert('Error al cargar el usuario.');
-                            window.location.href = 'index.html'; // Redirigir si el usuario no es válido
+                            window.location.href = 'index.html';
                         }
                     })
                     .catch(error => {
                         console.error('Error al cargar los datos del usuario:', error);
                         alert('No se pudo cargar la información del usuario.');
-                        window.location.href = 'index.html'; // Redirigir si hay un error de fetch
+                        window.location.href = 'index.html';
                     });
             } else {
                 alert('No hay usuario registrado en la sesión.');
                 window.location.href = 'index.html';
             }
 
-            // Inicializar el buscador rápido
             const searchInput = document.getElementById('header-search-input');
             const searchResults = document.getElementById('header-search-results');
 
@@ -717,20 +690,14 @@
                 searchAll(this.value);
             });
 
-            // Cerrar resultados de búsqueda rápida al hacer clic fuera
             document.addEventListener('click', function(e) {
                 if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
                     searchResults.style.display = 'none';
                 }
             });
 
-            // Event Listeners para la búsqueda avanzada de productos
-            // Al cambiar el input o el filtro, se recarga la primera página
             document.getElementById('product-search-input').addEventListener('input', () => advancedSearchProducts(1));
             document.getElementById('product-sort-by').addEventListener('change', () => advancedSearchProducts(1));
-
-            // Event Listeners para la búsqueda avanzada de usuarios
-            // Al cambiar el input o el filtro, se recarga la primera página
             document.getElementById('user-search-input').addEventListener('input', () => advancedSearchUsers(1));
             document.getElementById('user-role-filter').addEventListener('change', () => advancedSearchUsers(1));
             document.getElementById('user-sort-by').addEventListener('change', () => advancedSearchUsers(1));

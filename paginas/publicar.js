@@ -5,7 +5,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const nombreCategoria = document.getElementById('nombreCategoria');
     const descripcionCategoria = document.getElementById('descripcionCategoria');
 
-    // 1) Cargar categorías dinámicamente
+    const radioVenta = document.getElementById('venta');
+    const radioCotizacion = document.getElementById('cotizacion');
+    const inputPrecio = document.getElementById('precio');
+
     function cargarCategorias() {
         fetch('obtenerCategorias.php')
             .then(response => response.json())
@@ -26,7 +29,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     cargarCategorias();
 
-    // 2) Manejar creación de categorías
     btnCrearCategoria.addEventListener('click', function() {
         const nombre = nombreCategoria.value.trim();
         const desc = descripcionCategoria.value.trim();
@@ -47,8 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(response => response.json())
         .then(data => {
             if (!data.success) throw new Error(data.error || 'Error al crear categoría');
-            
-            // Limpiar campos y actualizar lista
+
             nombreCategoria.value = '';
             descripcionCategoria.value = '';
             cargarCategorias();
@@ -60,7 +61,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // 3) Validación de campos requeridos
     function toggleRequiredFields() {
         if (selectCat.options.length > 0) {
             selectCat.required = true;
@@ -72,17 +72,29 @@ document.addEventListener('DOMContentLoaded', function () {
             descripcionCategoria.required = true;
         }
     }
+    function handleMetodoVentaChange() {
+        if (radioCotizacion.checked) {
+            inputPrecio.value = 0; 
+            inputPrecio.disabled = true;
+            inputPrecio.required = false; 
+        } else { 
+            inputPrecio.disabled = false; 
+            inputPrecio.required = true;
+        }
+    }
 
-    // 4) Manejar envío del formulario principal
+    radioVenta.addEventListener('change', handleMetodoVentaChange);
+    radioCotizacion.addEventListener('change', handleMetodoVentaChange);
+
+    handleMetodoVentaChange(); 
     form.addEventListener('submit', function (event) {
         event.preventDefault();
 
-        // Validación de tamaño de imágenes
         const maxSize = 5 * 1024 * 1024;
         const fotoPrincipal = document.getElementById('fotoPrincipal').files[0];
         const fotoExtra1 = document.getElementById('fotoExtra1').files[0];
         const fotoExtra2 = document.getElementById('fotoExtra2').files[0];
-        
+
         if (fotoPrincipal && fotoPrincipal.size > maxSize) {
             alert('La imagen principal es demasiado grande (máximo 5MB)');
             return;
@@ -96,13 +108,10 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Desactivar botón
         const btnSubmit = document.getElementById('btnpublicar');
         btnSubmit.disabled = true;
-
-        // Enviar formulario
         const formData = new FormData(form);
-        
+
         fetch('publicar.php', {
             method: 'POST',
             body: formData
@@ -114,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(result => {
             if (result.success) {
                 alert('Producto publicado exitosamente');
-                window.location.href = 'mainvendedor.html'; 
+                window.location.href = 'mainvendedor.html';
             } else {
                 throw new Error(result.error || 'Error desconocido');
             }
@@ -128,9 +137,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Event listeners para validación dinámica
     selectCat.addEventListener('change', toggleRequiredFields);
     nombreCategoria.addEventListener('input', toggleRequiredFields);
     descripcionCategoria.addEventListener('input', toggleRequiredFields);
-    toggleRequiredFields(); // Estado inicial
+    toggleRequiredFields(); 
 });

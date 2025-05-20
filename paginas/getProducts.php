@@ -27,7 +27,6 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         exit();
     }
 
-    // Consulta para contar productos
     $countQuery = "SELECT COUNT(*) as total FROM Producto WHERE ID_Usuario = ?";
     $stmtCount = $conn->prepare($countQuery);
     $stmtCount->bind_param("i", $userId);
@@ -36,7 +35,6 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     $total = $totalResult->fetch_assoc()['total'];
     $stmtCount->close();
 
-    // Consulta para obtener productos (ahora usando FotoPrincipal en lugar de Foto)
     $offset = ($page - 1) * $perPage;
     $productQuery = "SELECT ID, Nombre, Descripcion, FotoPrincipal, Precio, Categoria 
                     FROM Producto 
@@ -51,7 +49,6 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
     
     $products = [];
     while ($row = $productsResult->fetch_assoc()) {
-        // Convertir BLOB a base64 directamente
         $imagenBase64 = null;
         if (!empty($row['FotoPrincipal'])) {
             $imagenBase64 = 'data:image/jpeg;base64,' . base64_encode($row['FotoPrincipal']);

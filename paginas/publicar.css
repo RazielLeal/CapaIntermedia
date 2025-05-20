@@ -133,7 +133,6 @@ h2{
 
 
 
-/* CREAR CATEGORIA */
 .nueva-categoria-container {
     background-color: var(--secundario);
     padding: 20px;
@@ -172,7 +171,6 @@ h2{
 
 
 
-/* CREAR CATEGORIA BOTON */
 #btnCrearCategoria {
     background-color: var(--principal);
     color: var(--blanco);

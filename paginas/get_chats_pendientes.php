@@ -4,7 +4,6 @@ session_start();
 require 'conexion.php';
 $conn = conectarDB();
 
-// Verificar autenticación
 if (!isset($_SESSION['usuario_id'])) {
     echo json_encode(["success" => false, "message" => "Usuario no autenticado.", "chats" => []]);
     exit();
@@ -12,7 +11,6 @@ if (!isset($_SESSION['usuario_id'])) {
 
 $id_usuario = intval($_SESSION['usuario_id']);
 
-// Consultar los chats pendientes
 $sql = "SELECT chat.id_chat, usuario.Nombre AS nombre_usuario, 
                (SELECT mensaje FROM mensajes WHERE id_chat = chat.id_chat ORDER BY fecha DESC LIMIT 1) AS ultimo_mensaje
         FROM chat
@@ -37,6 +35,5 @@ while ($row = $result->fetch_assoc()) {
 $stmt->close();
 $conn->close();
 
-// 🚨 Asegurar que solo se envíe JSON y no texto adicional
 echo json_encode(["success" => true, "chats" => $chats]);
 exit();

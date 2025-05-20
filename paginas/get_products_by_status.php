@@ -6,7 +6,6 @@ require_once 'conexion.php';
 
 $status = isset($_GET['status']) ? $_GET['status'] : '';
 
-// Validar los estados permitidos incluyendo "No aceptado"
 $allowedStatuses = ['Aceptado', 'No aceptado', 'Rechazado'];
 if (!in_array($status, $allowedStatuses)) {
     echo json_encode(["success" => false, "error" => "Estado no válido"]);
@@ -15,7 +14,6 @@ if (!in_array($status, $allowedStatuses)) {
 
 $conn = conectarDB();
 
-// Consulta que incluye información del vendedor
 $query = "SELECT p.*, u.Nickname as Vendedor 
           FROM Producto p
           LEFT JOIN Usuario u ON p.ID_Usuario = u.ID
@@ -29,7 +27,6 @@ $result = $stmt->get_result();
 
 $products = [];
 while ($row = $result->fetch_assoc()) {
-    // Procesar imágenes
     $row['FotoPrincipal'] = $row['FotoPrincipal'] ? base64_encode($row['FotoPrincipal']) : null;
     $row['FotoExtra1'] = $row['FotoExtra1'] ? base64_encode($row['FotoExtra1']) : null;
     $row['FotoExtra2'] = $row['FotoExtra2'] ? base64_encode($row['FotoExtra2']) : null;

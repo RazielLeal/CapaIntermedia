@@ -1,6 +1,6 @@
 <?php
 header("Content-Type: application/json");
-header("Access-Control-Allow-Origin: http://localhost:3306"); // Ajusta según tu frontend
+header("Access-Control-Allow-Origin: http://localhost:3306"); 
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type");
 
@@ -14,7 +14,6 @@ if ($conn->connect_error) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Validar campos obligatorios
     $required_fields = ["nombre", "apellidoP", "email", "password", "username", "nacimiento", "rol"];
     foreach ($required_fields as $field) {
 
@@ -28,17 +27,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // Obtener datos del formulario
     $nombre = trim($_POST["nombre"]);
     $apellidoP = trim($_POST["apellidoP"]);
     $apellidoM = trim($_POST["apellidoM"] ?? "");
     $email = trim($_POST["email"]);
-    $password = $_POST["password"]; // Contraseña en texto plano (sin hash)
+    $password = $_POST["password"]; 
     $username = trim($_POST["username"]);
     $nacimiento = $_POST["nacimiento"];
     $rol = $_POST["rol"];
 
-    // Validar formato de email
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         echo json_encode([
             "success" => false, 
@@ -47,7 +44,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    // Verificar si el usuario o correo ya existen
     $check = $conn->prepare("SELECT Nickname, Correo FROM Usuario WHERE Nickname = ? OR Correo = ?");
     $check->bind_param("ss", $username, $email);
     $check->execute();
@@ -65,7 +61,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     $check->close();
 
-    // Insertar en la base de datos (contraseña en texto plano)
     $stmt = $conn->prepare("INSERT INTO Usuario (
         Correo, Contrasena, Nombre, ApellidoPaterno, ApellidoMaterno, 
         Nickname, Nacimiento, Rol

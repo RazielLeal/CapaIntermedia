@@ -42,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             "register_date" => $diaderegistro,
             "photo" => $avatarBase64,
             "role" => $rol,
-            "token" => $id // En producción usar JWT
+            "token" => $id 
         ]);
     } else {
         echo json_encode(["success" => false, "error" => "Credenciales incorrectas"]);

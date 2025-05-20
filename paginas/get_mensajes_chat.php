@@ -9,7 +9,6 @@ if (!isset($_SESSION['usuario_id']) || !isset($_GET['id_chat'])) {
     exit();
 }
 
-//TODO ESTO PARA EL CHAT DEL COMPRADOR
 $id_chat = intval($_GET['id_chat']);
 
 $sql = "SELECT mensajes.mensaje, mensajes.id_usuario  FROM mensajes WHERE mensajes.id_chat = ? ORDER BY fecha ASC";

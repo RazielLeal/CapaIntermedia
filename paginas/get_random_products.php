@@ -9,11 +9,10 @@ if ($conn->connect_error) {
     die(json_encode(['error' => 'Error de conexión: ' . $conn->connect_error]));
 }
 
-// Establecer charset utf8
 $conn->set_charset("utf8");
 
 try {
-    // Consulta para obtener productos aleatorios con status 'Aceptado'
+    
     $sql = "SELECT 
             p.ID, 
             p.Nombre, 
@@ -34,13 +33,11 @@ try {
     $products = [];
     if ($result->num_rows > 0) {
         while($row = $result->fetch_assoc()) {
-            // Procesar imagen BLOB
             $imagen = 'img/placeholder.jpg';
             if (!empty($row['FotoPrincipal'])) {
                 $imagen = 'data:image/jpeg;base64,' . base64_encode($row['FotoPrincipal']);
             }
             
-            // Preparar datos del producto
             $product = [
                 'ID' => $row['ID'],
                 'Nombre' => htmlspecialchars($row['Nombre'], ENT_QUOTES, 'UTF-8'),

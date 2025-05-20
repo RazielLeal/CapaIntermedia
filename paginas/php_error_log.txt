@@ -1,0 +1,108 @@
+[18-May-2025 23:44:23 Europe/Berlin] --- Inicio de registrate.php ---
+[18-May-2025 23:44:23 Europe/Berlin] Datos POST recibidos: Array
+(
+    [nombre] => fsdgdhsdshh
+    [apellidoP] => sgsdgsdhdshsdh
+    [apellidoM] => fdhdfh
+    [email] => fdhfhd3@gmail.comfff
+    [password] => fdjdfj
+    [username] => fdjfdhdfjdfj
+    [genero] => Masculino
+    [nacimiento] => 2025-05-01
+    [rol] => Usuario
+    [estatus] => Publico
+)
+
+[18-May-2025 23:44:23 Europe/Berlin] Datos FILES recibidos: Array
+(
+    [foto] => Array
+        (
+            [name] => Captura de pantalla 2025-05-12 221659.png
+            [full_path] => Captura de pantalla 2025-05-12 221659.png
+            [type] => image/png
+            [tmp_name] => E:\XAMPP\tmp\php501C.tmp
+            [error] => 0
+            [size] => 519299
+        )
+
+)
+
+[18-May-2025 23:44:23 Europe/Berlin] Valores de variables: Nombre=fsdgdhsdshh, ApellidoP=sgsdgsdhdshsdh, Email=fdhfhd3@gmail.comfff, Username=fdjfdhdfjdfj, Genero=Masculino, Rol=Usuario, Estatus=Publico
+[18-May-2025 23:44:23 Europe/Berlin] Avatar cargado: tamaño 519299 bytes.
+[18-May-2025 23:44:23 Europe/Berlin] PHP Fatal error:  Uncaught ArgumentCountError: The number of elements in the type definition string must match the number of bind variables in E:\XAMPP\htdocs\[Progra Web Intermedia]\paginas\registrate.php:120
+Stack trace:
+#0 E:\XAMPP\htdocs\[Progra Web Intermedia]\paginas\registrate.php(120): mysqli_stmt->bind_param('sssssssssbss', 'fdhfhd3@gmail.c...', 'fdjdfj', 'fsdgdhsdshh', 'sgsdgsdhdshsdh', 'fdhdfh', 'fdjfdhdfjdfj', '2025-05-01', 'Usuario', '\x89PNG\r\n\x1A\n\x00\x00\x00\rIHD...', 'Masculino', 'Publico')
+#1 {main}
+  thrown in E:\XAMPP\htdocs\[Progra Web Intermedia]\paginas\registrate.php on line 120
+[18-May-2025 23:44:33 Europe/Berlin] --- Inicio de registrate.php ---
+[18-May-2025 23:44:33 Europe/Berlin] Datos POST recibidos: Array
+(
+    [nombre] => fsdgdhsdshh
+    [apellidoP] => sgsdgsdhdshsdh
+    [apellidoM] => fdhdfh
+    [email] => fdhfhd3@gmail.comfff
+    [password] => fdjdfj
+    [username] => fdjfdhdfjdfj
+    [genero] => Masculino
+    [nacimiento] => 2025-05-01
+    [rol] => Usuario
+    [estatus] => Publico
+)
+
+[18-May-2025 23:44:33 Europe/Berlin] Datos FILES recibidos: Array
+(
+    [foto] => Array
+        (
+            [name] => Ben_7.webp
+            [full_path] => Ben_7.webp
+            [type] => image/webp
+            [tmp_name] => E:\XAMPP\tmp\php7856.tmp
+            [error] => 0
+            [size] => 31510
+        )
+
+)
+
+[18-May-2025 23:44:33 Europe/Berlin] Valores de variables: Nombre=fsdgdhsdshh, ApellidoP=sgsdgsdhdshsdh, Email=fdhfhd3@gmail.comfff, Username=fdjfdhdfjdfj, Genero=Masculino, Rol=Usuario, Estatus=Publico
+[18-May-2025 23:44:33 Europe/Berlin] Avatar cargado: tamaño 31510 bytes.
+[18-May-2025 23:44:33 Europe/Berlin] PHP Fatal error:  Uncaught ArgumentCountError: The number of elements in the type definition string must match the number of bind variables in E:\XAMPP\htdocs\[Progra Web Intermedia]\paginas\registrate.php:120
+Stack trace:
+#0 E:\XAMPP\htdocs\[Progra Web Intermedia]\paginas\registrate.php(120): mysqli_stmt->bind_param('sssssssssbss', 'fdhfhd3@gmail.c...', 'fdjdfj', 'fsdgdhsdshh', 'sgsdgsdhdshsdh', 'fdhdfh', 'fdjfdhdfjdfj', '2025-05-01', 'Usuario', 'RIFF\x0E{\x00\x00WEBPVP8...', 'Masculino', 'Publico')
+#1 {main}
+  thrown in E:\XAMPP\htdocs\[Progra Web Intermedia]\paginas\registrate.php on line 120
+[18-May-2025 23:48:49 Europe/Berlin] --- Inicio de registrate.php ---
+[18-May-2025 23:48:49 Europe/Berlin] Datos POST recibidos: Array
+(
+    [nombre] => dfhfdh
+    [apellidoP] => fdhdfh
+    [apellidoM] => dfhdfh
+    [email] => dfhdfhl@hotmail.com
+    [password] => 4346
+    [username] => dfjfdjghkhg
+    [genero] => Masculino
+    [nacimiento] => 2025-04-09
+    [rol] => Usuario
+    [estatus] => Publico
+)
+
+[18-May-2025 23:48:49 Europe/Berlin] Datos FILES recibidos: Array
+(
+    [foto] => Array
+        (
+            [name] => f2FYGsJPJWLnsnzI3wHO6vQP7LM.jpg
+            [full_path] => f2FYGsJPJWLnsnzI3wHO6vQP7LM.jpg
+            [type] => image/jpeg
+            [tmp_name] => E:\XAMPP\tmp\php5E44.tmp
+            [error] => 0
+            [size] => 33477
+        )
+
+)
+
+[18-May-2025 23:48:49 Europe/Berlin] Valores de variables: Nombre=dfhfdh, ApellidoP=fdhdfh, Email=dfhdfhl@hotmail.com, Username=dfjfdjghkhg, Genero=Masculino, Rol=Usuario, Estatus=Publico
+[18-May-2025 23:48:49 Europe/Berlin] Avatar cargado: tamaño 33477 bytes.
+[18-May-2025 23:48:49 Europe/Berlin] PHP Fatal error:  Uncaught ArgumentCountError: The number of elements in the type definition string must match the number of bind variables in E:\XAMPP\htdocs\[Progra Web Intermedia]\paginas\registrate.php:120
+Stack trace:
+#0 E:\XAMPP\htdocs\[Progra Web Intermedia]\paginas\registrate.php(120): mysqli_stmt->bind_param('sssssssssbss', 'dfhdfhl@hotmail...', '4346', 'dfhfdh', 'fdhdfh', 'dfhdfh', 'dfjfdjghkhg', '2025-04-09', 'Usuario', '\xFF\xD8\xFF\xE0\x00\x10JFIF\x00\x01\x01\x00\x00...', 'Masculino', 'Publico')
+#1 {main}
+  thrown in E:\XAMPP\htdocs\[Progra Web Intermedia]\paginas\registrate.php on line 120

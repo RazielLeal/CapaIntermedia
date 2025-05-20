@@ -4,7 +4,6 @@ session_start();
 require 'conexion.php';
 $conn = conectarDB();
 
-// Verificar autenticación
 if (!isset($_SESSION['usuario_id']) || !isset($_POST['mensaje']) || !isset($_POST['id_chat'])) {
     echo json_encode(["success" => false, "message" => "Datos insuficientes."]);
     exit();
@@ -19,7 +18,6 @@ if ($mensaje === "") {
     exit();
 }
 
-// Insertar mensaje en la base de datos
 $sql_insertar = "INSERT INTO mensajes (id_chat, id_usuario, mensaje, fecha) VALUES (?, ?, ?, NOW())";
 $stmt_insertar = $conn->prepare($sql_insertar);
 $stmt_insertar->bind_param("iis", $id_chat, $id_usuario, $mensaje);

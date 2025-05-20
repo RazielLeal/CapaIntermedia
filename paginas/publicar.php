@@ -12,23 +12,39 @@ if (!isset($_SESSION['usuario_id'])) {
     exit;
 }
 
-require 'conexion.php';
+require 'conexion.php'; 
 $conn = conectarDB();
 $conn->set_charset("utf8");
 
-// Recoger datos del formulario
 $nombre = trim($_POST['nombre'] ?? '');
 $descripcion = trim($_POST['descripcion'] ?? '');
 $precio = floatval($_POST['precio'] ?? 0);
-$stock = intval($_POST['stock'] ?? 0);
+$stock = intval($_POST['stock'] ?? 0);  
 $catsPost = $_POST['categorias'] ?? [];
 $tipo = trim($_POST['metodo_venta'] ?? '');
 
-// Validaciones 
-if (empty($nombre) || empty($descripcion) || $precio <= 0 || $stock < 0 || empty($catsPost) || empty($tipo)) {
-    echo json_encode(["success" => false, "error" => "Datos del producto inválidos"]);
-    exit;
+$errors = []; 
+
+if (empty($nombre)) {
+    $errors[] = "El nombre del producto es requerido.";
 }
+if (empty($descripcion)) {
+    $errors[] = "La descripción del producto es requerida.";
+}
+if ($stock < 0) { 
+    $errors[] = "El stock no puede ser un número negativo.";
+}
+
+if ($tipo === 'Venta') {
+    if (!is_numeric($precio) || $precio <= 0) {
+        $errors[] = "Para productos de venta, el precio debe ser un número positivo.";
+    }
+} elseif ($tipo === 'Cotizacion') {
+    $precio = 0;
+} else {
+    $errors[] = "Tipo de método de venta inválido.";
+}
+
 
 $categoriasValidas = [];
 foreach ($catsPost as $catId) {
@@ -39,67 +55,71 @@ foreach ($catsPost as $catId) {
 }
 
 if (empty($categoriasValidas)) {
-    echo json_encode(["success" => false, "error" => "Seleccione al menos una categoría válida"]);
+    $errors[] = "Debe seleccionar al menos una categoría válida.";
+}
+
+if (!empty($errors)) {
+    echo json_encode(["success" => false, "error" => implode(" ", $errors)]);
     exit;
 }
 
-// Manejo de archivos
 try {
-    // Foto principal (obligatoria)
     if (empty($_FILES["fotoPrincipal"]["tmp_name"]) || $_FILES["fotoPrincipal"]["error"] !== UPLOAD_ERR_OK) {
-        throw new Exception("La imagen principal es requerida");
+        throw new Exception("La imagen principal es requerida.");
     }
     $fotoPrincipal = file_get_contents($_FILES["fotoPrincipal"]["tmp_name"]);
 
-    // Fotos opcionales
-    $fotoExtra1 = $_FILES["fotoExtra1"]["error"] === UPLOAD_ERR_OK ? 
-        file_get_contents($_FILES["fotoExtra1"]["tmp_name"]) : null;
+    $fotoExtra1 = null;
+    if (isset($_FILES["fotoExtra1"]) && $_FILES["fotoExtra1"]["error"] === UPLOAD_ERR_OK) {
+        $fotoExtra1 = file_get_contents($_FILES["fotoExtra1"]["tmp_name"]);
+    }
     
-    $fotoExtra2 = $_FILES["fotoExtra2"]["error"] === UPLOAD_ERR_OK ? 
-        file_get_contents($_FILES["fotoExtra2"]["tmp_name"]) : null;
+    $fotoExtra2 = null;
+    if (isset($_FILES["fotoExtra2"]) && $_FILES["fotoExtra2"]["error"] === UPLOAD_ERR_OK) {
+        $fotoExtra2 = file_get_contents($_FILES["fotoExtra2"]["tmp_name"]);
+    }
 
-    // Video opcional
     $video_path = null;
-    if ($_FILES["video"]["error"] === UPLOAD_ERR_OK) {
+    if (isset($_FILES["video"]) && $_FILES["video"]["error"] === UPLOAD_ERR_OK) {
         $video_dir = "uploads/videos/";
         if (!file_exists($video_dir)) {
             mkdir($video_dir, 0777, true);
         }
-        $video_name = uniqid() . '_' . basename($_FILES["video"]["name"]);
+        $video_name = uniqid() . '_' . basename($_FILES["video"]["name"]); 
         $video_path = $video_dir . $video_name;
         if (!move_uploaded_file($_FILES["video"]["tmp_name"], $video_path)) {
-            throw new Exception("Error al guardar el video");
+            throw new Exception("Error al guardar el video en el servidor.");
         }
     }
 
-    // Insertar producto
     $sqlProducto = "INSERT INTO Producto (
-        Nombre, 
-        Descripcion, 
-        FotoPrincipal, 
-        FotoExtra1, 
-        FotoExtra2, 
-        Video, 
-        Precio, 
-        Stock, 
-        ID_CategoriaPrincipal, 
+        Nombre,
+        Descripcion,
+        FotoPrincipal,
+        FotoExtra1,
+        FotoExtra2,
+        Video,
+        Precio,
+        Stock,
+        ID_CategoriaPrincipal,
         ID_Usuario,
         tipo
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     $stmtProducto = $conn->prepare($sqlProducto);
     if (!$stmtProducto) {
-        throw new Exception("Error al preparar consulta: " . $conn->error);
+        throw new Exception("Error al preparar la consulta de producto: " . $conn->error);
     }
 
     $categoriaPrincipal = $categoriasValidas[0];
     $null = null;
+
     $stmtProducto->bind_param(
         "ssbbbsdiiis",
         $nombre,
         $descripcion,
         $null,
-        $null,
+        $null, 
         $null,
         $video_path,
         $precio,
@@ -109,23 +129,28 @@ try {
         $tipo
     );
 
-    // Enviar datos BLOB
     $stmtProducto->send_long_data(2, $fotoPrincipal);
     if ($fotoExtra1) $stmtProducto->send_long_data(3, $fotoExtra1);
     if ($fotoExtra2) $stmtProducto->send_long_data(4, $fotoExtra2);
 
     if (!$stmtProducto->execute()) {
-        throw new Exception("Error al guardar producto: " . $stmtProducto->error);
+        throw new Exception("Error al insertar el producto: " . $stmtProducto->error);
     }
 
     $productoId = $conn->insert_id;
     $stmtProducto->close();
+
     $sqlRelacion = "INSERT INTO Producto_Categoria (ID_Producto, ID_Categoria) VALUES (?, ?)";
     $stmtRelacion = $conn->prepare($sqlRelacion);
+    if (!$stmtRelacion) {
+        throw new Exception("Error al preparar la consulta de relación de categoría: " . $conn->error);
+    }
     
     foreach ($categoriasValidas as $catId) {
         $stmtRelacion->bind_param("ii", $productoId, $catId);
-        $stmtRelacion->execute();
+        if (!$stmtRelacion->execute()) {
+            error_log("Error al insertar relación Producto_Categoria para Producto ID $productoId y Categoria ID $catId: " . $stmtRelacion->error);
+        }
     }
     $stmtRelacion->close();
 
@@ -134,6 +159,8 @@ try {
 } catch (Exception $e) {
     echo json_encode(["success" => false, "error" => $e->getMessage()]);
 } finally {
-    $conn->close();
+    if ($conn) {
+        $conn->close();
+    }
 }
 ?>

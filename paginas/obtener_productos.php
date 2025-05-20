@@ -14,7 +14,6 @@ if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     exit;
 }
 
-// Parámetros
 $userId   = isset($_GET['user_id'])   ? intval($_GET['user_id'])   : null;
 $pagina   = isset($_GET['pagina'])    ? max(1, intval($_GET['pagina'])) : 1;
 $porPagina= isset($_GET['por_pagina'])? min(max(1, intval($_GET['por_pagina'])), 20) : 8;
@@ -26,7 +25,6 @@ if (!$userId || $userId <= 0) {
     exit;
 }
 
-// 1) Total de productos (con filtro opcional)
 $sqlTotal = "SELECT COUNT(DISTINCT p.ID) as total
     FROM Producto p
     " . ($categoriaFilter
@@ -44,7 +42,6 @@ $stmtT->execute();
 $total = $stmtT->get_result()->fetch_assoc()['total'];
 $stmtT->close();
 
-// 2) Datos paginados con GROUP_CONCAT de categorías
 $orderBy = match($orden) {
     'antiguos'    => "p.FechaPublicacion ASC",
     'precio_asc'  => "p.Precio ASC",
@@ -56,10 +53,10 @@ $sql = "SELECT
         p.ID,
         p.Nombre,
         p.Descripcion,
-        TO_BASE64(p.FotoPrincipal) AS imagen,       -- ← CAMBIO: devolvemos base64
+        TO_BASE64(p.FotoPrincipal) AS imagen,      
         p.Precio,
         DATE_FORMAT(p.FechaPublicacion, '%Y-%m-%d') AS FechaPublicacion,
-        GROUP_CONCAT(c.Nombre SEPARATOR ',') AS categorias  -- ← CAMBIO: todas las categorías
+        GROUP_CONCAT(c.Nombre SEPARATOR ',') AS categorias
     FROM Producto p
     LEFT JOIN Producto_Categoria pc ON p.ID = pc.ID_Producto
     LEFT JOIN Categoria c ON pc.ID_Categoria = c.ID
@@ -74,11 +71,9 @@ $sql = "SELECT
 
 $stmt = $conn->prepare($sql);
 if ($categoriaFilter) {
-    // params: filter-cat, userId, porPagina, offset
     $offset = ($pagina - 1) * $porPagina;
     $stmt->bind_param("iiii", $categoriaFilter, $userId, $porPagina, $offset);
 } else {
-    // params: userId, porPagina, offset
     $offset = ($pagina - 1) * $porPagina;
     $stmt->bind_param("iii", $userId, $porPagina, $offset);
 }
@@ -88,7 +83,6 @@ $result = $stmt->get_result();
 
 $productos = [];
 while ($row = $result->fetch_assoc()) {
-    // Construimos la URL de la imagen
     $row['imagen'] = $row['imagen']
         ? "data:image/jpeg;base64,{$row['imagen']}"
         : null;

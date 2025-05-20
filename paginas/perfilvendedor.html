@@ -69,9 +69,9 @@
   <header>
     <h1><a href="">Markline</a></h1>
     <nav>
-      <button class="botones" onclick="location.href='publicar.html'">Publicar Producto</button>
-
-    </nav>
+            <button class="botones" onclick="location.href='publicar.html'">Publicar Producto</button>
+            <button class="botones" onclick="location.href='mainvendedor.html'">Venta Detallada</button>
+      </nav>
 
   </header>
 
@@ -87,7 +87,7 @@
         <button class="botonesgrandes" id="mensajes-btn">
             <img src="avatar2.png" alt="Mensajes">
               <h3>MENSAJES PENDIENTES</h3>
-            <span id="notificacion" class="notificacion hidden">3</span> <!-- Número de mensajes sin leer -->
+            <span id="notificacion" class="notificacion hidden">3</span> 
         </button>
         
         <button class="botones" id="cerrar-btn">Cerrar Sesión</button>
@@ -118,7 +118,6 @@
         </select>
       </div>
       <div class="productos-grid" id="productos">
-        <!-- Los productos se cargarán dinámicamente aquí -->
       </div>
       <div class="paginacion">
         <button id="prev-btn" disabled>&larr; Anterior</button>
@@ -128,7 +127,6 @@
     </div>
   </section>
 
-  <!-- Modal de chats pendientes -->
   <div id="chat-pendientes-modal" class="modal-lateral hidden">
       <div class="modal-header">
           <h2>Chats Pendientes</h2>
@@ -139,7 +137,6 @@
       </div>
   </div>
 
-  <!-- Modal del chat seleccionado -->
 <div id="chat-modal" class="modal-chat hidden">
     <div class="modal-header">
         <h2 id="chat-title">Chat con <span id="chat-usuario"></span></h2>
@@ -157,24 +154,23 @@
     <button id="cotizacion-btn" class="botones">Ingresa datos de cotización</button>
 </div>
 
-<!-- Modal de cotización -->
 <div class="modal-cotizacion-container hidden">
-  <div id="cotizacion-modal" class="modal-cotizacion hidden">
-    <div class="modal-header">
-      <h2>Cotización para <span id="cotizacion-producto"></span></h2>
-      <button class="botones" id="cotizacion-close">X</button>
-    </div>
-    <div class="modal-body">
-      <label for="cotizacion-precio">Precio cotizado:</label>
-      <input type="number" id="cotizacion-precio" min="1" step="0.01" required>
-      <label for="cotizacion-detalles">Detalles de la cotización:</label>
-      <textarea id="cotizacion-detalles" required></textarea>
-    </div>
-    <div class="modal-footer">
-      <button id="cotizacion-enviar" class="botones">Enviar Cotización</button>
+    <div id="cotizacion-modal" class="modal-cotizacion hidden">
+      <div class="modal-header">
+        <h2>Cotización para <span id="cotizacion-producto"></span></h2>
+        <button class="botones" id="cotizacion-close">X</button>
+      </div>
+      <div class="modal-body">
+        <label for="cotizacion-precio">Precio cotizado:</label>
+        <input type="number" id="cotizacion-precio" min="1" step="0.01" required>
+        <label for="cotizacion-stock">Stock cotizado:</label> <input type="number" id="cotizacion-stock" min="1" required>       <label for="cotizacion-detalles">Detalles de la cotización:</label>
+        <textarea id="cotizacion-detalles" required></textarea>
+      </div>
+      <div class="modal-footer">
+         <button id="cotizacion-enviar" class="botones">Enviar Cotización</button>
+      </div>
     </div>
   </div>
-</div>
 
 
 <script src="cotizacion.js"></script>

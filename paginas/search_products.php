@@ -47,7 +47,7 @@ try {
             'stock' => $row['stock'],
             'imagen' => $row['imagen'] ? 'data:image/jpeg;base64,' . base64_encode($row['imagen']) : 'avatar.png',
             'vendidos' => $row['vendidos'],
-            'status' => 'Aceptado' // Añadido para referencia
+            'status' => 'Aceptado' 
         ];
     }
     

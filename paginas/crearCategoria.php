@@ -11,7 +11,6 @@ require 'conexion.php';
 $conn = conectarDB();
 $conn->set_charset("utf8");
 
-// Validar y sanitizar datos
 $nombre = trim(filter_input(INPUT_POST, 'nombreCategoria', FILTER_SANITIZE_STRING));
 $descripcion = trim(filter_input(INPUT_POST, 'descripcionCategoria', FILTER_SANITIZE_STRING));
 
@@ -21,7 +20,6 @@ if (empty($nombre) || empty($descripcion)) {
 }
 
 try {
-    // Verificar existencia previa
     $sqlCheck = "SELECT ID FROM Categoria WHERE Nombre = ?";
     $stmtCheck = $conn->prepare($sqlCheck);
     $stmtCheck->bind_param("s", $nombre);
@@ -32,7 +30,6 @@ try {
         throw new Exception("Ya existe una categoría con ese nombre");
     }
 
-    // Insertar nueva categoría
     $sqlInsert = "INSERT INTO Categoria (Nombre, Descripcion) VALUES (?, ?)";
     $stmtInsert = $conn->prepare($sqlInsert);
     $stmtInsert->bind_param("ss", $nombre, $descripcion);

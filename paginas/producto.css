@@ -276,7 +276,6 @@ body, html {
             display: none;
         }
 
-        /* Estilos para el modal de listas */
         #listas-modal {
             display: none;
             position: fixed;
@@ -355,3 +354,78 @@ body, html {
                 height: 250px;
             }
         }
+
+
+.calificacion-promedio {
+    margin-top: 15px;
+    font-size: 1.5em;
+    color: #ffc107; 
+    display: flex;
+    align-items: center;
+    gap: 5px; 
+}
+
+.calificacion-promedio span#promedio-valor {
+    color: #333; 
+    font-size: 0.8em;
+}
+
+.seccion-comentarios {
+    width: 100%;
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.seccion-comentarios h2 {
+    text-align: center;
+    color: var(--principal);
+    margin-bottom: 25px;
+    font-size: 1.8em;
+}
+
+.lista-comentarios {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; 
+}
+
+.review-item {
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 15px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.review-item p {
+    margin: 0 0 5px 0;
+}
+
+.review-item strong {
+    color: var(--principal);
+    font-size: 1.1em;
+}
+
+.review-stars {
+    color: #ffc107;
+    font-size: 1.1em;
+    margin-left: 8px;
+}
+
+.review-comment {
+    font-style: italic;
+    color: #555;
+    margin-top: 10px;
+    line-height: 1.5;
+}
+
+#no-comentarios-mensaje {
+    text-align: center;
+    color: #888;
+    padding: 20px;
+    font-style: italic;
+}

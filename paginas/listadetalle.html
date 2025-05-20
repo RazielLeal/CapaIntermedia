@@ -87,17 +87,13 @@
                 return;
             }
 
-            // Cargar datos de la lista
             fetch(`get_lista_detalle.php?id=${listaId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        // Actualizar header
                         document.getElementById('lista-nombre').textContent = data.lista.Nombre;
                         document.getElementById('lista-status').textContent = `Visibilidad: ${data.lista.Status}`;
                         document.getElementById('lista-descripcion').textContent = data.lista.Descripcion || 'Sin descripción';
-                        
-                        // Cargar productos
                         const container = document.getElementById('productos-lista');
                         if (data.productos.length === 0) {
                             container.innerHTML = `

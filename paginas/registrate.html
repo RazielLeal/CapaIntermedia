@@ -17,55 +17,65 @@
                 <h2>Regístrate</h2>
 
                 <label>Nombre/s</label>
-                <input type="text" name="nombre" id="nombre" required>
-    
+                <input type="text" name="nombre" id="nombre" required autocomplete="off">
+
                 <label>Apellido Paterno</label>
-                <input type="text" name="apellidoP" id="apellidoP" required>
-    
+                <input type="text" name="apellidoP" id="apellidoP" required autocomplete="off">
+
                 <label>Apellido Materno</label>
-                <input type="text" name="apellidoM" id="apellidoM" required>
-    
+                <input type="text" name="apellidoM" id="apellidoM" autocomplete="off">
+
                 <label>Correo</label>
-                <input type="email" name="email" id="email" required>
-    
+                <input type="email" name="email" id="email" required autocomplete="off">
+
                 <label>Contraseña</label>
-                <input type="password" name="password" id="password" required>
-    
+                <input type="password" name="password" id="password" required autocomplete="new-password">
+
                 <label>Username</label>
-                <input type="text" name="username" id="username" required>
-    
+                <input type="text" name="username" id="username" required autocomplete="off">
+
                 <label>Fotografía</label>
-                <input type="file" name="foto" id="foto" accept="image/*">
-    
+                <input type="file" name="foto" id="foto" accept="image/*" autocomplete="off">
+
                 <label>Género</label>
                 <div class="genero">
-                    <input type="radio" name="genero" value="Masculino" id="genero-m" required>
+                    <input type="radio" name="genero" value="Masculino" id="genero-m" required autocomplete="off">
                     <label for="genero-m">Masculino</label>
-                    
-                    <input type="radio" name="genero" value="Femenino" id="genero-f">
+
+                    <input type="radio" name="genero" value="Femenino" id="genero-f" autocomplete="off">
                     <label for="genero-f">Femenino</label>
                 </div>
-    
+
                 <label>Fecha de Nacimiento</label>
-                <input type="date" name="nacimiento" id="nacimiento" required>
-                
-                <!-- Nuevo campo para seleccionar el rol con radio buttons -->
+                <input type="date" name="nacimiento" id="nacimiento" required autocomplete="off">
+
                 <label>Tipo de cuenta</label>
                 <div class="rol-options">
-                    <input type="radio" name="rol" value="Usuario" id="rol-usuario" checked required>
+                    <input type="radio" name="rol" value="Usuario" id="rol-usuario" checked required autocomplete="off">
                     <label for="rol-usuario">Usuario normal</label>
-                    
-                    <input type="radio" name="rol" value="Vendedor" id="rol-vendedor">
+
+                    <input type="radio" name="rol" value="Vendedor" id="rol-vendedor" autocomplete="off">
                     <label for="rol-vendedor">Vendedor</label>
                 </div>
-    
+
+                <div id="estatus-options" style="display: block;">
+                    <label>Estatus de la cuenta</label>
+                    <div class="estatus">
+                        <input type="radio" name="estatus" value="Publico" id="estatus-publico" checked autocomplete="off">
+                        <label for="estatus-publico">Pública</label>
+
+                        <input type="radio" name="estatus" value="Privado" id="estatus-privado" autocomplete="off">
+                        <label for="estatus-privado">Privada</label>
+                    </div>
+                </div>
+
                 <div id="botonesContainer">
                     <button class="botones" type="submit" id="btnregistrarse">Registrarse</button>
-                    <button class="botones" type="button" id="btncancelar"><a href="index.html">Cancelar</a></button>    
+                    <button class="botones" type="button" id="btncancelar"><a href="index.html">Cancelar</a></button>
                 </div>
-    
+
             </form>
-    
+
         </div>
     </section>
 

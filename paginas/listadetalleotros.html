@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markline - Detalle de Lista de Otro Usuario</title>
+    <link rel="stylesheet" href="listas.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .lista-header {
+            background-color: var(--terciario);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .lista-title {
+            color: var(--principal);
+            margin: 0;
+        }
+        
+        .lista-status {
+            color: var(--letrados);
+            font-size: 0.9em;
+        }
+        
+        .lista-descripcion {
+            margin: 15px 0;
+            color: #666;
+        }
+        
+        .producto-lista {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .producto-lista:hover {
+            transform: translateY(-3px);
+        }
+        
+        .producto-precio {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background-color: rgba(0, 116, 31, 0.9);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9em;
+        }
+        
+        .empty-list {
+            text-align: center;
+            padding: 40px;
+            color: var(--letrados);
+        }
+
+        .lista-vacia-icono {
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            color: var(--letrados);
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><a href="main.html">Markline</a></h1>
+        <div class="user-icon">
+            <img id="profile-photo" src="avatar.png" alt="Usuario">
+        </div>
+    </header>
+
+    <section class="perfil-container">
+        <div class="lista-header">
+            <h1 class="lista-title" id="lista-nombre"></h1>
+            <p class="lista-status" id="lista-status"></p>
+            <p class="lista-descripcion" id="lista-descripcion"></p>
+            <button class="botones" onclick="window.history.back()">Regresar a Listas</button>
+        </div>
+
+        <div class="grid" id="productos-lista">
+            </div>
+    </section>
+
+    <script src="listadetalleotros.js"></script>
+</body>
+</html>

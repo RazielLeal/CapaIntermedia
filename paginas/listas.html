@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="listas.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Estilos para el modal */
         .modal {
             display: none;
             position: fixed;
@@ -90,7 +89,6 @@
             background-color: var(--secundario);
         }
         
-        /* Estilo para el botón de crear lista */
         .crear-lista-btn {
             background-color: var(--principal);
             color: white;
@@ -106,7 +104,6 @@
             background-color: var(--secundario);
         }
         
-        /* Nuevos estilos para el icono de lista vacía */
         .lista-vacia-icono {
             width: 80px;
             height: 80px;
@@ -152,11 +149,9 @@
         </div>
 
         <div class="grid" id="Listas">
-            <!-- Las listas se cargarán dinámicamente -->
         </div>
     </section>
 
-    <!-- Modal para crear lista -->
     <div id="crear-lista-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -186,11 +181,9 @@
     </div>
 
     <script>
-        // Variables globales
         let userId = null;
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Obtener elementos del DOM
             const userNicknameElement = document.getElementById('user-nickname');
             const profilePhotoElement = document.getElementById('profile-photo');
             const crearListaBtn = document.getElementById('crear-lista-btn');
@@ -199,7 +192,6 @@
             const listaForm = document.getElementById('lista-form');
             const listasContainer = document.getElementById('Listas');
             
-            // Obtener el usuario de sessionStorage
             const username = sessionStorage.getItem('username');
             
             if (!username) {
@@ -208,10 +200,8 @@
                 return;
             }
             
-            // Mostrar el nickname inmediatamente
             userNicknameElement.innerHTML = `${username} <button class="botones" id="listas-btn" onclick="window.location.href='perfil.html'">Regresar</button>`;
             
-            // Cargar datos adicionales del usuario
             fetch(`login.php?user=${encodeURIComponent(username)}`)
                 .then(response => {
                     if (!response.ok) {
@@ -221,16 +211,13 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        // Guardar el ID del usuario
                         userId = data.id;
                         document.getElementById('user-id').value = userId;
                         
-                        // Actualizar foto de perfil si existe
                         if (data.photo) {
                             profilePhotoElement.src = 'data:image/jpeg;base64,' + data.photo;
                         }
                         
-                        // Cargar las listas del usuario
                         cargarListasUsuario(userId);
                     } else {
                         console.error('Error en los datos recibidos:', data.error);
@@ -240,24 +227,20 @@
                     console.error('Error al cargar datos del usuario:', error);
                 });
             
-            // Manejar el botón de crear lista
             crearListaBtn.addEventListener('click', function() {
                 modal.style.display = 'flex';
             });
             
-            // Manejar el cierre del modal
             closeModalBtn.addEventListener('click', function() {
                 modal.style.display = 'none';
             });
             
-            // Cerrar modal al hacer clic fuera del contenido
             modal.addEventListener('click', function(e) {
                 if (e.target === modal) {
                     modal.style.display = 'none';
                 }
             });
             
-            // Manejar el envío del formulario
             listaForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
@@ -269,7 +252,6 @@
             });
         });
         
-        // Función para cargar las listas del usuario
         function cargarListasUsuario(userId) {
             fetch(`get_listas.php?user_id=${userId}`)
                 .then(response => response.json())
@@ -287,7 +269,6 @@
                             const listaElement = document.createElement('div');
                             listaElement.className = 'producto';
                             
-                            // Determinar el contenido de la imagen
                             let imagenHTML = '';
                             if (lista.primerProductoImagen) {
                                 imagenHTML = `<img src="${lista.primerProductoImagen}" alt="${lista.Nombre}" class="imagen-producto">`;
@@ -305,7 +286,6 @@
                                 </div>
                             `;
                             
-                            // Hacer que la lista sea clickeable
                             listaElement.addEventListener('click', function() {
                                 window.location.href = `listadetalle.html?id=${lista.ID}`;
                             });
@@ -321,7 +301,6 @@
                 });
         }
         
-        // Función para crear una nueva lista
         function crearLista(userId, nombre, descripcion, status) {
             const data = {
                 user_id: userId,

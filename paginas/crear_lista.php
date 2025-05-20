@@ -4,14 +4,12 @@ header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header('Content-Type: application/json');
 
-// Manejar preflight request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
 require_once 'conexion.php';
 
-// Obtener el contenido JSON del cuerpo de la solicitud
 $json = file_get_contents('php://input');
 $data = json_decode($json, true);
 
@@ -34,7 +32,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && $data) {
 
     $conn = conectarDB();
 
-    // Insertar la nueva lista
     $sql = "INSERT INTO Lista (Nombre, Descripcion, Status, ID_Usuario) VALUES (?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
     

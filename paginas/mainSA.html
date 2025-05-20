@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markline - Registro</title>
+    <title>Markline - Registro de Administrador</title>
     <link rel="stylesheet" href="registrate.css">
     <link rel="stylesheet" href="mainSA.css">
 </head>
 <body>
     <header>
-        <h1><a href="">Markline</a></h1>
-        <button class="botones" type="button" id="btncancelar"><a href="index.html">Cerrar Sesión</a></button>
+        <h1><a href="mainSA.html">Markline</a></h1>
+        <nav>
+            <button class="botones" type="button" id="btn-cerrar-sesion-sa">Cerrar Sesión</button>
+        </nav>
     </header>
 
     <section class="registro-container">
@@ -46,14 +48,24 @@
 
                 <div id="botonesContainer">
                     <button class="botones" type="submit" id="btnregistrarse">Registrarse</button>
-                    
                 </div>
-
             </form>
-
         </div>
     </section>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const btnCerrarSesionSA = document.getElementById('btn-cerrar-sesion-sa');
+            if (btnCerrarSesionSA) {
+                btnCerrarSesionSA.addEventListener('click', function() {
+                    sessionStorage.removeItem('username');
+                    sessionStorage.removeItem('userRole');
+                    window.location.href = 'index.html';
+                });
+            }
+
+        });
+    </script>
     <script src="mainSA.js"></script>
 </body>
 </html>

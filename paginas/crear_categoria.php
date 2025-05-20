@@ -4,16 +4,13 @@ header("Access-Control-Allow-Origin: http://localhost:8080");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type");
 
-// Configuración de la base de datos
 $servername = "localhost";
 $username = "root";
 $password = "";
 $dbname = "PWInter";
 
-// Crear conexión
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Verificar conexión
 if ($conn->connect_error) {
     die(json_encode([
         "success" => false,
@@ -22,11 +19,9 @@ if ($conn->connect_error) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Obtener y limpiar datos
+
     $nombre = trim($_POST["nombre"] ?? '');
     $descripcion = trim($_POST["descripcion"] ?? '');
-
-    // Validaciones
     $errors = [];
     
     if (empty($nombre)) {
@@ -47,7 +42,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    // Verificar si la categoría ya existe
     $check_sql = "SELECT ID FROM Categoria WHERE Nombre = ?";
     $check_stmt = $conn->prepare($check_sql);
     $check_stmt->bind_param("s", $nombre);
@@ -64,7 +58,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     $check_stmt->close();
 
-    // Insertar nueva categoría
     $insert_sql = "INSERT INTO Categoria (Nombre, Descripcion) VALUES (?, ?)";
     $insert_stmt = $conn->prepare($insert_sql);
     $insert_stmt->bind_param("ss", $nombre, $descripcion);

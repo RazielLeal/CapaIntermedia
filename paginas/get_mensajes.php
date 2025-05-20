@@ -11,8 +11,6 @@ if (!isset($_SESSION['usuario_id'])) {
 
 $id_usuario = intval($_SESSION['usuario_id']);
 $chat_id = isset($_GET['chat_id']) ? intval($_GET['chat_id']) : null;
-//ESTO ES PARA EL CHAT DEL VENDEDOR PARA LAS LISTAS
-// Obtener mensajes sin leer
 $sql = "SELECT chat.id_chat as CHAT, chat.usuario1 as CompradorID, usuario.Nombre as Comprador, mensajes.mensaje as mensaje, chat.id_producto
 FROM chat
 JOIN mensajes on chat.usuario1=mensajes.id_usuario

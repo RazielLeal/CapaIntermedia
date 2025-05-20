@@ -15,7 +15,6 @@ if (empty($username) || empty($contrasena_actual) || empty($nueva_contrasena)) {
 
 $conn = conectarDB();
 
-// Verificar contraseña actual
 $stmt = $conn->prepare("SELECT Contrasena FROM Usuario WHERE Nickname = ?");
 $stmt->bind_param("s", $username);
 $stmt->execute();
@@ -33,7 +32,6 @@ if (!password_verify($contrasena_actual, $usuario['Contrasena'])) {
     exit;
 }
 
-// Actualizar contraseña
 $hashed_password = password_hash($nueva_contrasena, PASSWORD_DEFAULT);
 $update_stmt = $conn->prepare("UPDATE Usuario SET Contrasena = ? WHERE Nickname = ?");
 $update_stmt->bind_param("ss", $hashed_password, $username);

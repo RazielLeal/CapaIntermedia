@@ -16,7 +16,6 @@ try {
     
     $conn = conectarDB();
     
-    // Obtener ID del usuario
     $stmt = $conn->prepare("SELECT ID FROM Usuario WHERE Nickname = ?");
     $stmt->bind_param("s", $_GET['username']);
     $stmt->execute();
@@ -30,7 +29,6 @@ try {
     $userId = $user['ID'];
     $productId = $_GET['productId'];
     
-    // Obtener todas las listas del usuario
     $stmt = $conn->prepare("SELECT ID, Nombre, Status FROM Lista WHERE ID_Usuario = ?");
     $stmt->bind_param("i", $userId);
     $stmt->execute();
@@ -41,7 +39,6 @@ try {
         $lists[] = $row;
     }
     
-    // Verificar si el producto está en cada lista
     foreach ($lists as &$list) {
         $stmt = $conn->prepare("SELECT COUNT(*) as count FROM Lista_Producto WHERE ID_Lista = ? AND ID_Producto = ?");
         $stmt->bind_param("ii", $list['ID'], $productId);

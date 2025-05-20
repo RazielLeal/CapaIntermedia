@@ -8,14 +8,12 @@
     <link rel="stylesheet" href="producto.css">
 </head>
 <body>
-        <script src="producto.js"></script>
+    <script src="producto.js"></script>
 
     <header>
         <h1><a href="main.html">Markline</a></h1>
         <nav>
             <button class="botones" onclick="location.href='Perfil.html'">Ver Perfil</button>
-            <button class="botones" onclick="location.href='main.html'"> 🏠 Inicio</button>
-            <button class="botones" onclick="openCart()"> 🛒 Carrito</button>
         </nav>
     </header>
 
@@ -26,13 +24,18 @@
                 <video id="video-reproductor" class="video-reproductor" controls></video>
                 
                 <div class="miniaturas-container" id="miniaturas-container">
-                    <!-- Las miniaturas se cargarán dinámicamente -->
                 </div>
             </div>
             
             <div class="producto-info">
                 <h1 id="producto-titulo" class="producto-titulo"></h1>
                 <div id="categorias-container" class="categorias-container"></div>
+                
+                <div id="calificacion-promedio" class="calificacion-promedio">
+                    <span id="promedio-estrellas"></span>
+                    <span id="promedio-valor"></span>
+                </div>
+
                 <div id="producto-precio" class="producto-precio"></div>
                 <div id="producto-stock" class="producto-stock"></div>
                 <div id="producto-vendidos" class="producto-vendidos"></div>
@@ -44,9 +47,15 @@
                 <button id="btn-agregar-lista" class="btn-agregar-lista">➕ Agregar a Lista</button>
             </div>
         </div>
+
+        <div class="seccion-comentarios">
+            <h2>Reseñas de Usuarios</h2>
+            <div id="lista-comentarios" class="lista-comentarios">
+                <p id="no-comentarios-mensaje" style="display: none;">Este producto aún no tiene reseñas.</p>
+            </div>
+        </div>
     </main>
 
-    <!-- Modal para listas -->
     <div id="listas-overlay" onclick="closeListasModal()"></div>
     <div id="listas-modal">
         <h2>Agregar a Listas</h2>
@@ -55,35 +64,33 @@
         <button onclick="closeListasModal()" style="margin-top:10px; width:100%;">Cancelar</button>
     </div>
 
-<div id="chat-modal" class="hidden">
-    <div id="chat-modal-header">
-        Chat de Soporte
-        <script>
-        // Fetch vendedor info y mostrar en el header del chat
-        document.addEventListener('DOMContentLoaded', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const productId = urlParams.get('id');
-            if (!productId) return;
-            fetch(`get_product_details.php?id=${productId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success && data.product && data.product.vendedor) {
-                        document.getElementById('chat-modal-header').textContent = 'Vendedor: ' + data.product.vendedor;
-                    }
-                });
-        });
-        </script>
-        <button id="chat-modal-close" title="Cerrar">&times;</button>
+    <div id="chat-modal" class="hidden">
+        <div id="chat-modal-header">
+            Chat de Soporte
+            <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const productId = urlParams.get('id');
+                if (!productId) return;
+                fetch(`get_product_details.php?id=${productId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success && data.product && data.product.vendedor) {
+                            document.getElementById('chat-modal-header').textContent = 'Vendedor: ' + data.product.vendedor;
+                        }
+                    });
+            });
+            </script>
+            <button id="chat-modal-close" title="Cerrar">&times;</button>
+        </div>
+        <div id="chat-modal-body">
+            <div style="color:#888;text-align:center;margin-top:30px;">¡Hola! ¿En qué podemos ayudarte?</div>
+        </div>
+        <div id="chat-modal-footer">
+            <input type="text" id="chat-input" placeholder="Escribe tu mensaje..." autocomplete="off" />
+            <button id="chat-send">Enviar</button>
+        </div>
     </div>
-    <div id="chat-modal-body">
-        <div style="color:#888;text-align:center;margin-top:30px;">¡Hola! ¿En qué podemos ayudarte?</div>
-    </div>
-    <div id="chat-modal-footer">
-        <input type="text" id="chat-input" placeholder="Escribe tu mensaje..." autocomplete="off" />
-        <button id="chat-send">Enviar</button>
-    </div>
-</div>
 
 </body>
-
 </html>

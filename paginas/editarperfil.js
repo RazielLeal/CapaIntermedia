@@ -4,21 +4,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const contrasenaForm = document.getElementById('contrasenaForm');
     const guardarContrasenaBtn = document.getElementById('guardarContrasena');
     
-    // Cargar datos actuales del usuario
     cargarDatosUsuario();
     
-    // Mostrar/ocultar formulario de contraseña
     cambiarContrasenaBtn.addEventListener('click', function() {
         contrasenaForm.style.display = contrasenaForm.style.display === 'none' ? 'block' : 'none';
     });
     
-    // Manejar el envío del formulario principal
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         actualizarPerfil();
     });
     
-    // Manejar el cambio de contraseña
     guardarContrasenaBtn.addEventListener('click', function() {
         cambiarContrasena();
     });
@@ -37,13 +33,11 @@ function cargarDatosUsuario() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Rellenar campos con los datos actuales
                 if (data.nombre) document.getElementById('nombre').value = data.nombre;
                 if (data.apellidoPaterno) document.getElementById('apellidoP').value = data.apellidoPaterno;
                 if (data.apellidoMaterno) document.getElementById('apellidoM').value = data.apellidoMaterno;
                 if (data.nickname) document.getElementById('username').value = data.nickname;
                 
-                // Seleccionar género
                 if (data.genero) {
                     const generoRadios = document.getElementsByName('genero');
                     for (let radio of generoRadios) {
@@ -68,7 +62,6 @@ function actualizarPerfil() {
     const formData = new FormData(form);
     const username = sessionStorage.getItem('username');
     
-    // Agregar el username actual para identificarlo en la BD
     formData.append('current_username', username);
     
     fetch('actualizar_perfil.php', {
@@ -127,7 +120,6 @@ function cambiarContrasena() {
         if (data.success) {
             alert('Contraseña cambiada correctamente');
             document.getElementById('contrasenaForm').style.display = 'none';
-            // Limpiar campos
             document.getElementById('contrasena_actual').value = '';
             document.getElementById('nueva_contrasena').value = '';
             document.getElementById('confirmar_contrasena').value = '';

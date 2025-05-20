@@ -5,13 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markline - Perfil</title>
     <link rel="stylesheet" href="perfil.css">
-</head>
+    <link rel="stylesheet" href="main.css"> </head>
 <body>
     <header>
         <h1><a href="main.html">Markline</a></h1>
-        <div class="user-icon">
-            <img src="avatar.png" alt="Usuario">
+        <div id="header-search">
+            <input type="text" id="header-search-input" placeholder="Buscar productos o usuarios..." autocomplete="off">
+            <div id="header-search-results"></div>
         </div>
+        <nav>
+            <button class="botones" onclick="location.href='Perfil.html'">Ver Perfil</button>
+            <button class="botones" onclick="openCart()"> 🛒 Carrito (<span id="cart-count">0</span>)</button>
+        </nav>
     </header>
 
     <section class="perfil-container">
@@ -27,8 +32,437 @@
             <button class="botones" id="cerrar-btn">Cerrar Sesión</button>
         </div>
 
+        <div class="compras-container">
+            <h3>Mis Compras</h3>
+
+<div class="filtros-compras">
+    <div class="filtro-group">
+        <label>Fecha desde:</label>
+        <input type="datetime-local" id="filtro-fecha-desde" class="filtro-input">
+    </div>
+    <div class="filtro-group">
+        <label>Fecha hasta:</label>
+        <input type="datetime-local" id="filtro-fecha-hasta" class="filtro-input">
+    </div>
+    <div class="filtro-group">
+        <label>Categoría:</label>
+        <select id="filtro-categoria" class="filtro-input">
+            <option value="">Todas</option>
+        </select>
+    </div>
+    <button class="botones" onclick="resetFilters()">Reiniciar</button>
+</div>
+
+            <div id="lista-compras" class="lista-compras">
+                <p id="no-compras-mensaje" style="display: none;">Aún no has realizado ninguna compra.</p>
+            </div>
+        </div>
     </section>
 
+    <div id="review-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeReviewModal()">&times;</span>
+            <h2>Añadir Reseña</h2>
+            <h3 id="review-product-name"></h3>
+            <div class="rating-stars" id="rating-stars-container">
+                <span class="star" data-value="1">&#9733;</span>
+                <span class="star" data-value="2">&#9733;</span>
+                <span class="star" data-value="3">&#9733;</span>
+                <span class="star" data-value="4">&#9733;</span>
+                <span class="star" data-value="5">&#9733;</span>
+                <span class="star" data-value="6">&#9733;</span>
+                <span class="star" data-value="7">&#9733;</span>
+                <span class="star" data-value="8">&#9733;</span>
+                <span class="star" data-value="9">&#9733;</span>
+                <span class="star" data-value="10">&#9733;</span>
+            </div>
+            <input type="hidden" id="review-purchase-id"> <input type="hidden" id="review-product-id">
+            <input type="hidden" id="review-rating" value="0">
+            <textarea id="review-comment" placeholder="Escribe tu comentario aquí..." rows="4"></textarea>
+            <button class="botones" onclick="submitReview()">Enviar Reseña</button>
+        </div>
+    </div>
+
+    <div id="cart-overlay" onclick="closeCart()"></div>
+    <div id="cart-modal"></div>
+
     <script src="perfil.js"></script>
+    <script>
+        const ITEMS_PER_PAGE = 8;
+
+        function openCart() {
+            document.getElementById('cart-overlay').style.display = 'block';
+            document.getElementById('cart-modal').style.display = 'block';
+            updateCartModal();
+        }
+
+        function closeCart() {
+            document.getElementById('cart-overlay').style.display = 'none';
+            document.getElementById('cart-modal').style.display = 'none';
+        }
+
+        function updateCartModal() {
+            const username = sessionStorage.getItem('username');
+            if (!username) {
+                alert('Debes iniciar sesión para ver el carrito');
+                return;
+            }
+
+            fetch('carrito_api.php', {
+                headers: {
+                    'Authorization': 'Bearer ' + username
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const modal = document.getElementById('cart-modal');
+
+                if (!data.success) {
+                    modal.innerHTML = '<p>Error al cargar el carrito: ' + (data.error || '') + '</p>';
+                    return;
+                }
+
+                let html = '<h2>Tu Carrito</h2>';
+
+                if (data.carrito.length === 0) {
+                    html += '<p>Tu carrito está vacío</p>';
+                } else {
+                    let total = 0;
+                    html += `
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%; margin: 15px 0;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align:left;">Producto</th>
+                                    <th style="text-align:right;">Precio</th>
+                                    <th style="text-align:center;">Cantidad</th>
+                                    <th style="text-align:right;">Subtotal</th>
+                                    <th style="text-align:center;">Eliminar</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
+
+                    data.carrito.forEach(item => {
+                        const subtotal = parseFloat(item.Total);
+                        total += subtotal;
+
+                        html += `
+                        <tr>
+                            <td style="display:flex; align-items:center;">
+                                <img src="${item.FotoPrincipal ? 'data:image/jpeg;base64,' + item.FotoPrincipal : 'avatar2.png'}"
+                                        style="width:50px; height:50px; object-fit:contain; margin-right:10px;">
+                                ${item.Nombre}
+                            </td>
+                            <td style="text-align:right;">$${parseFloat(item.Precio).toFixed(2)}</td>
+                            <td style="text-align:center;">
+                                <div class="cantidad-control">
+                                    <button class="cantidad-btn" onclick="updateQuantity(${item.ID}, ${item.Cantidad - 1}, ${item.Stock})">-</button>
+                                    <span id="cantidad-${item.ID}">${item.Cantidad}</span>
+                                    <button class="cantidad-btn" onclick="updateQuantity(${item.ID}, ${item.Cantidad + 1}, ${item.Stock})">+</button>
+                                </div>
+                            </td>
+                            <td style="text-align:right;">$${subtotal.toFixed(2)}</td>
+                            <td style="text-align:center;">
+                                <button onclick="removeFromCart(${item.ID})" style="background:none; border:none; cursor:pointer; color:red;">✖</button>
+                            </td>
+                        </tr>`;
+                    });
+
+                    html += `
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" style="text-align:right; font-weight:bold;">Total:</td>
+                                    <td style="text-align:right; font-weight:bold;" id="cart-total-amount">$${total.toFixed(2)}</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <button onclick="checkout()" style="background-color:var(--principal); color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; width:100%;">Proceder al Pago</button>`;
+                }
+
+                html += '<button onclick="closeCart()" style="margin-top:15px; width:100%;">Seguir Comprando</button>';
+                modal.innerHTML = html;
+
+                updateCartCount();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('cart-modal').innerHTML = '<p>Error al cargar el carrito</p>';
+            });
+        }
+
+        function updateQuantity(carritoId, newQuantity, maxStock) {
+            const username = sessionStorage.getItem('username');
+            if (!username) {
+                alert('Debes iniciar sesión para modificar el carrito');
+                return;
+            }
+
+            if (newQuantity < 1) {
+                removeFromCart(carritoId);
+                return;
+            }
+
+            if (newQuantity > maxStock) {
+                alert('No hay suficiente stock para esta cantidad. Stock disponible: ' + maxStock);
+                return;
+            }
+
+            fetch('carrito_api.php', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + username
+                },
+                body: JSON.stringify({
+                    carritoId: carritoId,
+                    cantidad: newQuantity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateCartModal();
+                    updateCartCount();
+                } else {
+                    alert('Error al actualizar la cantidad: ' + (data.error || ''));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al actualizar la cantidad');
+            });
+        }
+
+        function removeFromCart(carritoId) {
+            const username = sessionStorage.getItem('username');
+            if (!username) {
+                alert('Debes iniciar sesión para modificar el carrito');
+                return;
+            }
+
+            fetch('carrito_api.php', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + username
+                },
+                body: JSON.stringify({
+                    carritoId: carritoId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateCartModal();
+                } else {
+                    alert('Error al eliminar del carrito: ' + (data.error || ''));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al eliminar del carrito');
+            });
+        }
+
+        function checkout() {
+            const username = sessionStorage.getItem('username');
+            if (!username) {
+                alert('Debes iniciar sesión para realizar la compra');
+                return;
+            }
+
+            fetch('carrito_api.php', {
+                headers: {
+                    'Authorization': 'Bearer ' + username
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success || data.carrito.length === 0) {
+                    alert('No hay productos en el carrito para procesar el pago.');
+                    return;
+                }
+
+                const sinStock = data.carrito.some(item => item.Cantidad > item.Stock);
+                if (sinStock) {
+                    alert('Algunos productos en tu carrito exceden el stock disponible. Por favor, ajusta las cantidades.');
+                    updateCartModal();
+                    return;
+                }
+
+                fetch('carrito_api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + username
+                    },
+                    body: JSON.stringify({
+                        action: 'process_payment'
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('¡Compra realizada con éxito! Revisa tu historial de compras.');
+                        closeCart();
+                        updateCartCount();
+                        // Asumiendo que loadProducts es de main.js y no existe aquí, lo comento.
+                        // loadProducts();
+                    } else {
+                        alert('Error al realizar la compra: ' + (data.error || 'Mensaje de error desconocido.'));
+                        updateCartModal();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error en la solicitud de pago:', error);
+                    alert('Hubo un problema al intentar procesar su pago. Intente de nuevo.');
+                });
+            })
+            .catch(error => {
+                console.error('Error al verificar el carrito antes del pago:', error);
+                alert('Error al verificar los productos en el carrito. Intente de nuevo.');
+            });
+        }
+
+        function updateCartCount() {
+            const username = sessionStorage.getItem('username');
+            if (!username) {
+                document.getElementById('cart-count').textContent = '0';
+                return;
+            }
+
+            fetch('carrito_api.php', {
+                headers: {
+                    'Authorization': 'Bearer ' + username
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const count = data.carrito.reduce((total, item) => total + item.Cantidad, 0);
+                    document.getElementById('cart-count').textContent = count;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('cart-count').textContent = '0';
+            });
+        }
+
+        async function searchAll(query) {
+            if (query.length < 2) {
+                document.getElementById('header-search-results').style.display = 'none';
+                return;
+            }
+
+            const resultsContainer = document.getElementById('header-search-results');
+            resultsContainer.innerHTML = '';
+
+            let allResults = [];
+
+            try {
+                const productResponse = await fetch(`search_products.php?q=${encodeURIComponent(query)}`);
+                const productData = await productResponse.json();
+                if (productData.success && productData.products.length > 0) {
+                    allResults = allResults.concat(productData.products.map(p => ({...p, type: 'product'})));
+                }
+            } catch (error) {
+                console.error('Error al buscar productos:', error);
+            }
+
+            try {
+                const userResponse = await fetch(`search_users.php?q=${encodeURIComponent(query)}`);
+                const userData = await userResponse.json();
+                if (userData.success && userData.users.length > 0) {
+                    allResults = allResults.concat(userData.users.map(u => ({...u, type: 'user'})));
+                }
+            } catch (error) {
+                console.error('Error al buscar usuarios:', error);
+            }
+
+            if (allResults.length > 0) {
+                const productSection = document.createElement('div');
+                productSection.innerHTML = '<h3>Productos</h3>';
+                const productsFound = allResults.filter(item => item.type === 'product');
+                if (productsFound.length > 0) {
+                    productsFound.forEach(product => {
+                        const item = document.createElement('div');
+                        item.className = 'header-search-result';
+                        item.innerHTML = `
+                            <img src="${product.imagen}" alt="${product.nombre}">
+                            <div style="flex:1;">
+                                <div style="font-weight:bold;">${product.nombre}</div>
+                                <div style="color:var(--secundario);">$${product.precio}</div>
+                                <div style="font-size:0.8em; color:${product.stock > 0 ? 'var(--principal)' : 'red'}">
+                                    ${product.stock > 0 ? 'Disponible' : 'Agotado'}
+                                </div>
+                            </div>
+                        `;
+                        item.addEventListener('click', () => {
+                            window.location.href = `producto.html?id=${product.id}`;
+                        });
+                        productSection.appendChild(item);
+                    });
+                } else {
+                    productSection.innerHTML += '<p>No se encontraron productos.</p>';
+                }
+                resultsContainer.appendChild(productSection);
+
+                const userSection = document.createElement('div');
+                userSection.innerHTML = '<h3>Usuarios</h3>';
+                const usersFound = allResults.filter(item => item.type === 'user');
+                if (usersFound.length > 0) {
+                    usersFound.forEach(user => {
+                        const item = document.createElement('div');
+                        item.className = 'header-search-result';
+                        item.innerHTML = `
+                            <img src="${user.avatar}" alt="${user.nickname}" style="border-radius: 50%;">
+                            <div style="flex:1;">
+                                <div style="font-weight:bold;">${user.nickname}</div>
+                                <div style="font-size:0.9em; color:grey;">${user.nombre} ${user.apellidoPaterno}</div>
+                            </div>
+                        `;
+                        item.addEventListener('click', () => {
+                            alert(`Ver perfil de ${user.nickname}`);
+                        });
+                        userSection.appendChild(item);
+                    });
+                } else {
+                    userSection.innerHTML += '<p>No se encontraron usuarios.</p>';
+                }
+                resultsContainer.appendChild(userSection);
+
+                resultsContainer.style.display = 'block';
+            } else {
+                const noResults = document.createElement('div');
+                noResults.className = 'no-results';
+                noResults.textContent = 'No se encontraron productos o usuarios.';
+                resultsContainer.appendChild(noResults);
+                resultsContainer.style.display = 'block';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const headerSearchInput = document.getElementById('header-search-input');
+            const headerSearchResults = document.getElementById('header-search-results');
+
+            if (headerSearchInput && headerSearchResults) {
+                headerSearchInput.addEventListener('input', (event) => {
+                    searchAll(event.target.value);
+                });
+
+                document.addEventListener('click', (event) => {
+                    if (!headerSearchResults.contains(event.target) && event.target !== headerSearchInput) {
+                        headerSearchResults.style.display = 'none';
+                    }
+                });
+            }
+
+            updateCartCount();
+        });
+    </script>
 </body>
 </html>

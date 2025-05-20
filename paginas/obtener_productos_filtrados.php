@@ -5,7 +5,6 @@ include 'conexion.php';
 try {
     $conn = conectarDB();
 
-    // Verificar método y parámetros
     if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
         throw new Exception('Método no permitido', 405);
     }
@@ -15,7 +14,6 @@ try {
         throw new Exception('ID de usuario no válido', 400);
     }
 
-    // Construir consulta
     $sql = "SELECT 
                 p.ID, 
                 p.Nombre, 
@@ -27,24 +25,21 @@ try {
             FROM Producto p
             WHERE p.ID_Usuario = ?";
 
-    // Parámetros para bind
     $params = [$userId];
-    $types = 'i'; // i = integer
+    $types = 'i'; 
 
-    // Aplicar filtros
     if (isset($_GET['status']) && $_GET['status'] !== 'todos') {
         $sql .= " AND p.Status = ?";
         $params[] = $_GET['status'];
-        $types .= 's'; // s = string
+        $types .= 's'; 
     }
 
     if (isset($_GET['categoria']) && $_GET['categoria'] !== 'todas') {
         $sql .= " AND p.ID_CategoriaPrincipal = ?";
         $params[] = $_GET['categoria'];
-        $types .= 'i'; // i = integer
+        $types .= 'i'; 
     }
 
-    // Aplicar orden
     $orden = $_GET['orden'] ?? 'recientes';
     switch ($orden) {
         case 'antiguos':
@@ -60,10 +55,8 @@ try {
             $sql .= " ORDER BY p.ID DESC";
     }
 
-    // Preparar y ejecutar
     $stmt = $conn->prepare($sql);
     
-    // Bind parameters dinámicamente
     if (count($params) > 0) {
         $stmt->bind_param($types, ...$params);
     }
@@ -72,7 +65,6 @@ try {
     $result = $stmt->get_result();
     $productos = $result->fetch_all(MYSQLI_ASSOC);
 
-    // Procesar imágenes
     foreach ($productos as &$producto) {
         if ($producto['FotoPrincipal']) {
             $producto['FotoPrincipal'] = base64_encode($producto['FotoPrincipal']);

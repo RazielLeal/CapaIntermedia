@@ -4,7 +4,6 @@ header("Access-Control-Allow-Methods: GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header('Content-Type: application/json');
 
-// Manejar preflight request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
@@ -16,7 +15,6 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['user_id'])) {
 
     $conn = conectarDB();
     
-    // Consulta principal para obtener las listas del usuario
     $sql = "SELECT ID, Nombre, Descripcion, Status FROM Lista WHERE ID_Usuario = ? ORDER BY ID DESC";
     $stmt = $conn->prepare($sql);
     
@@ -38,7 +36,6 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['user_id'])) {
     $listas = [];
 
     while ($row = $result->fetch_assoc()) {
-        // Obtener la imagen del primer producto de la lista (si existe)
         $sqlProducto = "SELECT p.FotoPrincipal 
                        FROM Lista_Producto lp
                        JOIN Producto p ON lp.ID_Producto = p.ID
@@ -61,7 +58,6 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['user_id'])) {
             $stmtProducto->close();
         }
 
-        // Obtener el conteo de productos en la lista
         $sqlCount = "SELECT COUNT(*) as cantidad FROM Lista_Producto WHERE ID_Lista = ?";
         $stmtCount = $conn->prepare($sqlCount);
         
@@ -75,7 +71,6 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['user_id'])) {
             $stmtCount->close();
         }
 
-        // Agregar datos adicionales a la lista
         $row['primerProductoImagen'] = $primerProductoImagen;
         $row['cantidadProductos'] = $cantidadProductos;
         

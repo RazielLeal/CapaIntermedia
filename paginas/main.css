@@ -25,15 +25,14 @@ body, html {
 header {
     background-color: var(--principal);
     color: var(--letrauno);
-    padding: 0px 15px;
+    padding: 0px 15px 0px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     width: 90%;
-    margin: 10px auto;
+    justify-self: center;
     height: 50px;
     border-radius: 15px;
-    gap: 15px;
 }
 
 /* Buscador en el header */
@@ -125,27 +124,25 @@ a {
     border: 2px solid var(--principal);
 }
 
-/* RE-APLICADO: Estilos para la sección Productos más vendidos */
 #productos-populares {
-    background-color: white; /* Fondo blanco */
-    border-radius: 10px; /* Bordes redondeados */
-    margin: 20px auto; /* Margen y centrado */
-    padding: 20px; /* Espaciado interno */
-    box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Sombra suave */
-    width: 90%; /* Ancho consistente */
+    background-color: white; 
+    border-radius: 10px;
+    margin: 20px auto; 
+    padding: 20px; 
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    width: 90%; 
 }
 
 #productos-populares h2 {
     color: var(--principal);
     margin-top: 0;
     padding-bottom: 10px;
-    border-bottom: 1px solid var(--letrados); /* Línea debajo del título */
-    padding-left: 0; /* Asegurar que no haya padding extra aquí */
-    text-align: left; /* Asegurar alineación izquierda */
+    border-bottom: 1px solid var(--letrados); 
+    padding-left: 0; 
+    text-align: left; 
 }
 
 
-/* Estilos para el contador del carrito */
 #cart-count {
     background-color: var(--secundario);
     color: white;
@@ -155,7 +152,6 @@ a {
     margin-left: 5px;
 }
 
-/* Estilos para el modal del carrito */
 #cart-modal {
     display: none;
     position: fixed;
@@ -271,7 +267,6 @@ a {
     color: red;
 }
 
-/* Estilos para las nuevas secciones de búsqueda avanzada */
 .advanced-search-section {
     width: 90%;
     margin: 20px auto;
@@ -317,7 +312,6 @@ a {
     max-width: 300px;
 }
 
-/* Estilo específico para las tarjetas de usuario avanzada */
 .user-card-advanced img {
     width: 150px;
     height: 150px;
@@ -339,14 +333,13 @@ a {
     font-weight: bold;
 }
 
-/* Estilos de Paginación */
 .pagination-controls {
     display: flex;
     justify-content: center;
     align-items: center;
     margin-top: 30px;
     gap: 10px;
-    flex-wrap: wrap; /* Permite que los botones se envuelvan en pantallas pequeñas */
+    flex-wrap: wrap; 
 }
 
 .pagination-controls button {
@@ -382,60 +375,9 @@ a {
 }
 
 
-/* Ajustes para móviles */
-@media (max-width: 768px) {
-    header {
-        flex-direction: column;
-        height: auto;
-        padding: 10px;
-    }
-    #header-search {
-        width: 100%;
-        max-width: none;
-        margin-bottom: 10px;
-    }
-    header nav {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        gap: 5px;
-    }
-    .botones {
-        width: 100%;
-    }
-    #user-info, #productos-populares,
-    .advanced-search-section {
-        width: 95%;
-        margin: 15px auto;
-        padding: 15px;
-    }
-    .productos-container {
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        padding: 10px;
-        gap: 15px;
-    }
-    .advanced-search-filters {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .advanced-search-filters input[type="text"],
-    .advanced-search-filters select {
-        max-width: 100%;
-    }
-    .pagination-controls {
-        gap: 5px;
-    }
-    .pagination-controls button {
-        padding: 6px 10px;
-        font-size: 0.9em;
-    }
-}
 
 
 
-/* ... (Código CSS existente) ... */
-
-/* Estilos para los controles de cantidad en el carrito */
 .cantidad-control {
     display: flex;
     align-items: center;
@@ -457,7 +399,7 @@ a {
     align-items: center;
     justify-content: center;
     padding: 0;
-    line-height: 1; /* Elimina el espacio extra vertical */
+    line-height: 1; 
 }
 
 .cantidad-control .cantidad-btn:hover {
@@ -469,5 +411,3 @@ a {
     text-align: center;
     font-weight: bold;
 }
-
-/* ... (Resto del código CSS existente) ... */

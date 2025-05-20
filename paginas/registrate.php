@@ -1,6 +1,6 @@
 <?php
 header("Content-Type: application/json");
-header("Access-Control-Allow-Origin: http://localhost:3306"); // Ajusta según tu frontend
+header("Access-Control-Allow-Origin: http://localhost:3306");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type");
 
@@ -17,8 +17,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Validar campos obligatorios
     $required_fields = ["nombre", "apellidoP", "email", "password", "username", "nacimiento", "genero", "rol"];
     foreach ($required_fields as $field) {
-
-        
         if (empty($_POST[$field])) {
             echo json_encode([
                 "success" => false, 
@@ -38,6 +36,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nacimiento = $_POST["nacimiento"];
     $genero = $_POST["genero"];
     $rol = $_POST["rol"];
+    
+    // Lógica para el estatus de la cuenta
+    $estatus = 'Publico'; // Valor por defecto
+
+    if ($rol === 'Usuario') {
+        // Si el rol es 'Usuario', se permite seleccionar el estatus
+        // Asegúrate de que el campo 'estatus' se envíe desde el formulario HTML
+        if (isset($_POST['estatus']) && ($_POST['estatus'] === 'Publico' || $_POST['estatus'] === 'Privado')) {
+            $estatus = $_POST['estatus'];
+        }
+    } 
+    // Si el rol es 'Vendedor' o 'Admin', el estatus siempre será 'Publico' por defecto.
+    // La asignación inicial de $estatus = 'Publico' ya lo maneja.
+
 
     // Validar formato de email
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -73,13 +85,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Insertar en la base de datos (contraseña en texto plano)
     $stmt = $conn->prepare("INSERT INTO Usuario (
         Correo, Contrasena, Nombre, ApellidoPaterno, ApellidoMaterno, 
-        Nickname, Nacimiento, Rol, Avatar, Genero
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        Nickname, Nacimiento, Rol, Avatar, Genero, Estatus
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"); // Agregado Estatus
 
     $stmt->bind_param(
-        "ssssssssss", 
+        "sssssssssss", // Agregado un 's' para Estatus
         $email, $password, $nombre, $apellidoP, $apellidoM, 
-        $username, $nacimiento, $rol, $avatar, $genero
+        $username, $nacimiento, $rol, $avatar, $genero, $estatus // Agregado $estatus
     );
 
     if ($stmt->execute()) {

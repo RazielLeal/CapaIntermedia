@@ -101,7 +101,6 @@ body, html {
     opacity: 0.9;
 }
 
-/* Productos Destacados (centrado) */
 .productos-header {
     text-align: center;
     padding: 20px 0;
@@ -114,7 +113,6 @@ body, html {
     font-size: 24px;
 }
 
-/* Product Grid */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -123,8 +121,6 @@ body, html {
     max-width: 1200px;
     margin: 0 auto;
 }
-
-/* ... (el resto de tu CSS existente permanece igual) ... */
 
 .product-card {
     background: linear-gradient(145deg, var(--secundario) 0%, var(--terciario) 100%);
@@ -305,7 +301,6 @@ body, html {
     opacity: 0;
 }
 
-/* Loading State */
 .producto-loading {
     text-align: center;
     padding: 40px;
@@ -349,7 +344,7 @@ body, html {
 }
 
 .productos-header {
-    text-align: center; /* Centra el texto horizontalmente */
-    padding: 20px 0; /* Añade un poco de espacio arriba y abajo */
-    width: 100%; /* Asegura que ocupe todo el ancho disponible */
+    text-align: center;
+    padding: 20px 0;
+    width: 100%;
 }

@@ -11,10 +11,7 @@
     <header>
         <h1><a href="mainadministrador.html">Markline</a></h1>
         <nav>
-    
-            <!-- <button class="botones" onclick="location.href='perfiladmin.html'"><i class="fas fa-user-cog"></i> Perfil</button> -->
-
-            AGREGAR BOTON DE CERRAR SESIÓN
+            <button class="botones" id="cerrar-sesion-btn">Cerrar Sesión</button>
         </nav>
     </header>
 
@@ -27,31 +24,13 @@
         <h2>Panel de Administración</h2>
         <div class="admin-actions">
             
-            <!-- <div class="admin-action" onclick="location.href='gestionusuarios.html'">
-                <i class="fas fa-users-cog"></i>
-                <h3>Gestionar Usuarios</h3>
-                <p>Administra los usuarios del sistema</p>
-            </div> -->
-
             <div class="admin-action" onclick="location.href='gestionproductos.html'">
                 <i class="fas fa-boxes"></i>
                 <h3>Solicitud de Productos</h3>
                 <p>Administra todos los productos</p>
             </div>
 
-            <!-- <div class="admin-action" onclick="location.href='crearcategoria.html'">
-                <i class="fas fa-chart-bar"></i>
-                <h3>Agregar Categoria</h3>
-                <p>Ingresa nuevas categorias</p>
-            </div> -->
-
-            <!-- <div class="admin-action" onclick="location.href='configuracion.html'">
-                <i class="fas fa-cog"></i>
-                <h3>Configuración</h3>
-                <p>Ajustes del sistema</p>
-            </div> -->
-
-        </div>
+            </div>
     </section>
 
     <div id="cart-overlay" onclick="closeCart()"></div>
@@ -80,6 +59,22 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            const cerrarSesionBtn = document.getElementById('cerrar-sesion-btn');
+            if (cerrarSesionBtn) {
+                cerrarSesionBtn.addEventListener('click', function() {
+                    sessionStorage.removeItem('username');
+                    sessionStorage.removeItem('userRole'); 
+                    window.location.href = 'index.html';
+                });
+            }
+
+            const userRole = sessionStorage.getItem('userRole');
+            if (userRole !== 'Admin') {
+                alert('Acceso denegado. Solo administradores pueden acceder a esta página.');
+                window.location.href = 'index.html';
+                return; 
+            }
+
             const username = sessionStorage.getItem('username');
             const userNameElement = document.getElementById('user-name');
             const profilePhoto = document.getElementById('profile-photo');
@@ -92,14 +87,13 @@
                     .then(data => {
                         if (data.success) {
                             userNameElement.textContent = data.username;
-
                             if (data.photo) {
                                 profilePhoto.src = 'data:image/jpeg;base64,' + data.photo;
                             } else {
                                 profilePhoto.src = 'avatar.png';
                             }
                         } else {
-                            alert('Error al cargar el usuario.');
+                            alert('Error al cargar la información del usuario desde la base de datos.');
                         }
                     })
                     .catch(error => {
@@ -109,8 +103,37 @@
             } else {
                 alert('No hay usuario registrado en la sesión.');
                 window.location.href = 'index.html';
+                return; 
             }
+            fetch('obtener_estadisticas.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('Estadísticas cargadas:', data);
+                    } else {
+                        console.error('Error en las estadísticas:', data.error || 'Desconocido');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al cargar estadísticas:', error);
+                });
         });
+
+         function gestionarUsuarios() {
+            window.location.href = 'gestion_usuarios.html';
+        }
+
+        function gestionarProductos() {
+            window.location.href = 'gestion_productos.html';
+        }
+
+        function verReportes() {
+            window.location.href = 'reportes.html';
+        }
+
+        function configurarSistema() {
+            window.location.href = 'configuracion.html';
+        }
     </script>
 </body>
 </html>

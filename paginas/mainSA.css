@@ -1,10 +1,10 @@
 :root{
-    --principal: rgb(131, 131, 131); 
-    --secundario:rgb(194, 194, 194); 
+    --principal: rgb(131, 131, 131);
+    --secundario:rgb(194, 194, 194);
     --terciario: rgb(252, 252, 252);
     --blanco: rgb(255, 255, 255);
     --fondo:rgb(255, 255, 255);
-    --letrauno:rgb(207, 207, 207);
+    --letrauno:rgb(207, 207, 207); 
     --letrados:rgb(179, 179, 179);
     --sombra:rgba(132, 189, 255, 0.1);
     --sombra2:rgba(50, 72, 97, 0.568);
@@ -24,7 +24,7 @@ body, html {
 
 header {
     background-color: var(--principal);
-    color: var(--letrauno);
+    color: var(--letrauno); 
     padding: 0px 15px;
     display: flex;
     justify-content: space-between;
@@ -36,7 +36,6 @@ header {
     gap: 15px;
 }
 
-/* Buscador en el header */
 #header-search {
     flex: 1;
     max-width: 500px;
@@ -105,9 +104,17 @@ header {
     background-color: var(--blanco);
 }
 
+#btn-cerrar-sesion-sa {
+    color: black;
+}
+
 a {
     text-decoration: none;
-    color: inherit;
+    color: black; 
+}
+
+header h1 a {
+    color: var(--letrauno); 
 }
 
 #user-info {
@@ -121,7 +128,7 @@ a {
     width: 80px;
     height: 80px;
     object-fit: cover;
-    border-radius: 50%; 
+    border-radius: 50%;
     border: 2px solid var(--principal);
 }
 
@@ -135,7 +142,6 @@ a {
     padding-left: 20px;
 }
 
-/* Estilos para el contador del carrito */
 #cart-count {
     background-color: var(--secundario);
     color: white;
@@ -145,7 +151,6 @@ a {
     margin-left: 5px;
 }
 
-/* Estilos para el modal del carrito */
 #cart-modal {
     display: none;
     position: fixed;
@@ -300,6 +305,5 @@ a {
 }
 
 header button.botones {
-    /* Estilos específicos para el botón de cerrar sesión en el header */
-    margin-left: 20px; /* Ejemplo: agregar un margen a la izquierda */
+    margin-left: 20px;
 }
